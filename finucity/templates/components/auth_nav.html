@@ -1,0 +1,169 @@
+<!-- Authentication Navigation Component -->
+<div class="auth-nav">
+    {% if current_user.is_authenticated %}
+        <!-- Logged in user menu -->
+        <div class="user-menu">
+            <span class="welcome-text">Welcome, {{ current_user.first_name }}!</span>
+            <div class="dropdown">
+                <button class="dropdown-toggle">
+                    <i class="fas fa-user-circle"></i>
+                    {{ current_user.first_name }}
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="{{ url_for('main.profile') }}" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                    <a href="{{ url_for('chat_bp.chat_history') }}" class="dropdown-item">
+                        <i class="fas fa-history"></i>
+                        Chat History
+                    </a>
+                    <a href="{{ url_for('auth.change_password') }}" class="dropdown-item">
+                        <i class="fas fa-key"></i>
+                        Change Password
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('auth.logout') }}" class="dropdown-item logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Guest user buttons -->
+        <div class="auth-buttons">
+            <a href="{{ url_for('auth.login') }}" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="btn-register">
+                <i class="fas fa-user-plus"></i>
+                Sign Up
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.auth-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-login, .btn-register {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-login {
+    color: var(--text-light);
+    border: 1px solid var(--primary-gold);
+}
+
+.btn-login:hover {
+    background: var(--primary-gold);
+    color: #1a1a1a;
+}
+
+.btn-register {
+    background: var(--primary-gold);
+    color: #1a1a1a;
+}
+
+.btn-register:hover {
+    background: var(--dark-gold);
+}
+
+.user-menu {
+    position: relative;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+    border-color: var(--primary-gold);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-main);
+}
+
+.dropdown-item.logout:hover {
+    background: var(--error-red);
+    color: white;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5rem 0;
+}
+
+.welcome-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-right: 1rem;
+}
+</style>

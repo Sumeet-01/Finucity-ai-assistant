@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Insurance Planning Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>🛡️ Insurance Planning Services</h1>
+        <p>Protect what matters with comprehensive insurance planning</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Complete Insurance Protection</h2>
+            <p>Our AI-powered insurance planning service helps you identify coverage gaps, find the right policies, and optimize your insurance portfolio to ensure comprehensive protection for you and your family.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>💼 Needs Analysis</h3>
+                    <p>Calculate your exact coverage requirements based on financial obligations.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>💰 Premium Optimization</h3>
+                    <p>Find the right balance between coverage and affordability.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>🔄 Portfolio Review</h3>
+                    <p>Periodic assessment to ensure your coverage evolves with your life stages.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="insurance-types">
+            <h2>Essential Insurance Coverage</h2>
+            <div class="insurance-grid">
+                <div class="insurance-card term-life">
+                    <div class="insurance-header">
+                        <div class="insurance-icon">🛡️</div>
+                        <h3>Term Life Insurance</h3>
+                    </div>
+                    <div class="insurance-content">
+                        <div class="insurance-description">
+                            <p>Pure protection policy providing high coverage at affordable premiums.</p>
+                        </div>
+                        <div class="key-features">
+                            <h4>Key Features:</h4>
+                            <ul>
+                                <li>High Sum Assured (10-20x annual income)</li>
+                                <li>Low premiums compared to other life insurance</li>
+                                <li>Income replacement for dependents</li>
+                                <li>Tax benefits under Section 80C</li>
+                                <li>Add-on riders for enhanced protection</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation">
+                            <strong>Recommended for:</strong> Primary breadwinners with dependents
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insurance-card health">
+                    <div class="insurance-header">
+                        <div class="insurance-icon">🏥</div>
+                        <h3>Health Insurance</h3>
+                    </div>
+                    <div class="insurance-content">
+                        <div class="insurance-description">
+                            <p>Coverage for hospitalization expenses, medical treatments, and procedures.</p>
+                        </div>
+                        <div class="key-features">
+                            <h4>Key Features:</h4>
+                            <ul>
+                                <li>Cashless hospitalization facility</li>
+                                <li>Pre and post hospitalization coverage</li>
+                                <li>No-claim bonus benefits</li>
+                                <li>Tax benefits under Section 80D</li>
+                                <li>Coverage for day-care procedures</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation">
+                            <strong>Recommended for:</strong> Everyone, regardless of age or income
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insurance-card critical-illness">
+                    <div class="insurance-header">
+                        <div class="insurance-icon">❤️</div>
+                        <h3>Critical Illness Cover</h3>
+                    </div>
+                    <div class="insurance-content">
+                        <div class="insurance-description">
+                            <p>Lump sum benefit upon diagnosis of specified critical illnesses.</p>
+                        </div>
+                        <div class="key-features">
+                            <h4>Key Features:</h4>
+                            <ul>
+                                <li>Coverage for 20-30 major illnesses</li>
+                                <li>Single lump sum payout</li>
+                                <li>No restriction on usage of funds</li>
+                                <li>Additional tax benefits</li>
+                                <li>Covers treatment costs and income loss</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation">
+                            <strong>Recommended for:</strong> Adults with family history of critical illnesses
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insurance-card personal-accident">
+                    <div class="insurance-header">
+                        <div class="insurance-icon">⚠️</div>
+                        <h3>Personal Accident Insurance</h3>
+                    </div>
+                    <div class="insurance-content">
+                        <div class="insurance-description">
+                            <p>Financial protection against accidental death and disabilities.</p>
+                        </div>
+                        <div class="key-features">
+                            <h4>Key Features:</h4>
+                            <ul>
+                                <li>Coverage for accidental death</li>
+                                <li>Permanent/temporary disability benefits</li>
+                                <li>Hospital cash allowance</li>
+                                <li>Low premium, high coverage</li>
+                                <li>Education benefit for children</li>
+                            </ul>
+                        </div>
+                        <div class="recommendation">
+                            <strong>Recommended for:</strong> Working individuals, especially those in high-risk professions
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="insurance-calculator">
+            <h2>🧮 Insurance Coverage Calculator</h2>
+            <div class="calculator-container">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label>Annual Income (₹)</label>
+                        <input type="number" id="annualIncome" value="1000000" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Age (years)</label>
+                        <input type="number" id="age" value="35" min="18" max="65">
+                    </div>
+                    <div class="input-group">
+                        <label>Total Outstanding Debt (₹)</label>
+                        <input type="number" id="outstandingDebt" value="2000000" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Children's Future Education (₹)</label>
+                        <input type="number" id="educationFund" value="1500000" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Medical Expenses (₹)</label>
+                        <input type="number" id="medicalExpenses" value="50000" min="0">
+                    </div>
+                    <button class="calculate-btn" onclick="calculateInsurance()">Calculate Coverage Needs</button>
+                </div>
+                
+                <div class="calculator-result">
+                    <h3>Recommended Coverage</h3>
+                    <div class="result-item">
+                        <span>Term Life Insurance:</span>
+                        <span id="lifeInsurance">₹1.5 Crore</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Health Insurance:</span>
+                        <span id="healthInsurance">₹10 Lakhs</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Critical Illness Cover:</span>
+                        <span id="criticalIllness">₹25 Lakhs</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span>Personal Accident Cover:</span>
+                        <span id="accidentCover">₹1 Crore</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="insurance-tips">
+            <h2>💡 Insurance Planning Tips</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h4>1. Buy Term, Invest the Rest</h4>
+                    <p>Choose pure term insurance for life coverage and invest the savings in mutual funds or other growth instruments separately.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>2. Adequate Health Cover</h4>
+                    <p>Secure at least ₹5-10 lakhs health insurance per family member, adjusting for inflation and rising healthcare costs.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>3. Start Early</h4>
+                    <p>Purchase insurance policies early in life to lock in lower premiums and ensure maximum coverage period.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>4. Disclose Everything</h4>
+                    <p>Always provide complete and accurate medical history to avoid claim rejections during emergencies.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>5. Review Regularly</h4>
+                    <p>Review your insurance portfolio annually or after major life events like marriage, childbirth, or job changes.</p>
+                </div>
+                
+                <div class="tip-card">
+                    <h4>6. Consider Inflation</h4>
+                    <p>Factor in medical inflation when selecting health insurance coverage and opt for policies with inflation protection.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h3>Get Your Insurance Plan Today</h3>
+            <p>Receive personalized insurance recommendations from our AI advisor</p>
+            <a href="/chat" class="cta-button">Plan My Insurance</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.feature-content {
+    margin-top: 3rem;
+}
+
+.feature-content section {
+    margin-bottom: 4rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.insurance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.insurance-card {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    overflow: hidden;
+}
+
+.insurance-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.insurance-icon {
+    font-size: 2rem;
+}
+
+.insurance-header h3 {
+    color: var(--accent-primary);
+    margin: 0;
+}
+
+.insurance-content {
+    padding: 1.5rem;
+}
+
+.insurance-description {
+    margin-bottom: 1rem;
+}
+
+.key-features h4 {
+    color: var(--text-light);
+    margin: 0 0 1rem;
+}
+
+.key-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.key-features li {
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.key-features li:last-child {
+    border-bottom: none;
+}
+
+.recommendation {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    margin-top: 1rem;
+    color: var(--text-light);
+}
+
+.calculator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(251, 160, 2, 0.2);
+    border-radius: var(--border-radius-md);
+    background: var(--bg-main);
+    color: var(--text-light);
+}
+
+.calculate-btn {
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-normal);
+    margin-top: 1rem;
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.result-item.highlight {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    margin: 1rem 0;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tip-card {
+    background: var(--bg-alt);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    transition: transform var(--transition-normal);
+}
+
+.tip-card:hover {
+    transform: translateY(-5px);
+}
+
+.tip-card h4 {
+    color: var(--accent-primary);
+    margin-bottom: 0.75rem;
+}
+
+.cta-section {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+@media (max-width: 992px) {
+    .insurance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .calculator-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function calculateInsurance() {
+    const annualIncome = parseFloat(document.getElementById('annualIncome').value) || 0;
+    const age = parseInt(document.getElementById('age').value) || 35;
+    const outstandingDebt = parseFloat(document.getElementById('outstandingDebt').value) || 0;
+    const educationFund = parseFloat(document.getElementById('educationFund').value) || 0;
+    const medicalExpenses = parseFloat(document.getElementById('medicalExpenses').value) || 0;
+    
+    // Term Life Insurance: 10x annual income + debt + education fund
+    let lifeInsurance = (annualIncome * 10) + outstandingDebt + educationFund;
+    
+    // Round to nearest 25 lakhs
+    lifeInsurance = Math.ceil(lifeInsurance / 2500000) * 2500000;
+    
+    // Health Insurance: Based on age and medical expenses
+    let healthInsurance = 500000; // Base coverage
+    
+    if (age > 45) {
+        healthInsurance = 1000000; // Higher base for older individuals
+    }
+    
+    if (medicalExpenses > 100000) {
+        healthInsurance = Math.max(healthInsurance, medicalExpenses * 10);
+    }
+    
+    // Round to nearest 5 lakhs
+    healthInsurance = Math.ceil(healthInsurance / 500000) * 500000;
+    
+    // Critical Illness: 25% of life cover, minimum 10 lakhs
+    let criticalIllness = Math.max(lifeInsurance * 0.25, 1000000);
+    
+    // Round to nearest 5 lakhs
+    criticalIllness = Math.ceil(criticalIllness / 500000) * 500000;
+    
+    // Personal Accident: Equal to annual income, minimum 50 lakhs
+    let accidentCover = Math.max(annualIncome, 5000000);
+    
+    // Round to nearest 50 lakhs
+    accidentCover = Math.ceil(accidentCover / 5000000) * 5000000;
+    
+    // Display results in Indian number format
+    document.getElementById('lifeInsurance').textContent = formatIndianCurrency(lifeInsurance);
+    document.getElementById('healthInsurance').textContent = formatIndianCurrency(healthInsurance);
+    document.getElementById('criticalIllness').textContent = formatIndianCurrency(criticalIllness);
+    document.getElementById('accidentCover').textContent = formatIndianCurrency(accidentCover);
+}
+
+function formatIndianCurrency(amount) {
+    if (amount >= 10000000) {
+        return '₹' + (amount / 10000000).toFixed(2) + ' Crore';
+    } else if (amount >= 100000) {
+        return '₹' + (amount / 100000).toFixed(2) + ' Lakhs';
+    } else if (amount >= 1000) {
+        return '₹' + (amount / 1000).toFixed(2) + ' Thousand';
+    } else {
+        return '₹' + amount.toFixed(2);
+    }
+}
+
+// Calculate on page load
+document.addEventListener('DOMContentLoaded', function() {
+    calculateInsurance();
+});
+</script>
+{% endblock %}

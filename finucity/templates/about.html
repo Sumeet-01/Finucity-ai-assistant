@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}About Finucity | AI Financial Assistant{% endblock %}
+{% block description %}Learn about Finucity - Your AI-powered financial assistant providing instant tax and investment guidance{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* FIXED: Changed blue theme to match your olive green theme */
+    .about-page .hero-section {
+        background: var(--bg-gradient);
+        background-image: 
+            radial-gradient(circle at 20% 80%, rgba(62, 74, 61, 0.8) 0%, transparent 25%),
+            radial-gradient(circle at 80% 20%, rgba(251, 160, 2, 0.1) 0%, transparent 35%);
+        color: var(--text-light);
+        padding: 6rem 0 4rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-top: 80px; /* Account for fixed navbar */
+    }
+    
+    .about-page .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            linear-gradient(45deg, transparent 30%, rgba(251, 160, 2, 0.05) 50%, transparent 70%),
+            linear-gradient(-45deg, transparent 30%, rgba(251, 160, 2, 0.03) 50%, transparent 70%);
+        pointer-events: none;
+    }
+    
+    .about-page .hero-section .container {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .about-page .hero-section h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: var(--spacing-lg);
+        color: var(--text-light);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .about-page .subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        max-width: 700px;
+        margin: 0 auto;
+        color: var(--text-muted);
+    }
+    
+    .about-page {
+        margin-top: 80px; /* Account for fixed navbar */
+    }
+    
+    .about-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+        align-items: start;
+        margin-top: 3rem;
+    }
+    
+    .about-text h2 {
+        color: var(--accent-primary);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+    }
+    
+    .about-text p {
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+        color: var(--text-light);
+    }
+    
+    .about-text ol, .about-text ul {
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        color: var(--text-light);
+    }
+    
+    .about-text li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .disclaimer-box {
+        background-color: var(--bg-alt);
+        border-left: 4px solid var(--warning);
+        padding: 1.5rem 2rem;
+        border-radius: var(--border-radius-md);
+        margin: 2rem 0;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .disclaimer-box h3 {
+        color: var(--warning);
+        margin-bottom: 1rem;
+    }
+    
+    .disclaimer-box p, .disclaimer-box ul {
+        color: var(--text-light);
+    }
+    
+    .feature-card {
+        background-color: var(--bg-alt);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
+        border: 1px solid rgba(251, 160, 2, 0.1);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(251, 160, 2, 0.3);
+    }
+    
+    .feature-card i {
+        font-size: 2rem;
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
+    }
+    
+    .feature-card p {
+        color: var(--text-muted);
+        margin-bottom: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .about-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .about-page .hero-section {
+            padding: 4rem 0 3rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .about-page .hero-section {
+            padding: 3rem 0 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="hero-section">
+        <div class="container">
+            <h1>About Finucity</h1>
+            <p class="subtitle">The story behind your AI financial assistant</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-text">
+                <h2>Our Mission</h2>
+                <p>Finucity was created with a simple yet powerful mission: to democratize access to financial guidance and tax advice through the power of artificial intelligence. We believe that everyone deserves clear, accurate financial information without the barriers of high costs or limited accessibility.</p>
+                
+                <h2>What is Finucity?</h2>
+                <p>Finucity is an AI-powered financial assistant designed to provide instant guidance on taxation, investments, GST compliance, and other financial matters. Built using advanced language models and trained on Indian financial regulations and best practices, Finucity aims to simplify complex financial concepts and make them accessible to everyone.</p>
+                
+                <h2>How It Works</h2>
+                <p>Finucity utilizes natural language processing to understand your financial questions and provide relevant, actionable answers. Our system is continuously learning and improving through user interactions, feedback, and regular updates to financial regulations.</p>
+                
+                <ol>
+                    <li><strong>Ask your question</strong> in simple language - no need for technical terms.</li>
+                    <li><strong>AI processing</strong> - our system analyzes your query and retrieves relevant information.</li>
+                    <li><strong>Receive guidance</strong> - get clear, concise answers to your financial questions.</li>
+                    <li><strong>Follow-up</strong> - ask additional questions to explore topics further.</li>
+                </ol>
+                
+                <h2>Who Created Finucity</h2>
+                <p>Finucity was developed by an independent developer passionate about combining AI technology with financial knowledge to create accessible solutions. Unlike large financial institutions or corporate-backed tools, Finucity was created as a solo project with the goal of helping individuals and small businesses navigate complex financial landscapes.</p>
+                
+                <div class="disclaimer-box">
+                    <h3>Important Disclaimer</h3>
+                    <p>Finucity is an AI assistant designed to provide general guidance and information on financial matters. While we strive for accuracy, it's important to note that:</p>
+                    <ul>
+                        <li>Finucity is not a substitute for professional financial advice from certified accountants, tax professionals, or financial advisors.</li>
+                        <li>The creator of Finucity is not a professional financial advisor or chartered accountant.</li>
+                        <li>Information provided should be used for general guidance only and verified with appropriate professionals before making financial decisions.</li>
+                        <li>Financial regulations change frequently, and while we try to keep our information updated, there may be delays or inaccuracies.</li>
+                    </ul>
+                    <p>Always consult with qualified professionals for personalized advice tailored to your specific situation.</p>
+                </div>
+            </div>
+            
+            <div class="about-sidebar">
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI-Powered Intelligence</h3>
+                    <p>Our system leverages advanced language models to understand and respond to your financial queries.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Privacy-Focused</h3>
+                    <p>Your financial queries are handled with strict privacy measures. We don't store personally identifiable financial data.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-sync"></i>
+                    <h3>Continuously Updated</h3>
+                    <p>Our knowledge base is regularly updated to reflect the latest in financial regulations and best practices.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Community Driven</h3>
+                    <p>We improve through user feedback and real-world use cases to better serve your financial needs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

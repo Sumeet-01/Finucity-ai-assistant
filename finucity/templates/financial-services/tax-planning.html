@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Tax Planning Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>💼 Tax Planning Services</h1>
+        <p>Optimize your tax liability with strategic tax planning</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Smart Tax Planning Solutions</h2>
+            <p>Our comprehensive tax planning services help you optimize your tax liability through legal deductions and exemptions. Get personalized tax strategies based on your income profile, investments, and financial goals.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>🧾 Tax Optimization</h3>
+                    <p>Identify all eligible deductions to minimize your tax liability legally.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>📝 Return Filing</h3>
+                    <p>Step-by-step guidance for accurate and timely filing of tax returns.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>⚖️ Regime Selection</h3>
+                    <p>Comparison between old and new tax regimes to choose the most beneficial option.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tax-saving-section">
+            <h2>🛡️ Tax Saving Instruments</h2>
+            <div class="tax-instruments-grid">
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>Section 80C</h3>
+                        <span class="deduction-badge">Up to ₹1.5 Lakh</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>PPF (Public Provident Fund)</li>
+                            <li>ELSS (Equity Linked Saving Scheme)</li>
+                            <li>Life Insurance Premium</li>
+                            <li>Tax Saving Fixed Deposits</li>
+                            <li>National Savings Certificate (NSC)</li>
+                            <li>Sukanya Samriddhi Yojana</li>
+                            <li>Home Loan Principal Repayment</li>
+                            <li>Tuition Fees for Children</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>Section 80D</h3>
+                        <span class="deduction-badge">Up to ₹1 Lakh</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>Health Insurance Premium for Self & Family: Up to ₹25,000</li>
+                            <li>Additional for Parents: Up to ₹25,000</li>
+                            <li>Senior Citizens: Enhanced limit of ₹50,000</li>
+                            <li>Preventive Health Check-up: Up to ₹5,000</li>
+                            <li>Medical Expenditure for Senior Citizens: Up to ₹50,000</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>Other Deductions</h3>
+                        <span class="deduction-badge">Various Limits</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>80CCD(1B): Additional NPS contribution up to ₹50,000</li>
+                            <li>80E: Education Loan Interest (No Limit)</li>
+                            <li>80EE/80EEA: Home Loan Interest up to ₹1.5 Lakh</li>
+                            <li>80G: Donations to Charitable Organizations</li>
+                            <li>80TTA: Interest on Savings Account up to ₹10,000</li>
+                            <li>80TTB: Interest Income for Senior Citizens up to ₹50,000</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tax-calculator-section">
+            <h2>🧮 Tax Calculator</h2>
+            <div class="tax-regime-toggle">
+                <button class="regime-btn active" data-regime="old" onclick="selectRegime('old')">Old Regime</button>
+                <button class="regime-btn" data-regime="new" onclick="selectRegime('new')">New Regime</button>
+            </div>
+
+            <div class="calculator-container">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label>Annual Income (₹)</label>
+                        <input type="number" id="annualIncome" value="1000000" min="0">
+                    </div>
+                    <div class="input-group old-regime-input">
+                        <label>80C Deductions (₹)</label>
+                        <input type="number" id="deductions80C" value="150000" min="0" max="150000">
+                    </div>
+                    <div class="input-group old-regime-input">
+                        <label>80D Health Insurance (₹)</label>
+                        <input type="number" id="deductions80D" value="25000" min="0" max="100000">
+                    </div>
+                    <div class="input-group old-regime-input">
+                        <label>HRA Exemption (₹)</label>
+                        <input type="number" id="hraExemption" value="120000" min="0">
+                    </div>
+                    <div class="input-group old-regime-input">
+                        <label>Standard Deduction (₹)</label>
+                        <input type="number" id="standardDeduction" value="50000" min="0" max="50000" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>Other Deductions (₹)</label>
+                        <input type="number" id="otherDeductions" value="50000" min="0">
+                    </div>
+                    <button class="calculate-btn" onclick="calculateTax()">Calculate Tax Liability</button>
+                </div>
+                
+                <div class="calculator-result">
+                    <h3>Tax Calculation</h3>
+                    <div class="result-item">
+                        <span>Total Income:</span>
+                        <span id="totalIncome">₹10,00,000</span>
+                    </div>
+                    <div class="result-item old-regime-result">
+                        <span>Total Deductions:</span>
+                        <span id="totalDeductions">₹3,75,000</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Taxable Income:</span>
+                        <span id="taxableIncome">₹6,25,000</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span>Tax Liability:</span>
+                        <span id="taxLiability">₹45,500</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Effective Tax Rate:</span>
+                        <span id="effectiveTaxRate">4.55%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h3>Need Personalized Tax Advice?</h3>
+            <p>Get expert guidance from our financial advisors</p>
+            <a href="{{ url_for('chat.chat_interface') }}?category=tax" class="cta-button">Chat with Tax Expert</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Your existing styles plus: */
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.feature-content {
+    margin-top: 3rem;
+}
+
+.feature-content section {
+    margin-bottom: 4rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.tax-instruments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.instrument-card {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    overflow: hidden;
+}
+
+.instrument-header {
+    background: var(--bg-main);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.instrument-header h3 {
+    color: var(--accent-primary);
+    margin: 0;
+}
+
+.deduction-badge {
+    background: var(--accent-primary);
+    color: var(--text-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.instrument-content {
+    padding: 1.5rem;
+}
+
+.instrument-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.instrument-list li {
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.instrument-list li:last-child {
+    border-bottom: none;
+}
+
+.tax-regime-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: var(--bg-alt);
+    padding: 0.5rem;
+    border-radius: var(--border-radius-full);
+    width: fit-content;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.regime-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.regime-btn.active {
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.calculator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(251, 160, 2, 0.2);
+    border-radius: var(--border-radius-md);
+    background: var(--bg-main);
+    color: var(--text-light);
+}
+
+.calculate-btn {
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-normal);
+    margin-top: 1rem;
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.result-item.highlight {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    margin: 1rem 0;
+}
+
+.cta-section {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+@media (max-width: 768px) {
+    .calculator-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let currentRegime = 'old';
+
+function selectRegime(regime) {
+    currentRegime = regime;
+    document.querySelectorAll('.regime-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-regime="${regime}"]`).classList.add('active');
+    
+    const oldRegimeInputs = document.querySelectorAll('.old-regime-input');
+    const oldRegimeResults = document.querySelectorAll('.old-regime-result');
+    
+    if (regime === 'old') {
+        oldRegimeInputs.forEach(el => el.style.display = 'block');
+        oldRegimeResults.forEach(el => el.style.display = 'flex');
+    } else {
+        oldRegimeInputs.forEach(el => el.style.display = 'none');
+        oldRegimeResults.forEach(el => el.style.display = 'none');
+    }
+    
+    calculateTax();
+}
+
+function calculateTax() {
+    const annualIncome = parseFloat(document.getElementById('annualIncome').value) || 0;
+    const deductions80C = parseFloat(document.getElementById('deductions80C').value) || 0;
+    const deductions80D = parseFloat(document.getElementById('deductions80D').value) || 0;
+    const hraExemption = parseFloat(document.getElementById('hraExemption').value) || 0;
+    const standardDeduction = parseFloat(document.getElementById('standardDeduction').value) || 0;
+    const otherDeductions = parseFloat(document.getElementById('otherDeductions').value) || 0;
+    
+    const totalDeductions = deductions80C + deductions80D + hraExemption + standardDeduction + otherDeductions;
+    const taxableIncome = Math.max(0, annualIncome - totalDeductions);
+    let taxLiability = 0;
+    
+    if (currentRegime === 'old') {
+        // Old regime calculation
+        if (taxableIncome <= 250000) {
+            taxLiability = 0;
+        } else if (taxableIncome <= 500000) {
+            taxLiability = (taxableIncome - 250000) * 0.05;
+        } else if (taxableIncome <= 1000000) {
+            taxLiability = 12500 + (taxableIncome - 500000) * 0.2;
+        } else {
+            taxLiability = 112500 + (taxableIncome - 1000000) * 0.3;
+        }
+    } else {
+        // New regime calculation
+        if (taxableIncome <= 300000) {
+            taxLiability = 0;
+        } else if (taxableIncome <= 600000) {
+            taxLiability = (taxableIncome - 300000) * 0.05;
+        } else if (taxableIncome <= 900000) {
+            taxLiability = 15000 + (taxableIncome - 600000) * 0.1;
+        } else if (taxableIncome <= 1200000) {
+            taxLiability = 45000 + (taxableIncome - 900000) * 0.15;
+        } else if (taxableIncome <= 1500000) {
+            taxLiability = 90000 + (taxableIncome - 1200000) * 0.2;
+        } else {
+            taxLiability = 150000 + (taxableIncome - 1500000) * 0.3;
+        }
+    }
+    
+    // Add 4% cess
+    taxLiability += taxLiability * 0.04;
+    
+    const effectiveTaxRate = (taxLiability / annualIncome) * 100;
+    
+    document.getElementById('totalIncome').textContent = '₹' + annualIncome.toLocaleString('en-IN');
+    document.getElementById('totalDeductions').textContent = '₹' + totalDeductions.toLocaleString('en-IN');
+    document.getElementById('taxableIncome').textContent = '₹' + taxableIncome.toLocaleString('en-IN');
+    document.getElementById('taxLiability').textContent = '₹' + Math.round(taxLiability).toLocaleString('en-IN');
+    document.getElementById('effectiveTaxRate').textContent = effectiveTaxRate.toFixed(2) + '%';
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', function() {
+    selectRegime('old');
+});
+</script>
+{% endblock %}

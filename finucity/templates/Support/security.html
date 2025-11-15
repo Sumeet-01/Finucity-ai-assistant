@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Security Information | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>🔐 Security Information</h1>
+        <p>How we protect your financial data and conversations</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="security-content">
+        <section class="security-overview">
+            <h2>Our Security Commitment</h2>
+            <p>At Finucity, we prioritize the security and privacy of your financial information above everything else. Our platform employs industry-leading security measures to ensure your data remains protected at all times.</p>
+            
+            <div class="security-grid">
+                <div class="security-card">
+                    <div class="security-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3>End-to-End Encryption</h3>
+                    <p>All data transmitted between your device and our servers is encrypted using TLS 1.3 protocol, ensuring that your financial information cannot be intercepted or accessed by unauthorized parties.</p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Data Privacy</h3>
+                    <p>We minimize data collection to only what's necessary for providing our services. Your conversation history is encrypted and securely stored, and you maintain full control over your data.</p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <h3>Secure Authentication</h3>
+                    <p>Our multi-layered authentication system protects your account from unauthorized access. We enforce strong password policies and support secure session management.</p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">
+                        <i class="fas fa-code-branch"></i>
+                    </div>
+                    <h3>Regular Security Audits</h3>
+                    <p>Our code and infrastructure undergo regular security audits and vulnerability assessments to identify and address potential security issues before they can be exploited.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="data-practices">
+            <h2>Our Data Practices</h2>
+            <div class="practices-container">
+                <div class="practice-item">
+                    <h3><i class="fas fa-database"></i> Data Storage</h3>
+                    <p>We store minimal personal data, only what's necessary to provide our financial advisory services. All stored data is encrypted at rest using AES-256 encryption.</p>
+                </div>
+                
+                <div class="practice-item">
+                    <h3><i class="fas fa-trash-alt"></i> Data Retention</h3>
+                    <p>Your conversation history is retained for as long as your account is active, allowing you to refer back to previous advice. You can request data deletion at any time.</p>
+                </div>
+                
+                <div class="practice-item">
+                    <h3><i class="fas fa-share-alt"></i> Data Sharing</h3>
+                    <p>We never sell your data or share it with third parties without your explicit consent. Your financial information remains strictly confidential.</p>
+                </div>
+                
+                <div class="practice-item">
+                    <h3><i class="fas fa-user-check"></i> Access Controls</h3>
+                    <p>Only authorized personnel with specific roles have access to our systems, following the principle of least privilege to ensure data security.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="security-steps">
+            <h2>Steps You Can Take</h2>
+            <p>While we implement robust security measures, you can enhance the security of your account by following these recommendations:</p>
+            
+            <div class="steps-grid">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Use Strong Passwords</h3>
+                        <p>Create a unique, complex password for your Finucity account. Consider using a password manager to generate and store secure passwords.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Keep Devices Secure</h3>
+                        <p>Ensure your devices have the latest security updates and use reputable antivirus software. Avoid using public or shared computers for accessing sensitive financial information.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Be Vigilant About Phishing</h3>
+                        <p>Be cautious of emails or messages asking for your Finucity credentials. We will never ask for your password via email or messages.</p>
+                    </div>
+                </div>
+                
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Sign Out When Finished</h3>
+                        <p>Always log out of your Finucity account when you're done, especially when using shared devices or public computers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="security-contact">
+            <h2>Security Concerns?</h2>
+            <p>If you believe you've found a security vulnerability or have concerns about the security of your account, please contact us immediately at:</p>
+            <div class="contact-info">
+                <a href="mailto:security@example.com">security@finucity.ai</a> | 
+                <a href="https://github.com/Sumeet-01" target="_blank">GitHub</a> |
+                <a href="https://linkedin.com/in/sumeet-sangwan" target="_blank">LinkedIn</a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.security-content {
+    margin: 3rem 0;
+}
+
+.security-overview h2,
+.data-practices h2,
+.security-steps h2,
+.security-contact h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-light);
+}
+
+.security-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.security-card {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.security-card:hover {
+    transform: translateY(-5px);
+}
+
+.security-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(251, 160, 2, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.security-icon i {
+    font-size: 2rem;
+    color: #FBA002;
+}
+
+.security-card h3 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+}
+
+.practices-container {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    margin: 2rem 0;
+}
+
+.practice-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.practice-item:last-child {
+    border-bottom: none;
+}
+
+.practice-item h3 {
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.practice-item p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.step-item {
+    display: flex;
+    gap: 1.5rem;
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    align-items: flex-start;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    color: var(--accent-primary);
+    margin-bottom: 0.75rem;
+}
+
+.step-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.security-contact {
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.contact-info {
+    margin-top: 1.5rem;
+    background: var(--bg-alt);
+    display: inline-block;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius-lg);
+    font-weight: 500;
+}
+
+.contact-info a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-info a:hover {
+    color: var(--accent-secondary);
+}
+
+@media (max-width: 768px) {
+    .step-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

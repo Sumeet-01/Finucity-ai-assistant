@@ -1,0 +1,822 @@
+{% extends "base.html" %}
+
+{% block title %}Finucity - Your Trusted AI Chartered Accountant{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatAnimation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.hero-animation {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero-animation-delay-1 {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.hero-animation-delay-2 {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+.hero-animation-delay-3 {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+.float-animation {
+    animation: floatAnimation 3s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(90deg, #FBA002, #E69200);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+}
+
+/* Card hover effects */
+.feature-card {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* Custom list styling */
+.custom-list {
+    padding-left: 1.5rem;
+}
+
+.custom-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.custom-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #FBA002;
+    border-radius: 50%;
+}
+
+/* Pulse animation for CTAs */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(251, 160, 2, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(251, 160, 2, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(251, 160, 2, 0); }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Enhanced testimonial card effects */
+.testimonial-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.testimonial-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #FBA002, transparent);
+    transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+}
+
+.testimonial-card:hover::after {
+    height: 4px;
+}
+
+/* Use case slider */
+.use-cases-slider {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0;
+    margin: 2rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: #FBA002 #f1f1f1;
+}
+
+.use-cases-slider::-webkit-scrollbar {
+    height: 6px;
+}
+
+.use-cases-slider::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.use-cases-slider::-webkit-scrollbar-thumb {
+    background: #FBA002;
+    border-radius: 10px;
+}
+
+.use-case-card {
+    flex: 0 0 auto;
+    width: 280px;
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.use-case-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(251, 160, 2, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #FBA002;
+    margin-bottom: 1rem;
+}
+
+.use-case-btn {
+    margin-top: auto;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    background: rgba(251, 160, 2, 0.1);
+    color: #FBA002;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.use-case-btn:hover {
+    background: #FBA002;
+    color: white;
+}
+
+/* Hero background elements */
+.hero-bg-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.bg-element {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+}
+
+.element-1 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(45deg, #FBA002, transparent);
+    top: -150px;
+    right: -100px;
+}
+
+.element-2 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(-45deg, #FBA002, transparent);
+    bottom: -100px;
+    left: -50px;
+}
+
+.element-3 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #FBA002, transparent);
+    top: 50%;
+    right: 10%;
+}
+
+/* Feature link */
+.feature-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 1rem;
+    color: #FBA002;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.feature-link i {
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.feature-link:hover {
+    color: #E69200;
+}
+
+.feature-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Section title small */
+.section-title-sm {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+/* Welcome back banner for authenticated users */
+.welcome-banner {
+    background: linear-gradient(135deg, rgba(251, 160, 2, 0.1), rgba(230, 146, 0, 0.1));
+    border: 1px solid rgba(251, 160, 2, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.welcome-banner-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--accent-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.welcome-banner-content {
+    flex: 1;
+}
+
+.welcome-banner-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-light);
+    font-size: 1.25rem;
+}
+
+.welcome-banner-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.welcome-banner-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .welcome-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .welcome-banner-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <!-- Welcome Banner for Authenticated Users -->
+                {% if current_user.is_authenticated %}
+                <div class="welcome-banner">
+                    <div class="welcome-banner-icon">{{ current_user.first_name[0]|upper }}</div>
+                    <div class="welcome-banner-content">
+                        <h3>Welcome back, {{ current_user.first_name }}!</h3>
+                        <p>Ready to continue your financial journey? Your AI assistant is waiting.</p>
+                    </div>
+                    <div class="welcome-banner-actions">
+                        <a href="{{ url_for('chat.chat_interface') }}" class="cta-button">
+                            <i class="fas fa-comments"></i> Go to Chat
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <h1 class="hero-animation">Your Trusted AI <br><span class="gradient-text">Chartered Accountant</span></h1>
+                <p class="subtitle hero-animation-delay-1">Instant, accurate, and confidential financial guidance. Simplify your taxes, investments, and business compliance with the power of AI.</p>
+                
+                <div class="hero-cta hero-animation-delay-2">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('chat.chat_interface') }}" class="cta-button pulse-animation">
+                            <i class="fas fa-comments"></i> Continue Chat
+                        </a>
+                        <a href="{{ url_for('chat.chat_history') }}" class="outline-button">
+                            <i class="fas fa-history"></i> View History
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('chat.chat_interface') }}" class="cta-button pulse-animation">
+                            <i class="fas fa-comments"></i> Ask Finucity AI
+                        </a>
+                        <a href="#how-it-works" class="outline-button js-scroll-trigger">
+                            <i class="fas fa-play-circle"></i> How It Works
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <div class="hero-stats hero-animation-delay-3">
+                    <div class="stat-item float-animation">
+                        <div class="stat-value" id="userCount">18K+</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-item float-animation">
+                        <div class="stat-value" id="queryCount">320K+</div>
+                        <div class="stat-label">Questions Answered</div>
+                    </div>
+                    <div class="stat-item float-animation">
+                        <div class="stat-value">98.5%</div>
+                        <div class="stat-label">Accuracy Rate</div>
+                    </div>
+                </div>
+                
+                <div class="daily-tip hero-animation-delay-3">
+                    <div class="daily-tip-label"><i class="fas fa-lightbulb"></i> Daily Finance Tip</div>
+                    <p class="daily-tip-content" id="dailyTip">Start your tax planning early in the financial year to maximize deductions under Section 80C.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Animated Background Elements -->
+        <div class="hero-bg-elements">
+            <div class="bg-element element-1"></div>
+            <div class="bg-element element-2"></div>
+            <div class="bg-element element-3"></div>
+        </div>
+    </section>
+    
+    <!-- Featured Use Cases -->
+    <section class="use-cases-section">
+        <div class="container">
+            <h2 class="section-title-sm">Popular Use Cases</h2>
+            <div class="use-cases-slider">
+                <div class="use-case-card">
+                    <div class="use-case-icon"><i class="fas fa-calculator"></i></div>
+                    <p>"Calculate my tax savings if I invest ₹1.5 lakhs in ELSS"</p>
+                    <a href="{{ url_for('chat.chat_interface') }}?query=Calculate+my+tax+savings+if+I+invest+₹1.5+lakhs+in+ELSS" class="use-case-btn">Ask Now</a>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon"><i class="fas fa-chart-line"></i></div>
+                    <p>"Which mutual funds are best for a 5-year investment horizon?"</p>
+                    <a href="{{ url_for('chat.chat_interface') }}?query=Which+mutual+funds+are+best+for+a+5-year+investment+horizon" class="use-case-btn">Ask Now</a>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon"><i class="fas fa-file-invoice"></i></div>
+                    <p>"How do I file my GST returns for my e-commerce business?"</p>
+                    <a href="{{ url_for('chat.chat_interface') }}?query=How+do+I+file+my+GST+returns+for+my+e-commerce+business" class="use-case-btn">Ask Now</a>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon"><i class="fas fa-building"></i></div>
+                    <p>"What business structure should I choose for my startup?"</p>
+                    <a href="{{ url_for('chat.chat_interface') }}?query=What+business+structure+should+I+choose+for+my+startup" class="use-case-btn">Ask Now</a>
+                </div>
+                <div class="use-case-card">
+                    <div class="use-case-icon"><i class="fas fa-umbrella-beach"></i></div>
+                    <p>"How much should I save monthly for retirement in 20 years?"</p>
+                    <a href="{{ url_for('chat.chat_interface') }}?query=How+much+should+I+save+monthly+for+retirement+in+20+years" class="use-case-btn">Ask Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features-section section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Finucity AI?</h2>
+            <p class="section-subtitle">We combine cutting-edge technology with the expertise you can trust, providing a seamless and supportive financial experience.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <i class="fas fa-bolt-lightning"></i>
+                    <h3>Instant Answers</h3>
+                    <p>Get immediate, 24/7 responses to your most pressing financial questions. No more waiting for appointments or long email threads.</p>
+                    <a href="{{ url_for('chat.chat_interface') }}" class="feature-link">Try Now <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card fade-in">
+                    <i class="fas fa-brain"></i>
+                    <h3>Expert Knowledge</h3>
+                    <p>Our AI is trained on vast libraries of Indian tax codes, investment strategies, and compliance documents, updated in real-time.</p>
+                    <a href="{{ url_for('main.about') }}" class="feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card fade-in">
+                    <i class="fas fa-shield-halved"></i>
+                    <h3>Secure & Confidential</h3>
+                    <p>Your financial data is encrypted and your conversations are private. We prioritize your security and trust above all else.</p>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#securityModal" class="feature-link">Security Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card fade-in">
+                    <i class="fas fa-file-invoice"></i>
+                    <h3>Simplified Finance</h3>
+                    <p>Complex financial concepts explained in plain language. Understand your finances without the jargon and technical terms.</p>
+                    <a href="{{ url_for('chat.chat_interface') }}" class="feature-link">Start Learning <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card fade-in">
+                    <i class="fas fa-arrows-to-dot"></i>
+                    <h3>Personalized Guidance</h3>
+                    <p>Receive tailored advice based on your specific situation, not generic information that doesn't apply to your needs.</p>
+                    <a href="{{ url_for('chat.chat_interface') }}" class="feature-link">Get Guidance <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="feature-card fade-in">
+                    <i class="fas fa-rotate"></i>
+                    <h3>Always Up-to-Date</h3>
+                    <p>Our AI continuously learns from the latest tax laws, regulatory changes, and financial strategies to provide current advice.</p>
+                    <a href="{{ url_for('main.financial_blog') }}" class="feature-link">Latest Updates <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works section" id="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How Finucity AI Works</h2>
+            <p class="section-subtitle">Get expert financial guidance in minutes, not days. Our AI is designed to be intuitive, accurate, and user-friendly.</p>
+            
+            <div class="steps-container">
+                <div class="step-timeline"></div>
+                
+                <div class="step step-left fade-in">
+                    <div class="step-content">
+                        <h3>1. Ask Your Question</h3>
+                        <p>Simply type your financial query in natural language. No need for formal or technical phrasing - ask as you would a human CA.</p>
+                        <ul class="custom-list">
+                            <li>Ask about tax deductions</li>
+                            <li>Request investment advice</li>
+                            <li>Get GST filing guidance</li>
+                        </ul>
+                    </div>
+                    <div class="step-icon float-animation">
+                        <i class="fas fa-question"></i>
+                    </div>
+                </div>
+                
+                <div class="step step-right fade-in">
+                    <div class="step-content">
+                        <h3>2. AI Analysis</h3>
+                        <p>Our advanced AI processes your query, accessing its vast knowledge of Indian financial regulations, tax codes, and best practices.</p>
+                        <ul class="custom-list">
+                            <li>Latest tax regulations</li>
+                            <li>Financial best practices</li>
+                            <li>Industry-specific compliance</li>
+                        </ul>
+                    </div>
+                    <div class="step-icon float-animation">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                </div>
+                
+                <div class="step step-left fade-in">
+                    <div class="step-content">
+                        <h3>3. Get Expert Guidance</h3>
+                        <p>Receive a clear, accurate response with actionable insights tailored to your specific situation and financial goals.</p>
+                        <ul class="custom-list">
+                            <li>Personalized recommendations</li>
+                            <li>Step-by-step instructions</li>
+                            <li>Helpful visual aids when needed</li>
+                        </ul>
+                    </div>
+                    <div class="step-icon float-animation">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                </div>
+                
+                <div class="step step-right fade-in">
+                    <div class="step-content">
+                        <h3>4. Follow Up & Refine</h3>
+                        <p>Ask follow-up questions for deeper understanding. Our AI remembers your conversation context for a seamless experience.</p>
+                        <ul class="custom-list">
+                            <li>Clarify complex concepts</li>
+                            <li>Explore different scenarios</li>
+                            <li>Save conversation for later reference</li>
+                        </ul>
+                    </div>
+                    <div class="step-icon float-animation">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('chat.chat_interface') }}" class="cta-button pulse-animation">Continue Your Financial Journey <i class="fas fa-arrow-right"></i></a>
+                {% else %}
+                    <a href="{{ url_for('chat.chat_interface') }}" class="cta-button pulse-animation">Try Finucity AI Now <i class="fas fa-arrow-right"></i></a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section section">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Financial Expertise</h2>
+            <p class="section-subtitle">From personal tax planning to complex business compliance, we have you covered with specialized AI guidance.</p>
+            
+            <div class="services-grid">
+                <div class="service-card fade-in">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <h3>Income Tax & Planning</h3>
+                    <p>Maximize savings with personalized tax strategies that put more money back in your pocket.</p>
+                    <ul class="service-items">
+                        <li><i class="fas fa-check-circle"></i> ITR filing guidance</li>
+                        <li><i class="fas fa-check-circle"></i> Tax-saving investment advice</li>
+                        <li><i class="fas fa-check-circle"></i> Deduction optimization</li>
+                        <li><i class="fas fa-check-circle"></i> Salary structure planning</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card fade-in">
+                    <i class="fas fa-building"></i>
+                    <h3>GST & Business Growth</h3>
+                    <p>Streamline your business compliance and focus on what matters - growing your dreams.</p>
+                    <ul class="service-items">
+                        <li><i class="fas fa-check-circle"></i> GST filing assistance</li>
+                        <li><i class="fas fa-check-circle"></i> Input tax credit optimization</li>
+                        <li><i class="fas fa-check-circle"></i> E-way bill compliance</li>
+                        <li><i class="fas fa-check-circle"></i> Business structure advisory</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card fade-in">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Wealth & Investment</h3>
+                    <p>Build a secure financial future with investment strategies tailored to your life goals.</p>
+                    <ul class="service-items">
+                        <li><i class="fas fa-check-circle"></i> Investment portfolio review</li>
+                        <li><i class="fas fa-check-circle"></i> Retirement planning</li>
+                        <li><i class="fas fa-check-circle"></i> Tax-efficient investing</li>
+                        <li><i class="fas fa-check-circle"></i> Capital gains optimization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonial-section">
+        <div class="container">
+            <div class="testimonial-container">
+                <div class="testimonial-highlight fade-in">
+                    <div class="testimonial-quote">
+                        <p>"Finucity AI didn't just help with my taxes; it helped me understand my finances in a way that changed my life. The guidance gave me confidence I never had before with financial decisions."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">P</div>
+                        <div class="author-info">
+                            <h4>Priya Sharma</h4>
+                            <p>Small Business Owner, Bangalore</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-list fade-in">
+                    <h3>What Our Users Say</h3>
+                    <div class="testimonial-card">
+                        <p>"The tax planning advice I received saved me over ₹45,000 this year alone. Worth every second!"</p>
+                        <div class="testimonial-card-author">- Rahul M., Software Engineer</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p>"As a freelancer, GST compliance was my biggest headache until I found Finucity AI."</p>
+                        <div class="testimonial-card-author">- Anjali K., Graphic Designer</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p>"The investment guidance is on par with what my financial advisor provides, but available 24/7."</p>
+                        <div class="testimonial-card-author">- Vikram S., Doctor</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section section" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Get answers to common questions about Finucity AI and how it can help with your financial needs.</p>
+            
+            <div class="faq-container">
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        <span>How accurate is Finucity AI's financial advice?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Finucity AI maintains a 98.5% accuracy rate for financial information. Our AI is continuously trained on the latest tax laws, financial regulations, and best practices in India. However, for legally binding decisions, we always recommend consulting with a human professional.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        <span>Is my financial information secure with Finucity?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. We employ bank-level encryption for all conversations and never store sensitive financial details. Your privacy is our priority, and we adhere to the strictest data protection standards to ensure your information remains confidential.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        <span>What types of financial questions can I ask?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can ask about virtually any financial topic relevant to India, including income tax planning, GST compliance, investment strategies, retirement planning, business structuring, and more. Our AI is designed to handle both simple queries and complex financial scenarios.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        <span>How is Finucity different from just searching online?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Unlike general web searches that return multiple sources with potentially conflicting information, Finucity AI provides a single, clear answer tailored to your specific situation. Our AI synthesizes information from authoritative sources and applies it to your unique context, saving you hours of research and interpretation.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item fade-in">
+                    <div class="faq-question">
+                        <span>Can Finucity AI help with my business finances?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Finucity AI is equipped to handle a wide range of business financial queries, from GST compliance and input tax credit optimization to business structure recommendations and tax-efficient profit distribution strategies. Whether you're a freelancer, small business owner, or startup founder, our AI can provide valuable guidance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Financial Experience?</h2>
+                <p>Join thousands of Indians who are making smarter financial decisions with the help of AI. Get started today - it's free!</p>
+                <div class="cta-buttons">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('chat.chat_interface') }}" class="button-dark pulse-animation">
+                            <i class="fas fa-comments"></i> Go to Chat
+                        </a>
+                        <a href="{{ url_for('main.profile') }}" class="button-dark">
+                            <i class="fas fa-user"></i> My Profile
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('chat.chat_interface') }}" class="button-dark pulse-animation">
+                            <i class="fas fa-comments"></i> Try Finucity AI Now
+                        </a>
+                        <a href="{{ url_for('main.about') }}" class="button-dark">
+                            <i class="fas fa-info-circle"></i> Learn More
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Security Modal -->
+    <div class="modal fade" id="securityModal" tabindex="-1" aria-labelledby="securityModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="securityModalLabel">Our Security Commitment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="security-grid">
+                        <div class="security-item">
+                            <i class="fas fa-lock"></i>
+                            <h4>End-to-End Encryption</h4>
+                            <p>All communications between your device and our servers are encrypted using industry-standard TLS encryption.</p>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-user-shield"></i>
+                            <h4>Data Privacy</h4>
+                            <p>We never store sensitive financial information. Your conversations are anonymized and secured.</p>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <h4>Secure Infrastructure</h4>
+                            <p>Our systems are hosted on secure cloud infrastructure with multiple layers of protection.</p>
+                        </div>
+                        <div class="security-item">
+                            <i class="fas fa-user-lock"></i>
+                            <h4>Access Control</h4>
+                            <p>Strict access controls ensure only you can access your financial information and chat history.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Array of financial tips
+const financialTips = [
+    "Start your tax planning early in the financial year to maximize deductions under Section 80C.",
+    "Consider ELSS funds for tax savings with potentially higher returns compared to other tax-saving options.",
+    "Ensure you have adequate health insurance coverage for yourself and family to get tax benefits under Section 80D.",
+    "Use a mix of debt and equity investments based on your risk profile and investment horizon.",
+    "Set up an emergency fund to cover 6 months of expenses before making other investments.",
+    "Review your investments quarterly to ensure they align with your financial goals.",
+    "File ITR even if your income is below taxable limit to maintain financial records and ease loan approvals.",
+    "E-verify your income tax returns to complete the filing process and avoid notices.",
+    "NPS contributions up to ₹50,000 offer tax benefits under Section 80CCD(1B), over and above Section 80C limit."
+];
+
+// Display random financial tip
+document.addEventListener('DOMContentLoaded', function() {
+    const randomTip = financialTips[Math.floor(Math.random() * financialTips.length)];
+    document.getElementById('dailyTip').textContent = randomTip;
+    
+    // FAQ toggle functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        
+        question.addEventListener('click', () => {
+            const isOpen = item.classList.contains('open');
+            
+            // Close all FAQs
+            faqItems.forEach(faq => {
+                faq.classList.remove('open');
+                faq.querySelector('.faq-answer').style.maxHeight = null;
+            });
+            
+            // Toggle current FAQ
+            if (!isOpen) {
+                item.classList.add('open');
+                answer.style.maxHeight = answer.scrollHeight + "px";
+            }
+        });
+    });
+    
+    // Animation on scroll
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    function checkFade() {
+        fadeElements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const elementVisible = 150;
+            
+            if (elementTop < window.innerHeight - elementVisible) {
+                element.classList.add('active');
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', checkFade);
+    checkFade(); // Check on load
+});
+</script>
+{% endblock %}

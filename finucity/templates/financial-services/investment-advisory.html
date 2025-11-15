@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block title %}Investment Advisory Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>📈 Investment Advisory Services</h1>
+        <p>Professional investment guidance powered by AI intelligence</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Smart Investment Solutions</h2>
+            <p>Our AI-powered investment advisory service provides personalized recommendations based on your financial goals, risk tolerance, and investment horizon. Get expert guidance on building a diversified portfolio.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>🎯 Goal-Based Planning</h3>
+                    <p>Customized investment strategies aligned with your specific financial objectives.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>🔍 Risk Assessment</h3>
+                    <p>Comprehensive risk profiling to match investments with your comfort level.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>📊 Portfolio Optimization</h3>
+                    <p>Advanced algorithms to maximize returns while minimizing risks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="investment-categories">
+            <h2>Investment Categories We Cover</h2>
+            <div class="categories-grid">
+                <div class="category-card equity">
+                    <div class="category-header">
+                        <h3>🚀 Equity Investments</h3>
+                        <span class="risk-badge high">High Risk</span>
+                    </div>
+                    <div class="category-content">
+                        <h4>Direct Stocks</h4>
+                        <ul>
+                            <li>Large-cap stocks (stable companies)</li>
+                            <li>Mid-cap stocks (growth potential)</li>
+                            <li>Small-cap stocks (high growth)</li>
+                            <li>Sectoral investments</li>
+                        </ul>
+                        
+                        <h4>Mutual Funds</h4>
+                        <ul>
+                            <li>Equity Linked Savings Scheme (ELSS)</li>
+                            <li>Large-cap funds</li>
+                            <li>Multi-cap funds</li>
+                            <li>Index funds and ETFs</li>
+                        </ul>
+                        
+                        <div class="expected-returns">
+                            <strong>Expected Returns:</strong> 12-15% annually (long-term)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card debt">
+                    <div class="category-header">
+                        <h3>🏛️ Debt Investments</h3>
+                        <span class="risk-badge low">Low Risk</span>
+                    </div>
+                    <div class="category-content">
+                        <h4>Government Securities</h4>
+                        <ul>
+                            <li>Public Provident Fund (PPF)</li>
+                            <li>National Savings Certificate (NSC)</li>
+                            <li>Government bonds</li>
+                            <li>Treasury bills</li>
+                        </ul>
+                        
+                        <h4>Corporate Bonds</h4>
+                        <ul>
+                            <li>Fixed deposits</li>
+                            <li>Corporate bonds</li>
+                            <li>Debt mutual funds</li>
+                            <li>Liquid funds</li>
+                        </ul>
+                        
+                        <div class="expected-returns">
+                            <strong>Expected Returns:</strong> 6-9% annually
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-card alternative">
+                    <div class="category-header">
+                        <h3>💎 Alternative Investments</h3>
+                        <span class="risk-badge medium">Medium Risk</span>
+                    </div>
+                    <div class="category-content">
+                        <h4>Precious Metals</h4>
+                        <ul>
+                            <li>Gold ETFs and funds</li>
+                            <li>Silver investments</li>
+                            <li>Digital gold</li>
+                            <li>Gold bonds</li>
+                        </ul>
+                        
+                        <h4>Real Estate</h4>
+                        <ul>
+                            <li>REITs (Real Estate Investment Trusts)</li>
+                            <li>Property investments</li>
+                            <li>Real estate funds</li>
+                            <li>Commercial real estate</li>
+                        </ul>
+                        
+                        <div class="expected-returns">
+                            <strong>Expected Returns:</strong> 8-12% annually
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="portfolio-builder">
+            <h2>🎯 Portfolio Builder</h2>
+            <div class="builder-container">
+                <div class="risk-selector">
+                    <h3>Select Your Risk Profile</h3>
+                    <div class="risk-options">
+                        <button class="risk-btn active" data-risk="conservative" onclick="selectRisk('conservative')">
+                            🔰 Conservative
+                        </button>
+                        <button class="risk-btn" data-risk="moderate" onclick="selectRisk('moderate')">
+                            ⚖️ Moderate
+                        </button>
+                        <button class="risk-btn" data-risk="aggressive" onclick="selectRisk('aggressive')">
+                            🚀 Aggressive
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="portfolio-recommendation" id="portfolioRecommendation">
+                    <h3>Recommended Portfolio: Conservative</h3>
+                    <div class="allocation-chart">
+                        <div class="allocation-item">
+                            <div class="allocation-bar debt" style="width: 70%"></div>
+                            <span>Debt: 70%</span>
+                        </div>
+                        <div class="allocation-item">
+                            <div class="allocation-bar equity" style="width: 25%"></div>
+                            <span>Equity: 25%</span>
+                        </div>
+                        <div class="allocation-item">
+                            <div class="allocation-bar alternative" style="width: 5%"></div>
+                            <span>Alternative: 5%</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-details">
+                        <p><strong>Expected Returns:</strong> 7-9% annually</p>
+                        <p><strong>Suitable for:</strong> Risk-averse investors, nearing retirement</p>
+                        <p><strong>Investment Horizon:</strong> 3-5 years</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sip-strategies">
+            <h2>💰 SIP Investment Strategies</h2>
+            <div class="strategies-grid">
+                <div class="strategy-card">
+                    <h3>Regular SIP</h3>
+                    <p>Fixed amount invested monthly</p>
+                    <div class="strategy-example">
+                        <strong>Example:</strong> ₹5,000 every month
+                    </div>
+                    <div class="strategy-benefit">✅ Discipline and consistency</div>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>Step-up SIP</h3>
+                    <p>Increase SIP amount annually</p>
+                    <div class="strategy-example">
+                        <strong>Example:</strong> Start ₹5,000, increase 10% yearly
+                    </div>
+                    <div class="strategy-benefit">✅ Beat inflation effectively</div>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>Trigger SIP</h3>
+                    <p>Invest more when market falls</p>
+                    <div class="strategy-example">
+                        <strong>Example:</strong> Extra ₹2,000 when Nifty falls 5%
+                    </div>
+                    <div class="strategy-benefit">✅ Benefit from market volatility</div>
+                </div>
+                
+                <div class="strategy-card">
+                    <h3>Goal-based SIP</h3>
+                    <p>Target-oriented investments</p>
+                    <div class="strategy-example">
+                        <strong>Example:</strong> ₹8,000 for child's education
+                    </div>
+                    <div class="strategy-benefit">✅ Achieve specific financial goals</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h3>Ready to Start Your Investment Journey?</h3>
+            <p>Get personalized investment recommendations from our AI advisor</p>
+            <a href="/chat" class="cta-button">Get Investment Advice</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.feature-content {
+    margin-top: 3rem;
+}
+
+.feature-content section {
+    margin-bottom: 4rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.category-card {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    overflow: hidden;
+}
+
+.category-header {
+    background: var(--bg-main);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-header h3 {
+    color: var(--accent-primary);
+    margin: 0;
+}
+
+.risk-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.risk-badge.high {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.risk-badge.medium {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.risk-badge.low {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.category-content {
+    padding: 1.5rem;
+}
+
+.category-content h4 {
+    color: var(--text-light);
+    margin: 1rem 0 0.5rem;
+}
+
+.category-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.category-content li {
+    padding: 0.25rem 0;
+    color: var(--text-muted);
+}
+
+.expected-returns {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    color: var(--text-light);
+}
+
+.builder-container {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.risk-options {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.risk-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(251, 160, 2, 0.3);
+    background: var(--bg-main);
+    color: var(--text-light);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.risk-btn.active {
+    background: var(--accent-primary);
+    color: var(--text-dark);
+    border-color: var(--accent-primary);
+}
+
+.allocation-chart {
+    margin: 1.5rem 0;
+}
+
+.allocation-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.allocation-bar {
+    height: 25px;
+    border-radius: 12px;
+    display: block;
+}
+
+.allocation-bar.debt {
+    background: #4CAF50;
+}
+
+.allocation-bar.equity {
+    background: #FBA002;
+}
+
+.allocation-bar.alternative {
+    background: #9C27B0;
+}
+
+.portfolio-details {
+    background: var(--bg-main);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+}
+
+.strategies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.strategy-card {
+    background: var(--bg-alt);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.strategy-card h3 {
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+}
+
+.strategy-example {
+    background: var(--bg-main);
+    padding: 0.75rem;
+    border-radius: var(--border-radius-sm);
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+
+.strategy-benefit {
+    color: #4CAF50;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.cta-section {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+@media (max-width: 768px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .risk-options {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+function selectRisk(riskLevel) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.risk-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to selected button
+    document.querySelector(`[data-risk="${riskLevel}"]`).classList.add('active');
+    
+    // Update portfolio recommendation
+    const recommendations = {
+        conservative: {
+            title: 'Conservative',
+            debt: 70,
+            equity: 25,
+            alternative: 5,
+            returns: '7-9%',
+            suitable: 'Risk-averse investors, nearing retirement',
+            horizon: '3-5 years'
+        },
+        moderate: {
+            title: 'Moderate',
+            debt: 40,
+            equity: 50,
+            alternative: 10,
+            returns: '9-12%',
+            suitable: 'Balanced investors, 5-10 years to retirement',
+            horizon: '5-10 years'
+        },
+        aggressive: {
+            title: 'Aggressive',
+            debt: 20,
+            equity: 70,
+            alternative: 10,
+            returns: '12-15%',
+            suitable: 'Young investors, high risk tolerance',
+            horizon: '10+ years'
+        }
+    };
+    
+    const rec = recommendations[riskLevel];
+    
+    document.getElementById('portfolioRecommendation').innerHTML = `
+        <h3>Recommended Portfolio: ${rec.title}</h3>
+        <div class="allocation-chart">
+            <div class="allocation-item">
+                <div class="allocation-bar debt" style="width: ${rec.debt}%"></div>
+                <span>Debt: ${rec.debt}%</span>
+            </div>
+            <div class="allocation-item">
+                <div class="allocation-bar equity" style="width: ${rec.equity}%"></div>
+                <span>Equity: ${rec.equity}%</span>
+            </div>
+            <div class="allocation-item">
+                <div class="allocation-bar alternative" style="width: ${rec.alternative}%"></div>
+                <span>Alternative: ${rec.alternative}%</span>
+            </div>
+        </div>
+        <div class="portfolio-details">
+            <p><strong>Expected Returns:</strong> ${rec.returns} annually</p>
+            <p><strong>Suitable for:</strong> ${rec.suitable}</p>
+            <p><strong>Investment Horizon:</strong> ${rec.horizon}</p>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

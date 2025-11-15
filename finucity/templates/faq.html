@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Frequently Asked Questions | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>❓ Frequently Asked Questions</h1>
+        <p>Get answers to common questions about Finucity AI and our financial services</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="faq-content">
+        <section class="faq-section">
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How accurate is Finucity AI's financial advice?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Finucity AI maintains a 98.5% accuracy rate for financial information. Our AI is continuously trained on the latest tax laws, financial regulations, and best practices in India. However, for legally binding decisions, we always recommend consulting with a human professional.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is my financial information secure with Finucity?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. We employ bank-level encryption for all conversations and never store sensitive financial details. Your privacy is our priority, and we adhere to the strictest data protection standards to ensure your information remains confidential.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What types of financial questions can I ask?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can ask about virtually any financial topic relevant to India, including income tax planning, GST compliance, investment strategies, retirement planning, business structuring, and more. Our AI is designed to handle both simple queries and complex financial scenarios.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How is Finucity different from just searching online?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Unlike general web searches that return multiple sources with potentially conflicting information, Finucity AI provides a single, clear answer tailored to your specific situation. Our AI synthesizes information from authoritative sources and applies it to your unique context, saving you hours of research and interpretation.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can Finucity AI help with my business finances?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Finucity AI is equipped to handle a wide range of business financial queries, from GST compliance and input tax credit optimization to business structure recommendations and tax-efficient profit distribution strategies. Whether you're a freelancer, small business owner, or startup founder, our AI can provide valuable guidance.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is Finucity suitable for complex financial planning?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>While Finucity AI can handle many complex financial questions, we always recommend consulting with professional financial advisors for major financial decisions. Our AI serves as an excellent starting point and educational resource, but human expertise is still valuable for complex personalized planning.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How often is the financial information updated?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our AI is regularly updated with the latest financial regulations, tax codes, and market information. We make sure to incorporate new budget announcements, tax amendments, and regulatory changes as soon as they are officially released.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I save and refer back to my conversations?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, registered users can access their complete conversation history. This feature allows you to refer back to previous advice and continue conversations where you left off, making it easier to build on earlier discussions about your financial situation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-cta">
+            <h2>Still Have Questions?</h2>
+            <p>Reach out to us for more information or visit our GitHub repository for technical details.</p>
+            <div class="contact-buttons">
+                <a href="https://github.com/Sumeet-01" target="_blank" class="cta-button">
+                    <i class="fab fa-github"></i> Visit GitHub
+                </a>
+                <a href="https://linkedin.com/in/sumeet-sangwan" target="_blank" class="outline-button">
+                    <i class="fab fa-linkedin"></i> Connect on LinkedIn
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.faq-content {
+    margin: 3rem 0;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1rem;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    overflow: hidden;
+}
+
+.faq-question {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.faq-question i {
+    color: var(--accent-primary);
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.faq-item.open .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-item.open .faq-answer {
+    padding: 0 1.5rem 1.5rem;
+    max-height: 1000px;
+}
+
+.faq-answer p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.contact-cta {
+    text-align: center;
+    margin-top: 4rem;
+    background: var(--bg-alt);
+    padding: 3rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.contact-cta h2 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+.contact-buttons {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // FAQ toggle functionality
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        
+        question.addEventListener('click', () => {
+            const isOpen = item.classList.contains('open');
+            
+            // Close all FAQs
+            faqItems.forEach(faq => {
+                faq.classList.remove('open');
+            });
+            
+            // Toggle current FAQ
+            if (!isOpen) {
+                item.classList.add('open');
+            }
+        });
+    });
+    
+    // Open first FAQ item by default
+    if (faqItems.length > 0) {
+        faqItems[0].classList.add('open');
+    }
+});
+</script>
+{% endblock %}

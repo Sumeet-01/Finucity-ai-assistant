@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - {{ user.full_name }} | Finucity</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-gold: #D4AF37;
+            --dark-gold: #B8941F;
+            --bg-main: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --bg-section: #333333;
+            --text-light: #ffffff;
+            --text-muted: #b0b0b0;
+            --border-color: #404040;
+            --success-green: #28a745;
+            --error-red: #dc3545;
+            --info-blue: #17a2b8;
+            --warning-orange: #ffc107;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            padding: 2rem 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .header {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--dark-gold) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #1a1a1a;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+        
+        .user-avatar::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: var(--success-green);
+            border-radius: 50%;
+            bottom: 5px;
+            right: 10px;
+            border: 3px solid var(--bg-card);
+        }
+        
+        .avatar-upload {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-upload:hover {
+            border-color: var(--primary-gold);
+            color: var(--text-light);
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-title {
+            font-size: 1.1rem;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .user-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        .meta-item i {
+            color: var(--primary-gold);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .header-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--dark-gold) 100%);
+            color: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-section);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-main);
+            border-color: var(--primary-gold);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--dark-gold) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1a1a1a;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-section);
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .recent-activity {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-section);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--primary-gold);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .account-settings {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-section);
+            border-radius: 10px;
+        }
+        
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .setting-icon {
+            width: 35px;
+            height: 35px;
+            background: var(--primary-gold);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #1a1a1a;
+        }
+        
+        .setting-details h4 {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .setting-details p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: var(--border-color);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary-gold);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(25px);
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .back-nav {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .back-btn {
+            background: var(--bg-card);
+            color: var(--text-light);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-gold);
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .back-nav {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0;
+            }
+            
+            .header {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .user-name {
+                font-size: 1.8rem;
+            }
+            
+            .user-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="back-nav">
+            <a href="{{ url_for('main.home') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+            <div class="breadcrumb">
+                <a href="{{ url_for('main.home') }}">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Profile</span>
+            </div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="header">
+            <div class="avatar-section">
+                <div class="user-avatar">
+                    {{ user.first_name[0] }}{{ user.last_name[0] }}
+                </div>
+                <button class="avatar-upload">
+                    <i class="fas fa-camera"></i> Change Photo
+                </button>
+            </div>
+            
+            <div class="user-info">
+                <h1 class="user-name">{{ user.full_name }}</h1>
+                <p class="user-title">
+                    {% if user.profession %}
+                        {{ user.profession }}
+                    {% else %}
+                        Finucity User
+                    {% endif %}
+                    {% if user.is_admin %} • Administrator{% endif %}
+                </p>
+                
+                <div class="user-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-user"></i>
+                        <span>@{{ user.username }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Joined {{ user.created_at.strftime('%B %Y') if user.created_at else 'Recently' }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Last seen {{ user.last_login.strftime('%B %d, %Y') if user.last_login else 'Never' }}</span>
+                    </div>
+                    {% if user.city %}
+                    <div class="meta-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ user.city }}{% if user.state %}, {{ user.state }}{% endif %}</span>
+                    </div>
+                    {% endif %}
+                    <div class="meta-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>{% if user.email_verified %}Verified Account{% else %}Unverified{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <a href="{{ url_for('chat.chat_interface') }}" class="btn btn-primary">
+                    <i class="fas fa-robot"></i>
+                    Start Chat
+                </a>
+                <button class="btn btn-secondary" onclick="openEditProfile()">
+                    <i class="fas fa-edit"></i>
+                    Edit Profile
+                </button>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Usage Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="card-title">Usage Statistics</h2>
+                </div>
+                
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user_stats.total_queries if user_stats else 0 }}</div>
+                        <div class="stat-label">Total Queries</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user_stats.total_feedback if user_stats else 0 }}</div>
+                        <div class="stat-label">Feedback Given</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user_stats.days_active if user_stats else 0 }}</div>
+                        <div class="stat-label">Days Active</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">{{ user_stats.satisfaction_rate if user_stats else 98 }}%</div>
+                        <div class="stat-label">Satisfaction Rate</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h2 class="card-title">Recent Activity</h2>
+                </div>
+                
+                <ul class="recent-activity">
+                    {% if recent_queries %}
+                        {% for query in recent_queries %}
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-{{ 'chart-line' if query.category == 'investment' else 'file-invoice-dollar' if query.category == 'income_tax' else 'building' if query.category == 'gst' else 'question' }}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ query.question[:60] }}{% if query.question|length > 60 %}...{% endif %}</div>
+                                <div class="activity-time">{{ query.timestamp.strftime('%B %d, %Y at %I:%M %p') if query.timestamp else 'Recently' }}</div>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Welcome to Finucity!</div>
+                                <div class="activity-time">Start your first chat to see activity here</div>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                {% if user_stats and user_stats.total_queries > 5 %}
+                <div style="text-align: center; margin-top: 1rem;">
+                    <a href="{{ url_for('chat.chat_history') }}" class="btn btn-secondary">
+                        <i class="fas fa-history"></i>
+                        View All History
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Account Settings -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="card-title">Account Settings</h2>
+                </div>
+                
+                <div class="account-settings">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="setting-details">
+                                <h4>Email Notifications</h4>
+                                <p>Receive updates about tax deadlines and financial tips</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active" onclick="toggleSetting(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="setting-details">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Add an extra layer of security to your account</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="setting-details">
+                                <h4>Privacy Mode</h4>
+                                <p>Keep your queries private and don't save chat history</p>
+                            </div>
+                        </div>
+                        <div class="toggle-switch" onclick="toggleSetting(this)"></div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="setting-details">

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}GST Compliance Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>🏢 GST Compliance Services</h1>
+        <p>Simplify your GST compliance with AI-powered guidance</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Complete GST Compliance Solution</h2>
+            <p>Our AI assistant helps you navigate GST regulations, file returns on time, and maintain compliance with the latest GST rules and requirements.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>📋 Return Filing</h3>
+                    <p>Step-by-step guidance for GSTR-1, GSTR-3B, and annual returns.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>🔄 Input Tax Credit</h3>
+                    <p>Maximize your ITC benefits and avoid common mistakes.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>⚖️ Compliance Check</h3>
+                    <p>Regular compliance audits and deadline reminders.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h3>Need GST Compliance Help?</h3>
+            <p>Get expert GST guidance from our AI assistant</p>
+            <a href="/chat" class="cta-button">Ask About GST</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.cta-section {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    margin: 3rem 0;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+</style>
+{% endblock %}

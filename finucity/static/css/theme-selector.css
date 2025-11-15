@@ -1,0 +1,66 @@
+/* Theme Selector Styling */
+.theme-selector {
+    position: relative;
+    z-index: 100;
+}
+
+.current-theme {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: var(--border-radius-md);
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.current-theme:hover {
+    color: var(--accent-primary);
+}
+
+.theme-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    width: 220px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    margin-top: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.theme-option {
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-option:last-child {
+    border-bottom: none;
+}
+
+.theme-option:hover {
+    background: var(--bg-input);
+}
+
+.theme-option.active {
+    background: var(--accent-primary);
+    color: var(--msg-user-text);
+    font-weight: 500;
+}

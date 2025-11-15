@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}Business Finance Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>🏢 Business Finance Services</h1>
+        <p>Comprehensive financial solutions for your business growth</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Complete Business Finance Solutions</h2>
+            <p>From startup funding to growth capital, our AI-powered platform provides expert guidance on all aspects of business finance. Get personalized recommendations for loans, investments, and financial planning.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>💰 Funding Solutions</h3>
+                    <p>Explore various funding options including bank loans, venture capital, and government schemes.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>📊 Financial Planning</h3>
+                    <p>Strategic financial planning to optimize cash flow and maximize profitability.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>🏛️ MSME Benefits</h3>
+                    <p>Complete guidance on MSME registration and available government benefits.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <h2>Our Business Finance Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🚀</div>
+                    <h3>Startup Funding</h3>
+                    <ul>
+                        <li>Seed funding strategies</li>
+                        <li>Angel investor connections</li>
+                        <li>Government startup schemes</li>
+                        <li>Incubator program guidance</li>
+                    </ul>
+                    <div class="service-highlight">
+                        <strong>Startup India Benefits:</strong> Tax exemptions for 3 years, easier compliance
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏦</div>
+                    <h3>Business Loans</h3>
+                    <ul>
+                        <li>Working capital loans</li>
+                        <li>Term loans for expansion</li>
+                        <li>Equipment financing</li>
+                        <li>Trade finance solutions</li>
+                    </ul>
+                    <div class="service-highlight">
+                        <strong>MUDRA Loans:</strong> Up to ₹10 lakh without collateral
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🏭</div>
+                    <h3>MSME Support</h3>
+                    <ul>
+                        <li>Udyam registration process</li>
+                        <li>Priority sector lending benefits</li>
+                        <li>Government subsidy schemes</li>
+                        <li>Credit guarantee coverage</li>
+                    </ul>
+                    <div class="service-highlight">
+                        <strong>CGFMU Benefits:</strong> Up to 85% guarantee coverage
+                    </div>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📈</div>
+                    <h3>Growth Capital</h3>
+                    <ul>
+                        <li>Private equity opportunities</li>
+                        <li>Venture capital funding</li>
+                        <li>IPO readiness guidance</li>
+                        <li>Strategic partnerships</li>
+                    </ul>
+                    <div class="service-highlight">
+                        <strong>SME IPO:</strong> Simplified listing process for growth
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="loan-calculator-section">
+            <h2>🧮 Business Loan Calculator</h2>
+            <div class="calculator-container">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label>Loan Amount (₹)</label>
+                        <input type="number" id="loanAmount" value="500000" min="50000">
+                    </div>
+                    <div class="input-group">
+                        <label>Interest Rate (% per annum)</label>
+                        <input type="number" id="interestRate" value="12" min="1" max="30" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Loan Tenure (Years)</label>
+                        <input type="number" id="loanTenure" value="5" min="1" max="30">
+                    </div>
+                    <button class="calculate-btn" onclick="calculateLoan()">Calculate EMI</button>
+                </div>
+                
+                <div class="calculator-result">
+                    <h3>Loan Details</h3>
+                    <div class="result-item">
+                        <span>Loan Amount:</span>
+                        <span id="principalAmount">₹5,00,000</span>
+                    </div>
+                    <div class="result-item highlight">
+                        <span>Monthly EMI:</span>
+                        <span id="monthlyEMI">₹11,122</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Interest:</span>
+                        <span id="totalInterest">₹1,67,320</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Total Amount:</span>
+                        <span id="totalAmount">₹6,67,320</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="government-schemes">
+            <h2>🏛️ Government Schemes for Business</h2>
+            <div class="schemes-grid">
+                <div class="scheme-card">
+                    <h3>Pradhan Mantri MUDRA Yojana</h3>
+                    <p><strong>Loan Amount:</strong> Up to ₹10 lakh</p>
+                    <p><strong>Purpose:</strong> Working capital and equipment</p>
+                    <p><strong>Interest Rate:</strong> 7-12% per annum</p>
+                    <p><strong>Collateral:</strong> Not required</p>
+                </div>
+                <div class="scheme-card">
+                    <h3>Stand Up India</h3>
+                    <p><strong>Loan Amount:</strong> ₹10 lakh to ₹1 crore</p>
+                    <p><strong>Purpose:</strong> Manufacturing, service, trading</p>
+                    <p><strong>Beneficiaries:</strong> SC/ST, Women entrepreneurs</p>
+                    <p><strong>Repayment:</strong> Up to 7 years</p>
+                </div>
+                <div class="scheme-card">
+                    <h3>CGTMSE Scheme</h3>
+                    <p><strong>Coverage:</strong> Up to ₹2 crore</p>
+                    <p><strong>Guarantee:</strong> 75-85% of loan amount</p>
+                    <p><strong>Purpose:</strong> Term loans and working capital</p>
+                    <p><strong>Sectors:</strong> All sectors except agriculture</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-section">
+            <h3>Ready to Grow Your Business?</h3>
+            <p>Get personalized business finance advice from our AI assistant</p>
+            <a href="/chat" class="cta-button">Get Business Finance Guidance</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    background: var(--bg-gradient);
+    padding: 6rem 0 4rem;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.feature-content {
+    margin-top: 3rem;
+}
+
+.feature-content section {
+    margin-bottom: 4rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    text-align: center;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.service-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.service-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.service-card h3 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+}
+
+.service-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.service-card li {
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.service-card li:last-child {
+    border-bottom: none;
+}
+
+.service-highlight {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    margin-top: 1rem;
+    color: var(--text-light);
+}
+
+.calculator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid rgba(251, 160, 2, 0.2);
+    border-radius: var(--border-radius-md);
+    background: var(--bg-main);
+    color: var(--text-light);
+}
+
+.calculate-btn {
+    background: var(--accent-gradient);
+    color: var(--text-dark);
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-normal);
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+.result-item.highlight {
+    background: rgba(251, 160, 2, 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none;
+    margin: 1rem 0;
+}
+
+.schemes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.scheme-card {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    border-left: 4px solid var(--accent-primary);
+}
+
+.scheme-card h3 {
+    color: var(--accent-primary);
+    margin-bottom: 1rem;
+}
+
+.cta-section {
+    background: var(--bg-alt);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    border: 1px solid rgba(251, 160, 2, 0.1);
+}
+
+@media (max-width: 768px) {
+    .calculator-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function calculateLoan() {
+    const principal = parseFloat(document.getElementById('loanAmount').value) || 500000;
+    const rate = parseFloat(document.getElementById('interestRate').value) || 12;
+    const tenure = parseFloat(document.getElementById('loanTenure').value) || 5;
+    
+    const monthlyRate = rate / 12 / 100;
+    const months = tenure * 12;
+    
+    const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+    const totalAmount = emi * months;
+    const totalInterest = totalAmount - principal;
+    
+    document.getElementById('principalAmount').textContent = '₹' + principal.toLocaleString('en-IN');
+    document.getElementById('monthlyEMI').textContent = '₹' + Math.round(emi).toLocaleString('en-IN');
+    document.getElementById('totalInterest').textContent = '₹' + Math.round(totalInterest).toLocaleString('en-IN');
+    document.getElementById('totalAmount').textContent = '₹' + Math.round(totalAmount).toLocaleString('en-IN');
+}
+
+// Calculate on page load
+calculateLoan();
+</script>
+{% endblock %}

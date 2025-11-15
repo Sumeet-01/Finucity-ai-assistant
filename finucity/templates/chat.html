@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finucity AI | Your Financial Companion</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link href="{{ url_for('static', filename='css/chat.css') }}" rel="stylesheet">
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Finucity AI - Your AI-powered Chartered Accountant for Indian taxes, investments, GST, and business finance.">
+    <meta name="author" content="Sumeet Sangwan (@Sumeet-01)">
+    <meta name="application-name" content="Finucity AI">
+    <meta name="version" content="2.1.0">
+</head>
+<body class="loading">
+    <!-- ========================================================================== -->
+    <!-- LOADING SCREEN -->
+    <!-- ========================================================================== -->
+    <div class="splash-screen">
+        <div class="splash-logo">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round">
+                    <animate attributeName="stroke-dashoffset" values="283;0" dur="1.5s" repeatCount="indefinite" />
+                </circle>
+                <path id="logo-path" d="M30,50 L45,65 L70,35" stroke="var(--accent-primary)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="90" stroke-dashoffset="90">
+                    <animate attributeName="stroke-dashoffset" values="90;0" dur="1s" begin="0.6s" fill="freeze" />
+                </path>
+            </svg>
+            <h1 class="splash-title">Finucity AI</h1>
+        </div>
+    </div>
+
+    <!-- ========================================================================== -->
+    <!-- MAIN APP CONTAINER -->
+    <!-- ========================================================================== -->
+    <div class="app-container">
+        
+        <!-- ====================================================================== -->
+        <!-- SIDEBAR -->
+        <!-- ====================================================================== -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="branding">
+                    <img src="{{ url_for('static', filename='images/favicon.png') }}" alt="Finucity Logo" class="logo-img">
+                    <h1 class="logo-text">Finucity <span>AI</span></h1>
+                </div>
+                
+                <!-- Home Button in Sidebar (Mobile Primary) -->
+                <a href="{{ url_for('main.home') }}" class="btn btn-home-sidebar">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Home</span>
+                </a>
+                
+                <!-- New Chat Button -->
+                <button class="btn btn-new-chat" id="newChatBtn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+            </div>
+            
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <!-- Quick Access Section -->
+                <div class="nav-section">
+                    <h2 class="nav-title">Quick Access</h2>
+                    <ul class="nav-list">
+                        <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About</a></li>
+                        <li><a href="{{ url_for('chat.chat_history') }}"><i class="fas fa-history"></i> Chat History</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Conversations Section -->
+                <div class="nav-section">
+                    <div class="section-header">
+                        <h2 class="nav-title">Conversations</h2>
+                        <button class="btn-icon btn-refresh" id="refreshConversations" title="Refresh Conversations">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="conversations-wrapper">
+                        <!-- Search Box -->
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" placeholder="Search conversations..." id="conversationSearch" autocomplete="off">
+                            <button class="btn-icon btn-clear" id="clearSearch" style="opacity: 0; pointer-events: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Filter Options -->
+                        <div class="conversations-filter">
+                            <button class="filter-option active" data-filter="all">All</button>
+                            <button class="filter-option" data-filter="tax">Tax</button>
+                            <button class="filter-option" data-filter="investment">Investment</button>
+                            <button class="filter-option" data-filter="gst">GST</button>
+                        </div>
+                        
+                        <!-- Conversations List -->
+                        <div class="conversations-list" id="conversationsList">
+                            <div class="conversations-placeholder">
+                                <div class="placeholder-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <p>Your conversations will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <!-- User Profile -->
+                <div class="user-profile" id="userProfile">
+                    {% if current_user.is_authenticated %}
+                    <div class="user-avatar">{{ current_user.first_name[0]|upper }}</div>
+                    <div class="user-info">
+                        <div class="user-name">{{ current_user.full_name }}</div>
+                        <div class="user-role">{{ current_user.role or 'User' }}</div>
+                    </div>
+                    {% else %}
+                    <div class="user-avatar guest">G</div>
+                    <div class="user-info">
+                        <div class="user-name">Guest User</div>
+                        <div class="user-role">Limited Access</div>
+                    </div>
+                    <div class="user-actions">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- ====================================================================== -->
+        <!-- MAIN CHAT AREA -->
+        <!-- ====================================================================== -->
+        <main class="chat-main">
+            <!-- Chat Header -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <!-- Home Button in Header (Desktop Primary) -->
+                    <a href="{{ url_for('main.home') }}" class="btn-home-header" title="Back to Home">
+                        <i class="fas fa-home"></i>
+                        <span class="home-text">Home</span>
+                    </a>
+                    
+                    <!-- Chat Info -->
+                    <div class="chat-info">
+                        <div class="chat-title-container">
+                            <h2 class="chat-title" id="chatTitle">Finucity AI Assistant</h2>
+                            <div class="chat-title-badge">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Secured</span>
+                            </div>
+                        </div>
+                        <p class="chat-subtitle" id="chatSubtitle">Your AI Chartered Accountant</p>
+                    </div>
+                </div>
+                
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <!-- Export Button -->
+                    <button class="btn-icon" id="exportButton" title="Export Conversation" aria-label="Export Conversation">
+                        <i class="fas fa-file-export"></i>
+                    </button>
+                    
+                    <!-- ===== OPTIONS MENU DROPDOWN ===== -->
+                    <div class="dropdown-wrapper" style="position: relative; display: inline-block;">
+                        <button class="btn-icon" id="optionsMenuBtn" title="More Options" aria-label="Options Menu">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="header-dropdown" id="optionsDropdown" style="display: none;">
+                            <div class="dropdown-header">Options</div>
+                            
+                            <a href="#" class="dropdown-item" id="settingsBtn">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                            
+                            <a href="#" class="dropdown-item" id="exportBtn">
+                                <i class="fas fa-download"></i>
+                                <span>Export Chat</span>
+                            </a>
+                            
+                            <div class="dropdown-divider"></div>
+                            
+                            <a href="#" class="dropdown-item danger" id="clearHistoryBtn">
+                                <i class="fas fa-trash-alt"></i>
+                                <span>Clear History</span>
+                            </a>
+                            
+                            <a href="#" class="dropdown-item" id="aboutBtn">
+                                <i class="fas fa-info-circle"></i>
+                                <span>About</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- ===== END: OPTIONS MENU ===== -->
+                    
+                    <!-- Info Button -->
+                    <button class="btn-icon" id="infoButton" title="Conversation Info" aria-label="Conversation Info">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Messages Container -->
+            <div class="messages-container" id="messagesContainer">
+                <!-- Welcome Message -->
+                <div class="welcome-container" id="welcomeMessage" data-aos="fade-up">
+                    <div class="welcome-header">
+                        <h1 class="welcome-title">
+                            Welcome, {% if current_user.is_authenticated %}{{ current_user.first_name }}{% else %}Guest{% endif %}!
+                        </h1>
+                        
+                        <p class="welcome-subtitle">
+                            I'm your AI financial expert. Ask me anything about Indian taxes, investments, GST, or business finance.
+                        </p>
+                    </div>
+                    
+                    <!-- Suggestion Categories Grid -->
+                    <div class="suggestions-grid">
+                        <!-- Tax Planning -->
+                        <div class="suggestion-category" data-aos="fade-up" data-aos-delay="100">
+                            <div class="suggestion-category-header">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <h3>Tax Planning</h3>
+                            </div>
+                            <div class="suggestion-chips">
+                                <div class="suggestion-chip" data-suggestion="How can I save tax under Section 80C for AY 2025-26?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Tax Saving under Section 80C</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="What is the income tax slab for FY 2025-26?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Income Tax Slabs 2025-26</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="How do I calculate capital gains tax for property sold in 2025?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Capital Gains Tax Calculation</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Investments -->
+                        <div class="suggestion-category" data-aos="fade-up" data-aos-delay="200">
+                            <div class="suggestion-category-header">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>Investments</h3>
+                            </div>
+                            <div class="suggestion-chips">
+                                <div class="suggestion-chip" data-suggestion="What are the best investment options for beginners in 2025?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Beginner Investment Options</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="Compare mutual funds vs stocks for long term investment">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Mutual Funds vs Stocks</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="How to create a retirement portfolio in India?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Retirement Planning</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- GST Compliance -->
+                        <div class="suggestion-category" data-aos="fade-up" data-aos-delay="300">
+                            <div class="suggestion-category-header">
+                                <i class="fas fa-landmark"></i>
+                                <h3>GST Compliance</h3>
+                            </div>
+                            <div class="suggestion-chips">
+                                <div class="suggestion-chip" data-suggestion="What is the GST registration process for new business?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>GST Registration Process</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="How to file GSTR-1 return for my small business?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>GSTR-1 Filing Guide</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="Explain input tax credit and its documentation">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Input Tax Credit Explained</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Finance -->
+                        <div class="suggestion-category" data-aos="fade-up" data-aos-delay="400">
+                            <div class="suggestion-category-header">
+                                <i class="fas fa-briefcase"></i>
+                                <h3>Business Finance</h3>
+                            </div>
+                            <div class="suggestion-chips">
+                                <div class="suggestion-chip" data-suggestion="How to calculate advance tax payments for my business?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Advance Tax Calculation</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="What are the best accounting practices for startups in India?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Startup Accounting Best Practices</span>
+                                </div>
+                                <div class="suggestion-chip" data-suggestion="How to optimize working capital for small business?">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Working Capital Optimization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Popular Queries -->
+                    <div class="popular-queries" data-aos="fade-up" data-aos-delay="500">
+                        <h3>Popular Today <span class="hot-badge">Hot Topics</span></h3>
+                        <div class="popular-queries-grid">
+                            <div class="popular-query" data-suggestion="What are the tax benefits of investing in NPS in 2025?">
+                                <i class="fas fa-fire"></i>
+                                <span>NPS Tax Benefits 2025</span>
+                            </div>
+                            <div class="popular-query" data-suggestion="How does the new crypto tax regulation work in India?">
+                                <i class="fas fa-fire"></i>
+                                <span>Crypto Tax Regulations</span>
+                            </div>
+                            <div class="popular-query" data-suggestion="Best tax-saving investments for salaried individuals">
+                                <i class="fas fa-fire"></i>
+                                <span>Tax-Saving for Salaried</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat messages will be dynamically added here -->
+            </div>
+
+            <!-- Input Container -->
+            <div class="input-container">
+                <form id="chatForm" class="chat-form">
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <button type="button" class="toolbar-btn" id="attachButton" title="Attach Files">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button type="button" class="toolbar-btn" id="templateButton" title="Use Templates">
+                            <i class="fas fa-file-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Input Wrapper -->
+                    <div class="input-wrapper">
+                        <textarea 
+                            class="chat-input" 
+                            id="messageInput" 
+                            placeholder="Ask me about taxes, investments, GST, or business finance..."
+                            rows="1"
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="sentences"
+                        ></textarea>
+                        
+                        <div class="input-actions">
+                            <button type="button" class="input-action-btn" id="emojiButton" title="Insert Emoji">
+                                <i class="far fa-smile"></i>
+                            </button>
+                            <button type="submit" id="sendButton" class="input-action-btn send" disabled title="Send Message">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Input Footer -->
+                <div class="input-footer">
+                    <div class="disclaimer">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>End-to-end encrypted & secure. Your financial data is never stored.</span>
+                    </div>
+                    <div class="typing-status" id="typingStatus"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ========================================================================== -->
+    <!-- MODALS -->
+    <!-- ========================================================================== -->
+    
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="close-btn" id="closeSettings" aria-label="Close Settings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Appearance Settings -->
+                <div class="settings-section">
+                    <h4>Appearance</h4>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="fas fa-text-height"></i>
+                            <span>Font Size</span>
+                        </div>
+                        <div class="font-size-controls">
+                            <button class="font-btn" data-size="small">A</button>
+                            <button class="font-btn active" data-size="medium">A</button>
+                            <button class="font-btn" data-size="large">A</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Privacy Settings -->
+                <div class="settings-section">
+                    <h4>Privacy</h4>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="fas fa-history"></i>
+                            <span>Save Chat History</span>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="saveChatHistory" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <div class="setting-label">
+                            <i class="fas fa-lock"></i>
+                            <span>Auto-delete Conversations</span>
+                        </div>
+                        <select class="settings-select" id="autoDeleteSelect">
+                            <option value="never">Never</option>
+                            <option value="30">After 30 days</option>
+                            <option value="7">After 7 days</option>
+                            <option value="1">After 24 hours</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="restoreDefaultsBtn">Restore Defaults</button>
+                <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Templates Modal -->
+    <div class="modal" id="templatesModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> Query Templates</h3>
+                <button class="close-btn" id="closeTemplates" aria-label="Close Templates">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Template Search -->
+                <div class="templates-search">
+                    <input type="text" placeholder="Search templates..." id="templateSearch" autocomplete="off">
+                </div>
+                
+                <!-- Template Categories -->
+                <div class="templates-categories">
+                    <button class="template-category active" data-category="all">All</button>
+                    <button class="template-category" data-category="tax">Tax</button>
+                    <button class="template-category" data-category="investment">Investment</button>
+                    <button class="template-category" data-category="business">Business</button>
+                </div>
+                
+                <!-- Templates List -->
+                <div class="templates-list">
+                    <div class="template-card" data-category="tax">
+                        <div class="template-card-header">
+                            <div class="template-icon">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <h4>Annual Tax Planning</h4>
+                        </div>
+                        <p>Help me create a tax saving plan for financial year 2025-26. My annual income is [amount], I have investments in [list investments], and my age is [age].</p>
+                        <button class="btn btn-sm btn-primary use-template-btn">Use Template</button>
+                    </div>
+                    
+                    <div class="template-card" data-category="investment">
+                        <div class="template-card-header">
+                            <div class="template-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <h4>Portfolio Analysis</h4>
+                        </div>
+                        <p>Please analyze my investment portfolio: [list investments with amounts]. My risk tolerance is [low/medium/high] and my investment horizon is [X years].</p>
+                        <button class="btn btn-sm btn-primary use-template-btn">Use Template</button>
+                    </div>
+                    
+                    <div class="template-card" data-category="business">
+                        <div class="template-card-header">
+                            <div class="template-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <h4>Business Setup Guide</h4>
+                        </div>
+                        <p>I'm planning to start a [type] business in [location]. What are the registration requirements, tax implications, and compliance needs I should be aware of?</p>
+                        <button class="btn btn-sm btn-primary use-template-btn">Use Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ========================================================================== -->
+    <!-- SCRIPTS -->
+    <!-- ========================================================================== -->
+    
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Backend Data Injection -->
+    <script>
+        // Pass data from backend to frontend
+        const currentUserId = {{ current_user.id if current_user.is_authenticated else 'null' }};
+        const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+        const initialConversationId = "{{ conversation_id or '' }}";
+        
+        // Initialize current user object for frontend use
+        const currentUser = {
+            {% if current_user.is_authenticated %}
+            id: {{ current_user.id }},
+            first_name: "{{ current_user.first_name }}",
+            full_name: "{{ current_user.full_name }}"
+            {% else %}
+            id: null,
+            first_name: "Guest",
+            full_name: "Guest User"
+            {% endif %}
+        };
+        
+        // App metadata
+        const APP_VERSION = '2.1.0';
+        const APP_NAME = 'Finucity AI';
+        const BUILD_DATE = '2025-11-12';
+        const BUILD_BY = 'Sumeet-01';
+        
+        // Console branding
+        console.log('%c🚀 ' + APP_NAME + ' v' + APP_VERSION, 'color: #FBA002; font-size: 20px; font-weight: bold;');
+        console.log('%cBuilt by: ' + BUILD_BY + ' | Date: ' + BUILD_DATE, 'color: #4CAF50; font-size: 12px;');
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #FBA002;');
+        console.log('User:', currentUser);
+        console.log('Authenticated:', isAuthenticated);
+        console.log('Conversation ID:', initialConversationId || 'None');
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #FBA002;');
+    </script>
+    
+    <!-- Main Chat JavaScript -->
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    
+    <!-- Dropdown Initialization Safety Script -->
+    <script>
+        // Ensure all dropdowns are hidden on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔒 Initializing dropdown safety...');
+            
+            const dropdowns = [
+                document.getElementById('optionsDropdown')
+            ];
+            
+            dropdowns.forEach(dropdown => {
+                if (dropdown) {
+                    dropdown.style.display = 'none';
+                    console.log('✅ Dropdown hidden:', dropdown.id);
+                }
+            });
+            
+            console.log('✅ All dropdowns initialized safely');
+        });
+    </script>
+</body>
+</html>

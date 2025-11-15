@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error | Finucity{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-code">500</div>
+        <h1>Server Error</h1>
+        <p>Oops! Something went wrong on our end.</p>
+        <p>Our team has been notified and is working to resolve the issue.</p>
+        
+        <div class="error-suggestions">
+            <h3>You might want to try:</h3>
+            <ul class="error-options">
+                <li>
+                    <i class="fas fa-redo"></i> 
+                    <span>Refresh the page</span>
+                </li>
+                <li>
+                    <i class="fas fa-clock"></i>
+                    <span>Try again later</span>
+                </li>
+                <li>
+                    <i class="fas fa-home"></i>
+                    <span>Return to our homepage</span>
+                </li>
+            </ul>
+        </div>
+        
+        <a href="{{ url_for('main.home') }}" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+    
+    <div class="error-illustration">
+        <div class="server-container">
+            <div class="server"></div>
+            <div class="server-lights">
+                <div class="light light-error"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+            </div>
+            <div class="server-connection"></div>
+            <div class="error-sparks">
+                <div class="spark spark-1"></div>
+                <div class="spark spark-2"></div>
+                <div class="spark spark-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10rem 2rem 5rem;
+    min-height: 80vh;
+    gap: 3rem;
+}
+
+.error-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    color: #e74c3c;
+    line-height: 1;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.error-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.error-content p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.error-suggestions {
+    margin: 3rem 0;
+}
+
+.error-suggestions h3 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.error-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: var(--bg-alt);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(231, 76, 60, 0.1);
+    overflow: hidden;
+}
+
+.error-options li {
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(231, 76, 60, 0.1);
+}
+
+.error-options li:last-child {
+    border-bottom: none;
+}
+
+.error-options li i {
+    color: #e74c3c;
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+}
+
+.error-options li span {
+    color: var(--text-muted);
+}
+
+.back-home-btn {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+}
+
+.back-home-btn:hover {
+    transform: translateY(-3px);
+}
+
+.error-illustration {
+    flex: 1;
+    max-width: 450px;
+    position: relative;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.server-container {
+    position: relative;
+    width: 200px;
+    height: 300px;
+}
+
+.server {
+    width: 200px;
+    height: 300px;
+    background: var(--bg-alt);
+    border-radius: 10px;
+    border: 1px solid rgba(231, 76, 60, 0.2);
+    position: relative;
+    box-shadow: var(--shadow-lg);
+}
+
+.server-lights {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.light {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: rgba(46, 204, 113, 0.2);
+    border: 1px solid rgba(46, 204, 113, 0.5);
+}
+
+.light-error {
+    background: rgba(231, 76, 60, 0.6);
+    border: 1px solid rgba(231, 76, 60, 0.8);
+    animation: blink 1s infinite alternate;
+}
+
+.server-connection {
+    position: absolute;
+    bottom: 30px;
+    left: -50px;
+    width: 50px;
+    height: 10px;
+    background: rgba(231, 76, 60, 0.5);
+    transform-origin: right center;
+    animation: connection-error 3s infinite;
+}
+
+.error-sparks {
+    position: absolute;
+    top: 50px;
+    right: 30px;
+}
+
+.spark {
+    position: absolute;
+    background: rgba(231, 76, 60, 0.8);
+    width: 3px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.spark-1 {
+    transform: rotate(45deg);
+    animation: spark 2s infinite 0.5s;
+}
+
+.spark-2 {
+    transform: rotate(-30deg);
+    animation: spark 2s infinite 1s;
+}
+
+.spark-3 {
+    transform: rotate(0deg);
+    animation: spark 2s infinite 1.5s;
+}
+
+@keyframes blink {
+    0%, 80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.2;
+    }
+}
+
+@keyframes connection-error {
+    0%, 100% {
+        transform: scaleX(1);
+        background: rgba(231, 76, 60, 0.5);
+    }
+    40%, 60% {
+        transform: scaleX(0.8);
+        background: rgba(231, 76, 60, 0.8);
+    }
+}
+
+@keyframes spark {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0) rotate(var(--rotation, 45deg));
+    }
+    20%, 80% {
+        opacity: 1;
+        transform: scale(1) rotate(var(--rotation, 45deg));
+    }
+}
+
+@media (max-width: 992px) {
+    .error-container {
+        flex-direction: column;
+        padding: 8rem 2rem 3rem;
+    }
+    
+    .error-illustration {
+        order: -1;
+        height: 300px;
+    }
+    
+    .error-content {
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
