@@ -60,9 +60,12 @@ def faq():
 def security():
     """Renders the security information page."""
     try:
-        return render_template('security.html')
+        return render_template('Support/security.html')
     except:
-        return render_template('Errors/404.html'), 404
+        try:
+            return render_template('security.html')
+        except:
+            return render_template('Errors/404.html'), 404
 
 # ==================== FINANCIAL SERVICES ROUTES ====================
 

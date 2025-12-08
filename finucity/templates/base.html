@@ -204,19 +204,6 @@
 
     {% include 'footer.html' %}
 
-    <!-- Cookie Consent -->
-    <div class="cookie-consent" id="cookieConsent">
-        <div class="container">
-            <div class="cookie-content">
-                <p><i class="fas fa-cookie-bite"></i> We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies.</p>
-                <div class="cookie-buttons">
-                    <button id="cookieAccept" class="cookie-btn accept">Accept</button>
-                    <button id="cookieSettings" class="cookie-btn settings">Settings</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Preload JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
@@ -352,32 +339,6 @@
                     if (currentTime - parseInt(bannerClosedTime) < sevenDays) {
                         notificationBanner.style.display = 'none';
                     }
-                }
-            }
-            
-            // Cookie consent
-            const cookieConsent = document.getElementById('cookieConsent');
-            const cookieAccept = document.getElementById('cookieAccept');
-            const cookieSettings = document.getElementById('cookieSettings');
-            
-            if (cookieConsent && cookieAccept) {
-                // Check if user has already accepted cookies
-                if (!localStorage.getItem('cookieConsent')) {
-                    setTimeout(() => {
-                        cookieConsent.classList.add('active');
-                    }, 2000); // Show after 2 seconds
-                }
-                
-                cookieAccept.addEventListener('click', function() {
-                    localStorage.setItem('cookieConsent', 'true');
-                    cookieConsent.classList.remove('active');
-                });
-                
-                if (cookieSettings) {
-                    cookieSettings.addEventListener('click', function() {
-                        // In a real implementation, open cookie settings modal
-                        alert('Cookie settings feature coming soon!');
-                    });
                 }
             }
             
@@ -542,7 +503,7 @@
                 }
                 to {
                     transform: translateX(400px);
-                    opacity: 0;
+                    opacity: 0);
                 }
             }
             
