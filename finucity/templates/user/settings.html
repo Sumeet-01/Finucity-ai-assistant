@@ -1,0 +1,534 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display: wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all. min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+    <style>
+        .settings-page {
+            padding: 32px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+        }
+
+        .settings-nav {
+            background: var(--bg-card);
+            border:  1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding:  16px;
+            height: fit-content;
+            position: sticky;
+            top: calc(var(--header-height) + 32px);
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--border-radius);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition:  all var(--transition);
+            margin-bottom: 4px;
+        }
+
+        .settings-nav-item:hover {
+            background:  var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .settings-nav-item. active {
+            background: var(--accent-gold-soft);
+            color:  var(--accent-gold);
+        }
+
+        .settings-nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .settings-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .settings-card {
+            background:  var(--bg-card);
+            border:  1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding:  28px;
+        }
+
+        .settings-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .settings-card-header i {
+            color: var(--accent-gold);
+        }
+
+        .settings-card-header h3 {
+            font-size: 16px;
+        }
+
+        .setting-row {
+            display:  flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom:  1px solid var(--border-soft);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .setting-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .setting-action . btn-outline-sm {
+            padding: 8px 18px;
+            background: transparent;
+            border:  1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor:  pointer;
+            transition: all var(--transition);
+        }
+
+        .setting-action .btn-outline-sm:hover {
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width:  0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position:  absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:  var(--bg-elevated);
+            border:  1px solid var(--border-primary);
+            border-radius: 28px;
+            transition: all var(--transition);
+        }
+
+        .toggle-slider:: before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width:  20px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all var(--transition);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--accent-gold-soft);
+            border-color: var(--accent-gold);
+        }
+
+        .toggle-switch input:checked + .toggle-slider::before {
+            background: var(--accent-gold);
+            transform: translateX(22px);
+        }
+
+        .danger-zone {
+            background: var(--error-soft);
+            border-color: rgba(248, 113, 113, 0.2);
+        }
+
+        . danger-zone . setting-row {
+            border-color: rgba(248, 113, 113, 0.1);
+        }
+
+        .btn-danger-sm {
+            padding:  8px 18px;
+            background: transparent;
+            border:  1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 8px;
+            color:  var(--error);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .btn-danger-sm:hover {
+            background: var(--error);
+            color: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-nav {
+                position: static;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .settings-nav-item {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/partials/sidebar.html' %}
+
+    <main class="main-content">
+        {% include 'user/partials/header.html' %}
+
+        <div class="settings-page">
+            <div class="page-header">
+                <h1>Settings</h1>
+                <p>Manage your account preferences and security settings. </p>
+            </div>
+
+            <div class="settings-layout">
+                <nav class="settings-nav">
+                    <a href="#profile" class="settings-nav-item active">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a href="#notifications" class="settings-nav-item">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="#security" class="settings-nav-item">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </a>
+                    <a href="#privacy" class="settings-nav-item">
+                        <i class="fas fa-lock"></i> Privacy
+                    </a>
+                    <a href="#preferences" class="settings-nav-item">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                </nav>
+
+                <div class="settings-content">
+                    <!-- Profile Section -->
+                    <section id="profile" class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-user"></i>
+                            <h3>Profile Settings</h3>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Full Name</h4>
+                                <p>{{ current_user.first_name or 'Not set' }} {{ current_user. last_name or '' }}</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Edit</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Email Address</h4>
+                                <p>{{ current_user. email }}</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Change</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Phone Number</h4>
+                                <p>+91 98765 43210</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Update</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Location</h4>
+                                <p>Mumbai, Maharashtra, India</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Edit</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Notifications Section -->
+                    <section id="notifications" class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-bell"></i>
+                            <h3>Notification Preferences</h3>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Email Notifications</h4>
+                                <p>Receive updates and alerts via email</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Push Notifications</h4>
+                                <p>Receive push notifications on your device</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>CA Messages</h4>
+                                <p>Get notified when your CA sends you a message</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Tax Deadline Reminders</h4>
+                                <p>Receive reminders about upcoming tax deadlines</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Marketing & Tips</h4>
+                                <p>Receive financial tips and platform updates</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <!-- Security Section -->
+                    <section id="security" class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Security Settings</h3>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Password</h4>
+                                <p>Last changed 30 days ago</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Change Password</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Add an extra layer of security to your account</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Enable</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Login Sessions</h4>
+                                <p>Manage your active login sessions</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">View Sessions</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Login History</h4>
+                                <p>View your recent login activity</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">View History</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Privacy Section -->
+                    <section id="privacy" class="settings-card">
+                        <div class="settings-card-header">
+                            <i class="fas fa-lock"></i>
+                            <h3>Privacy Settings</h3>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Profile Visibility</h4>
+                                <p>Control who can see your profile information</p>
+                            </div>
+                            <div class="setting-action">
+                                <select style="padding: 8px 16px; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-size: 13px;">
+                                    <option>Only My CAs</option>
+                                    <option>All Verified CAs</option>
+                                    <option>Private</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Document Sharing</h4>
+                                <p>Require confirmation before CAs can download your documents</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Activity Status</h4>
+                                <p>Show when you're online to your CAs</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Download My Data</h4>
+                                <p>Export all your data from Finucity</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-outline-sm">Request Export</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Danger Zone -->
+                    <section class="settings-card danger-zone">
+                        <div class="settings-card-header">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
+                            <h3 style="color: var(--error);">Danger Zone</h3>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Deactivate Account</h4>
+                                <p>Temporarily disable your account.  You can reactivate anytime.</p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-danger-sm">Deactivate</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h4>Delete Account</h4>
+                                <p>Permanently delete your account and all associated data. </p>
+                            </div>
+                            <div class="setting-action">
+                                <button class="btn-danger-sm">Delete Account</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            document. getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Settings nav active state
+        document.querySelectorAll('.settings-nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.settings-nav-item').forEach(i => i.classList. remove('active'));
+                this.classList. add('active');
+            });
+        });
+    </script>
+</body>
+</html>

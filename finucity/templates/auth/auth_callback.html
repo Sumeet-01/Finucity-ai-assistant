@@ -1,0 +1,304 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing in...  | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        : root {
+            --bg:  #0a0d0a;
+            --card:  #131814;
+            --text:  #f0f2f0;
+            --text-muted: #6b7a6b;
+            --accent:  #FBA002;
+            --error: #f87171;
+            --success: #4ade80;
+            --border: rgba(255, 255, 255, 0.08);
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background:  var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left:  0;
+            right: 0;
+            bottom: 0;
+            background:  radial-gradient(ellipse at 50% 50%, rgba(251, 160, 2, 0.06), transparent 60%);
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .card {
+            background:  var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .spinner {
+            width: 56px;
+            height: 56px;
+            border: 3px solid rgba(251, 160, 2, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 28px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        . spinner. hidden { display: none; }
+
+        .icon-success {
+            width: 56px;
+            height: 56px;
+            background: rgba(74, 222, 128, 0.15);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin:  0 auto 28px;
+            font-size: 1.8rem;
+            color: var(--success);
+        }
+
+        .icon-success. visible { display: flex; }
+
+        . icon-error {
+            width:  56px;
+            height: 56px;
+            background: rgba(248, 113, 113, 0.15);
+            border-radius: 50%;
+            display:  none;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            font-size: 1.8rem;
+            color: var(--error);
+        }
+
+        .icon-error.visible { display: flex; }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height:  1.6;
+        }
+
+        .error-box {
+            background:  rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            display: none;
+        }
+
+        .error-box.visible { display: block; }
+
+        .error-box p {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .progress-steps {
+            display:  flex;
+            justify-content: center;
+            gap:  8px;
+            margin-top: 32px;
+        }
+
+        .step-dot {
+            width:  8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        . step-dot.active {
+            background: var(--accent);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="spinner" id="spinner"></div>
+            <div class="icon-success" id="iconSuccess"><i class="fas fa-check"></i></div>
+            <div class="icon-error" id="iconError"><i class="fas fa-times"></i></div>
+
+            <h2 id="statusTitle">Signing you in...</h2>
+            <p id="statusText">Please wait while we verify your credentials.</p>
+
+            <div class="error-box" id="errorBox">
+                <p id="errorText"></p>
+                <a href="{{ url_for('auth.login') }}" class="btn">
+                    <i class="fas fa-arrow-left"></i> Try again
+                </a>
+            </div>
+
+            <div class="progress-steps" id="progressSteps">
+                <div class="step-dot active" id="step1"></div>
+                <div class="step-dot" id="step2"></div>
+                <div class="step-dot" id="step3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseClient = window.supabase. createClient("{{ SUPABASE_URL }}", "{{ SUPABASE_ANON_KEY }}");
+
+        function updateStep(stepNum) {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('step' + i);
+                dot.classList.remove('active', 'completed');
+                if (i < stepNum) {
+                    dot.classList.add('completed');
+                } else if (i === stepNum) {
+                    dot.classList.add('active');
+                }
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('spinner').classList.add('hidden');
+            document.getElementById('iconError').classList.add('visible');
+            document.getElementById('statusTitle').textContent = 'Something went wrong';
+            document.getElementById('statusText').style.display = 'none';
+            document. getElementById('progressSteps').style.display = 'none';
+            document. getElementById('errorBox').classList.add('visible');
+            document.getElementById('errorText').textContent = message;
+        }
+
+        function showSuccess() {
+            document. getElementById('spinner').classList.add('hidden');
+            document.getElementById('iconSuccess').classList.add('visible');
+            document.getElementById('statusTitle').textContent = 'Welcome back! ';
+            document. getElementById('statusText').textContent = 'Redirecting you now...';
+            updateStep(3);
+        }
+
+        async function run() {
+            try {
+                // Step 1: Get session
+                updateStep(1);
+                document.getElementById('statusText').textContent = 'Retrieving session...';
+
+                const { data:  { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error) throw error;
+                if (!session) {
+                    showError('No session found.  Please try logging in again.');
+                    return;
+                }
+
+                // Step 2: Bridge to Flask
+                updateStep(2);
+                document.getElementById('statusText').textContent = 'Creating your session...';
+
+                const token = session.access_token;
+
+                const res = await fetch('/auth/supabase-login', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (! res.ok) {
+                    const data = await res.json();
+                    throw new Error(data. detail || data.error || 'Login failed');
+                }
+
+                const userData = await res.json();
+
+                // Step 3:  Redirect
+                updateStep(3);
+                showSuccess();
+
+                // Small delay for visual feedback
+                await new Promise(resolve => setTimeout(resolve, 800));
+
+                // Redirect based on role
+                if (userData.role === 'ca' || userData.role === 'admin') {
+                    window. location.href = '/ca/dashboard';
+                } else if (userData.role === 'ca_pending') {
+                    window.location.href = '/auth/ca-pending';
+                } else {
+                    window.location.href = '/';
+                }
+
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                showError(error.message || 'An unexpected error occurred.');
+            }
+        }
+
+        // Run on page load
+        run();
+    </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Finucity - Your Trusted Financial Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display: wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="sidebar-logo-text">
+                    <h1>Finucity</h1>
+                    <span>Trusted Financial Companion</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('main.user_dashboard') }}" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('main.find_ca') }}" class="nav-item">
+                <i class="fas fa-user-tie"></i>
+                <span>Find CA</span>
+            </a>
+            <a href="{{ url_for('main. user_consultations') }}" class="nav-item">
+                <i class="fas fa-folder-open"></i>
+                <span>My Consultations</span>
+                <span class="nav-badge">2</span>
+            </a>
+            <a href="{{ url_for('main. user_messages') }}" class="nav-item">
+                <i class="fas fa-comments"></i>
+                <span>Messages</span>
+                <span class="nav-badge">3</span>
+            </a>
+            <a href="{{ url_for('main. user_documents') }}" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Documents</span>
+            </a>
+            <a href="{{ url_for('main. user_recommendations') }}" class="nav-item">
+                <i class="fas fa-lightbulb"></i>
+                <span>Recommendations</span>
+            </a>
+            <a href="{{ url_for('main.user_settings') }}" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-help">
+                <div class="help-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="help-content">
+                    <h4>Need Help?</h4>
+                    <p>We're here for you</p>
+                </div>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search for services, CAs, or documents... ">
+            </div>
+
+            <div class="header-right">
+                <button class="header-btn notification-btn" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+
+                <div class="header-profile" onclick="toggleProfileMenu()">
+                    <div class="profile-avatar">
+                        {{ current_user.first_name[0]|upper if current_user.first_name else 'U' }}
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name">{{ current_user.first_name or 'User' }}</span>
+                        <span class="profile-location"><i class="fas fa-map-marker-alt"></i> Mumbai</span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <!-- Notifications Dropdown -->
+            <div class="notifications-dropdown" id="notificationsDropdown">
+                <div class="notifications-header">
+                    <h4>Notifications</h4>
+                    <button>Mark all as read</button>
+                </div>
+                <div class="notifications-list">
+                    <div class="notification-item unread">
+                        <div class="notification-icon reminder">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p><strong>Tax Filing Reminder</strong></p>
+                            <span>ITR filing deadline is approaching. Consider filing early. </span>
+                            <time>2 hours ago</time>
+                        </div>
+                    </div>
+                    <div class="notification-item unread">
+                        <div class="notification-icon message">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p><strong>New message from CA Sharma</strong></p>
+                            <span>Your documents have been reviewed... </span>
+                            <time>5 hours ago</time>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <p><strong>GST Filing Complete</strong></p>
+                            <span>Your November GST return has been filed.</span>
+                            <time>Yesterday</time>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="notifications-footer">View All Notifications</a>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="profile-dropdown-header">
+                    <div class="profile-avatar-lg">
+                        {{ current_user.first_name[0]|upper if current_user.first_name else 'U' }}
+                    </div>
+                    <div>
+                        <h4>{{ current_user.first_name or 'User' }} {{ current_user.last_name or '' }}</h4>
+                        <span>{{ current_user. email }}</span>
+                    </div>
+                </div>
+                <div class="profile-dropdown-menu">
+                    <a href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="{{ url_for('main.user_settings') }}"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy & Security</a>
+                    <hr>
+                    <a href="{{ url_for('auth.logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-content">
+                    <div class="welcome-text">
+                        <h1>Welcome back, <span class="highlight">{{ current_user.first_name or 'there' }}</span></h1>
+                        <p class="welcome-subtitle">Managing your finances doesn't have to be stressful.  You're in safe hands.</p>
+                    </div>
+                    <div class="welcome-chips">
+                        <span class="chip location"><i class="fas fa-map-marker-alt"></i> Mumbai, Maharashtra</span>
+                        <span class="chip status verified"><i class="fas fa-check-circle"></i> Verified Account</span>
+                        <span class="chip action"><i class="fas fa-lightbulb"></i> 2 Suggested Actions</span>
+                    </div>
+                </div>
+                <div class="welcome-illustration">
+                    <div class="illustration-circle">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Stats -->
+            <section class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon consultations">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">3</span>
+                        <span class="stat-label">Active Consultations</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon documents">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">Documents Stored</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon messages">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">5</span>
+                        <span class="stat-label">Unread Messages</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value">8</span>
+                        <span class="stat-label">Completed Tasks</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Grid -->
+            <div class="dashboard-grid">
+                <!-- Find CA Card - Primary Action -->
+                <section class="find-ca-card">
+                    <div class="find-ca-content">
+                        <div class="find-ca-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Verified Professionals Only</span>
+                        </div>
+                        <h2>Find a Trusted Chartered Accountant</h2>
+                        <p>Explore verified professionals for tax planning, GST compliance, audit services, startup advisory & more.  Every CA on Finucity is credential-verified.</p>
+                        
+                        <div class="find-ca-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>ICAI Verified</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Secure Communication</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check"></i>
+                                <span>Transparent Pricing</span>
+                            </div>
+                        </div>
+
+                        <div class="find-ca-actions">
+                            <a href="{{ url_for('main.find_ca') }}" class="btn-primary">
+                                <i class="fas fa-search"></i> Browse CAs
+                            </a>
+                            <button class="btn-secondary">
+                                <i class="fas fa-magic"></i> Smart Match Me
+                            </button>
+                        </div>
+                    </div>
+                    <div class="find-ca-visual">
+                        <div class="visual-circle">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="visual-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- My Consultations -->
+                <section class="consultations-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-folder-open"></i> My Consultations</h3>
+                        <a href="{{ url_for('main.user_consultations') }}" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="consultations-list">
+                        <div class="consultation-card active">
+                            <div class="consultation-header">
+                                <div class="ca-info">
+                                    <div class="ca-avatar">RS</div>
+                                    <div class="ca-details">
+                                        <h4>CA Rajesh Sharma</h4>
+                                        <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                                    </div>
+                                </div>
+                                <span class="status-pill in-progress">In Progress</span>
+                            </div>
+                            <div class="consultation-body">
+                                <div class="service-type">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <span>GST Compliance</span>
+                                </div>
+                                <p class="last-update">Last updated: 2 hours ago</p>
+                            </div>
+                            <div class="consultation-actions">
+                                <button class="action-btn chat"><i class="fas fa-comment"></i> Chat</button>
+                                <button class="action-btn view"><i class="fas fa-eye"></i> View</button>
+                            </div>
+                        </div>
+
+                        <div class="consultation-card">
+                            <div class="consultation-header">
+                                <div class="ca-info">
+                                    <div class="ca-avatar">PM</div>
+                                    <div class="ca-details">
+                                        <h4>CA Priya Mehta</h4>
+                                        <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                                    </div>
+                                </div>
+                                <span class="status-pill waiting">Awaiting Response</span>
+                            </div>
+                            <div class="consultation-body">
+                                <div class="service-type">
+                                    <i class="fas fa-calculator"></i>
+                                    <span>Tax Planning FY 2024-25</span>
+                                </div>
+                                <p class="last-update">Last updated: Yesterday</p>
+                            </div>
+                            <div class="consultation-actions">
+                                <button class="action-btn chat"><i class="fas fa-comment"></i> Chat</button>
+                                <button class="action-btn view"><i class="fas fa-eye"></i> View</button>
+                            </div>
+                        </div>
+
+                        <div class="consultation-card completed">
+                            <div class="consultation-header">
+                                <div class="ca-info">
+                                    <div class="ca-avatar">AK</div>
+                                    <div class="ca-details">
+                                        <h4>CA Amit Kumar</h4>
+                                        <span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>
+                                    </div>
+                                </div>
+                                <span class="status-pill done">Completed</span>
+                            </div>
+                            <div class="consultation-body">
+                                <div class="service-type">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>ITR Filing FY 2023-24</span>
+                                </div>
+                                <p class="last-update">Completed: Dec 10, 2024</p>
+                            </div>
+                            <div class="consultation-actions">
+                                <button class="action-btn docs"><i class="fas fa-file-download"></i> Documents</button>
+                                <button class="action-btn review"><i class="fas fa-star"></i> Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Alerts & Guidance -->
+                <section class="alerts-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-bell"></i> Alerts & Guidance</h3>
+                    </div>
+
+                    <div class="alerts-list">
+                        <div class="alert-card reminder">
+                            <div class="alert-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Advance Tax Due Date</h4>
+                                <p>Third installment of advance tax is due by December 15th. Plan accordingly to avoid interest. </p>
+                                <span class="alert-time">Due in 5 days</span>
+                            </div>
+                            <button class="alert-action">Learn More</button>
+                        </div>
+
+                        <div class="alert-card tip">
+                            <div class="alert-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>Tax Saving Suggestion</h4>
+                                <p>You usually file ITR in July.  Want help preparing documents earlier this year?</p>
+                            </div>
+                            <button class="alert-action">Get Started</button>
+                        </div>
+
+                        <div class="alert-card info">
+                            <div class="alert-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <h4>New GST Rules</h4>
+                                <p>Important changes to e-invoicing thresholds effective from January 2025. </p>
+                            </div>
+                            <button class="alert-action">Read Update</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Documents Vault -->
+                <section class="documents-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-lock"></i> My Documents Vault</h3>
+                        <a href="{{ url_for('main.user_documents') }}" class="view-all">Manage <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="vault-security">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Encrypted & Secure • Only visible to you and your chosen CA</span>
+                    </div>
+
+                    <div class="documents-grid">
+                        <div class="document-folder">
+                            <div class="folder-icon identity">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <span class="folder-name">Identity Documents</span>
+                            <span class="folder-count">3 files</span>
+                        </div>
+                        <div class="document-folder">
+                            <div class="folder-icon tax">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <span class="folder-name">Tax Documents</span>
+                            <span class="folder-count">5 files</span>
+                        </div>
+                        <div class="document-folder">
+                            <div class="folder-icon gst">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <span class="folder-name">GST Files</span>
+                            <span class="folder-count">4 files</span>
+                        </div>
+                        <div class="document-folder upload">
+                            <div class="folder-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <span class="folder-name">Upload New</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Messages -->
+                <section class="messages-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-comments"></i> Recent Messages</h3>
+                        <a href="{{ url_for('main.user_messages') }}" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    <div class="messages-list">
+                        <div class="message-item unread">
+                            <div class="message-avatar">RS</div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <h4>CA Rajesh Sharma</h4>
+                                    <span class="message-time">2h ago</span>
+                                </div>
+                                <p>I've reviewed your GST documents. Everything looks good.  Please confirm if you want me to proceed with... </p>
+                            </div>
+                        </div>
+                        <div class="message-item unread">
+                            <div class="message-avatar">PM</div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <h4>CA Priya Mehta</h4>
+                                    <span class="message-time">5h ago</span>
+                                </div>
+                                <p>Thank you for sharing the Form 16.  I'll prepare your tax planning report by tomorrow... </p>
+                            </div>
+                        </div>
+                        <div class="message-item">
+                            <div class="message-avatar">F</div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <h4>Finucity Support</h4>
+                                    <span class="message-time">2 days ago</span>
+                                </div>
+                                <p>Welcome to Finucity! We're here to help you with any questions about the platform... </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Financial Insights -->
+                <section class="insights-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-chart-line"></i> Financial Insights</h3>
+                    </div>
+
+                    <div class="insights-content">
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <div class="insight-text">
+                                <h4>Tax Saving Opportunity</h4>
+                                <p>Based on your profile, you may be eligible for additional deductions under Section 80C. Consider investing before March 31st. </p>
+                            </div>
+                            <a href="#" class="insight-link">Explore Options <i class="fas fa-arrow-right"></i></a>
+                        </div>
+
+                        <div class="insight-card">
+                            <div class="insight-icon">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="insight-text">
+                                <h4>GST Filing Status</h4>
+                                <p>Your GST compliance is on track. All returns filed on time for the last 6 months.</p>
+                            </div>
+                            <span class="insight-badge success"><i class="fas fa-check"></i> On Track</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Footer -->
+            <footer class="dashboard-footer">
+                <p>&copy; 2024 Finucity. Your trusted financial companion.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Help Center</a>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            const profileDropdown = document. getElementById('profileDropdown');
+            profileDropdown.classList. remove('open');
+            dropdown.classList.toggle('open');
+        }
+
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profileDropdown');
+            const notificationsDropdown = document.getElementById('notificationsDropdown');
+            notificationsDropdown. classList.remove('open');
+            dropdown. classList.toggle('open');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('. notification-btn') && !e.target.closest('.notifications-dropdown')) {
+                document.getElementById('notificationsDropdown').classList.remove('open');
+            }
+            if (!e.target.closest('.header-profile') && !e.target.closest('.profile-dropdown')) {
+                document. getElementById('profileDropdown').classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

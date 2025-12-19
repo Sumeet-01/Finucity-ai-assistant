@@ -1,0 +1,104 @@
+<header class="header">
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="header-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search for services, CAs, or documents... ">
+    </div>
+
+    <div class="header-right">
+        <button class="header-btn notification-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-dot"></span>
+        </button>
+
+        <div class="header-profile" onclick="toggleProfileMenu()">
+            <div class="profile-avatar">
+                {{ current_user.first_name[0]|upper if current_user.first_name else 'U' }}
+            </div>
+            <div class="profile-info">
+                <span class="profile-name">{{ current_user.first_name or 'User' }}</span>
+                <span class="profile-location"><i class="fas fa-map-marker-alt"></i> Mumbai</span>
+            </div>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </div>
+
+    <!-- Notifications Dropdown -->
+    <div class="notifications-dropdown" id="notificationsDropdown">
+        <div class="notifications-header">
+            <h4>Notifications</h4>
+            <button>Mark all as read</button>
+        </div>
+        <div class="notifications-list">
+            <div class="notification-item unread">
+                <div class="notification-icon reminder">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="notification-content">
+                    <p><strong>Tax Filing Reminder</strong></p>
+                    <span>ITR filing deadline is approaching. </span>
+                    <time>2 hours ago</time>
+                </div>
+            </div>
+            <div class="notification-item unread">
+                <div class="notification-icon message">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <div class="notification-content">
+                    <p><strong>New message from CA Sharma</strong></p>
+                    <span>Your documents have been reviewed... </span>
+                    <time>5 hours ago</time>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="notifications-footer">View All Notifications</a>
+    </div>
+
+    <!-- Profile Dropdown -->
+    <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+            <div class="profile-avatar-lg">
+                {{ current_user.first_name[0]|upper if current_user.first_name else 'U' }}
+            </div>
+            <div>
+                <h4>{{ current_user.first_name or 'User' }} {{ current_user.last_name or '' }}</h4>
+                <span>{{ current_user. email }}</span>
+            </div>
+        </div>
+        <div class="profile-dropdown-menu">
+            <a href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> My Profile</a>
+            <a href="{{ url_for('main.user_settings') }}"><i class="fas fa-cog"></i> Settings</a>
+            <a href="#"><i class="fas fa-shield-alt"></i> Privacy & Security</a>
+            <hr>
+            <a href="{{ url_for('auth.logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleNotifications() {
+        const dropdown = document.getElementById('notificationsDropdown');
+        const profileDropdown = document. getElementById('profileDropdown');
+        profileDropdown.classList.remove('open');
+        dropdown.classList.toggle('open');
+    }
+
+    function toggleProfileMenu() {
+        const dropdown = document. getElementById('profileDropdown');
+        const notificationsDropdown = document.getElementById('notificationsDropdown');
+        notificationsDropdown. classList.remove('open');
+        dropdown.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (! e.target.closest('. notification-btn') && !e.target.closest('.notifications-dropdown')) {
+            document.getElementById('notificationsDropdown').classList.remove('open');
+        }
+        if (! e.target.closest('.header-profile') && !e.target.closest('.profile-dropdown')) {
+            document.getElementById('profileDropdown').classList.remove('open');
+        }
+    });
+</script>

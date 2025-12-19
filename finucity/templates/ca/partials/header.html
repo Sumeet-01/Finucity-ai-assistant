@@ -1,0 +1,28 @@
+<header class="header">
+    <div class="header-left">
+        <h2>{% block page_title %}Dashboard{% endblock %}</h2>
+        <p>{% block page_subtitle %}Welcome to your CA Workspace{% endblock %}</p>
+    </div>
+    <div class="header-right">
+        <div class="header-status">
+            <i class="fas fa-circle"></i>
+            Active
+        </div>
+        <button class="header-btn" title="Search">
+            <i class="fas fa-search"></i>
+        </button>
+        <button class="header-btn" title="Notifications">
+            <i class="fas fa-bell"></i>
+            <span class="notification-dot"></span>
+        </button>
+        <div class="header-profile">
+            <div class="header-avatar">
+                {% if current_user.first_name %}
+                    {{ current_user.first_name[0]|upper }}
+                {% else %}
+                    C
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>

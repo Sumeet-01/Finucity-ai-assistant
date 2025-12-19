@@ -1,0 +1,373 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | CA Workspace | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min. css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard.css') }}">
+</head>
+<body>
+    {% include 'ca/partials/sidebar.html' %}
+
+    <main class="main-content">
+        {% include 'ca/partials/header.html' %}
+
+        <div class="page-content">
+            <div class="page-title">
+                <h1>Settings</h1>
+                <p>Manage your account preferences and security</p>
+            </div>
+
+            <div class="settings-grid">
+                <!-- Settings Navigation -->
+                <div class="settings-nav">
+                    <a href="#account" class="settings-nav-item active">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </a>
+                    <a href="#notifications" class="settings-nav-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                    <a href="#privacy" class="settings-nav-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Privacy & Security</span>
+                    </a>
+                    <a href="#availability" class="settings-nav-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Availability</span>
+                    </a>
+                    <a href="#billing" class="settings-nav-item">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Billing</span>
+                    </a>
+                    <a href="#integrations" class="settings-nav-item">
+                        <i class="fas fa-plug"></i>
+                        <span>Integrations</span>
+                    </a>
+                </div>
+
+                <!-- Settings Content -->
+                <div class="settings-content">
+                    <!-- Account Section -->
+                    <section id="account" class="settings-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-user"></i> Account Settings</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Email Address</h4>
+                                        <p>{{ current_user.email }}</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Change</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Password</h4>
+                                        <p>Last changed 30 days ago</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Update</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Two-Factor Authentication</h4>
+                                        <p>Add an extra layer of security to your account</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Login Sessions</h4>
+                                        <p>Manage your active sessions</p>
+                                    </div>
+                                    <button class="btn-outline-sm">View All</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Notifications Section -->
+                    <section id="notifications" class="settings-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-bell"></i> Notification Preferences</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>New Client Requests</h4>
+                                        <p>Get notified when you receive new client requests</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Messages</h4>
+                                        <p>Get notified for new messages from clients</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Document Uploads</h4>
+                                        <p>Get notified when clients upload documents</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Payment Updates</h4>
+                                        <p>Get notified about payment status changes</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Email Notifications</h4>
+                                        <p>Receive notifications via email</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Marketing & Updates</h4>
+                                        <p>Receive platform updates and tips</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Privacy Section -->
+                    <section id="privacy" class="settings-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-shield-alt"></i> Privacy & Security</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Profile Visibility</h4>
+                                        <p>Control who can see your profile</p>
+                                    </div>
+                                    <select class="form-select-sm">
+                                        <option>Public</option>
+                                        <option>Registered Users Only</option>
+                                        <option>Private</option>
+                                    </select>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Show Contact Information</h4>
+                                        <p>Display phone number on public profile</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Activity Status</h4>
+                                        <p>Show when you're online</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Data Export</h4>
+                                        <p>Download all your data</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Export</button>
+                                </div>
+
+                                <div class="setting-item danger">
+                                    <div class="setting-info">
+                                        <h4>Delete Account</h4>
+                                        <p>Permanently delete your account and all data</p>
+                                    </div>
+                                    <button class="btn-danger-sm">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Availability Section -->
+                    <section id="availability" class="settings-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-clock"></i> Availability Settings</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Accept New Clients</h4>
+                                        <p>Toggle to stop receiving new client requests</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Working Hours</h4>
+                                        <p>Set your preferred working hours</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Configure</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Vacation Mode</h4>
+                                        <p>Temporarily pause all requests</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Auto-Response</h4>
+                                        <p>Send automatic responses when unavailable</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Set Message</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Billing Section -->
+                    <section id="billing" class="settings-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-credit-card"></i> Billing & Payments</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Bank Account</h4>
+                                        <p>HDFC Bank ****4521</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Update</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>UPI ID</h4>
+                                        <p>ca.sharma@hdfcbank</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Change</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Payout Schedule</h4>
+                                        <p>Weekly (Every Monday)</p>
+                                    </div>
+                                    <select class="form-select-sm">
+                                        <option>Weekly</option>
+                                        <option selected>Bi-weekly</option>
+                                        <option>Monthly</option>
+                                    </select>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Invoice Settings</h4>
+                                        <p>Customize your invoice template</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Configure</button>
+                                </div>
+
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>Tax Information</h4>
+                                        <p>GST:  27AABCT1234D1ZV</p>
+                                    </div>
+                                    <button class="btn-outline-sm">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            document. getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Settings nav active state
+        document.querySelectorAll('.settings-nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.settings-nav-item').forEach(i => i.classList. remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Smooth scroll to sections
+        document.querySelectorAll('. settings-nav-item').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

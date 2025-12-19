@@ -1,0 +1,426 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        : root {
+            --bg-primary: #0a0d0a;
+            --bg-secondary: #0f1410;
+            --bg-card: #131814;
+            --bg-card-hover: #1a201a;
+            --accent-gold: #FBA002;
+            --accent-gold-dim: rgba(251, 160, 2, 0.15);
+            --accent-gold-glow: rgba(251, 160, 2, 0.08);
+            --text-primary: #f0f2f0;
+            --text-secondary: #9ca89c;
+            --text-muted: #6b7a6b;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-accent: rgba(251, 160, 2, 0.3);
+            --success:  #4ade80;
+            --warning: #fbbf24;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl:  28px;
+            --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-elevated: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing:  border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background:  var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, var(--accent-gold-glow), transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(251, 160, 2, 0.04), transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(20, 30, 20, 0.5), transparent 70%);
+            animation: ambientMove 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes ambientMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2%, 2%) rotate(1deg); }
+            50% { transform:  translate(1%, -1%) rotate(-0.5deg); }
+            75% { transform: translate(2%, 1%) rotate(0.5deg); }
+        }
+
+        . container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width:  900px;
+        }
+
+        /* Header */
+        . header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s var(--transition-slow) forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform:  translateY(0);
+            }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            border-radius: var(--radius-md);
+            display:  flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #0a0d0a;
+            box-shadow: 0 8px 30px rgba(251, 160, 2, 0.25);
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color:  var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        . header h1 {
+            font-size: 2.4rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip:  text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* Role Cards Grid */
+        .role-grid {
+            display:  grid;
+            grid-template-columns:  repeat(2, 1fr);
+            gap: 28px;
+        }
+
+        @media (max-width: 700px) {
+            .role-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        . role-card {
+            background: var(--bg-card);
+            border:  1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding:  40px 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-slow);
+            cursor:  pointer;
+            animation: fadeInUp 0.8s var(--transition-slow) forwards;
+            opacity: 0;
+        }
+
+        . role-card:nth-child(1) { animation-delay: 0.2s; }
+        .role-card:nth-child(2) { animation-delay: 0.35s; }
+
+        .role-card:: before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+        }
+
+        .role-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-accent);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-elevated);
+        }
+
+        .role-card:hover::before {
+            opacity: 1;
+        }
+
+        .role-card.selected {
+            border-color: var(--accent-gold);
+            box-shadow:  0 0 0 1px var(--accent-gold), var(--shadow-elevated);
+        }
+
+        .role-icon {
+            width: 72px;
+            height: 72px;
+            background: var(--accent-gold-dim);
+            border-radius: var(--radius-lg);
+            display:  flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 28px;
+            transition: all var(--transition-medium);
+        }
+
+        . role-card:hover .role-icon {
+            background: var(--accent-gold);
+            color: #0a0d0a;
+            transform: scale(1.05);
+        }
+
+        .role-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .role-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .role-actions {
+            display:  flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all var(--transition-medium);
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            color: #0a0d0a;
+            box-shadow: 0 4px 20px rgba(251, 160, 2, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(251, 160, 2, 0.35);
+        }
+
+        . btn-secondary {
+            background: transparent;
+            color:  var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-secondary);
+        }
+
+        .role-note {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .role-note i {
+            color:  var(--accent-gold);
+            font-size: 0.9rem;
+            margin-top: 2px;
+        }
+
+        .role-note span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            animation: fadeInUp 0.8s var(--transition-slow) forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        . footer a {
+            color:  var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition-medium);
+        }
+
+        .footer a:hover {
+            color: var(--accent-gold);
+        }
+
+        . footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links span {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <span class="logo-text">Finucity</span>
+            </a>
+            <h1>How would you like to continue? </h1>
+            <p>Choose your role.  Each path is designed differently for your needs.</p>
+        </header>
+
+        <div class="role-grid">
+            <!-- User Card -->
+            <div class="role-card" onclick="selectRole('user')">
+                <div class="role-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="role-title">User</h2>
+                <p class="role-description">For individuals & businesses seeking financial help from verified professionals. </p>
+                <div class="role-actions">
+                    <a href="{{ url_for('auth. login') }}? role=user" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Continue as User
+                    </a>
+                    <a href="{{ url_for('auth. login') }}?role=user&mode=signup" class="btn btn-secondary">
+                        Create User Account
+                    </a>
+                </div>
+                <div class="role-note">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Simple profile. Instant access. Connect with verified professionals only.</span>
+                </div>
+            </div>
+
+            <!-- CA Card -->
+            <div class="role-card" onclick="selectRole('ca')">
+                <div class="role-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h2 class="role-title">Chartered Accountant</h2>
+                <p class="role-description">For certified professionals offering services through our verified platform.</p>
+                <div class="role-actions">
+                    <a href="{{ url_for('auth.login') }}?role=ca" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Login as CA
+                    </a>
+                    <a href="{{ url_for('auth.ca_apply') }}" class="btn btn-secondary">
+                        Apply as CA
+                    </a>
+                </div>
+                <div class="role-note">
+                    <i class="fas fa-certificate"></i>
+                    <span>Identity & credentials verification required before activation.</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="/">← Back to Home</a>
+                <span>•</span>
+                <a href="{{ url_for('main.privacy_policy') }}">Privacy Policy</a>
+                <span>•</span>
+                <a href="{{ url_for('main.terms_of_service') }}">Terms of Service</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | CA Workspace | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard.css') }}">
+</head>
+<body>
+    {% include 'ca/partials/sidebar.html' %}
+
+    <main class="main-content">
+        {% include 'ca/partials/header.html' %}
+
+        <div class="page-content">
+            <div class="page-title">
+                <h1>My Profile</h1>
+                <p>Manage your professional identity and credentials</p>
+            </div>
+
+            <div class="profile-grid">
+                <!-- Profile Photo & Basic Info -->
+                <div class="card profile-card">
+                    <div class="card-body">
+                        <div class="profile-photo-section">
+                            <div class="profile-photo">
+                                <span class="photo-initials">
+                                    {{ current_user.first_name[0]|upper if current_user.first_name else 'C' }}{{ current_user.last_name[0]|upper if current_user.last_name else 'A' }}
+                                </span>
+                                <button class="photo-edit-btn" title="Change Photo">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <div class="profile-basic">
+                                <h2>{{ current_user.first_name or 'CA' }} {{ current_user.last_name or 'Professional' }}</h2>
+                                <div class="verified-badge">
+                                    <i class="fas fa-check-circle"></i>
+                                    Verified Chartered Accountant
+                                </div>
+                                <p class="profile-location"><i class="fas fa-map-marker-alt"></i> Mumbai, Maharashtra</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">127</span>
+                                <span class="stat-label">Clients</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">4.9</span>
+                                <span class="stat-label">Rating</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">8</span>
+                                <span class="stat-label">Years</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">98%</span>
+                                <span class="stat-label">Response</span>
+                            </div>
+                        </div>
+
+                        <a href="#" class="btn-outline full-width">
+                            <i class="fas fa-eye"></i> View Public Profile
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
+                        <button class="btn-icon" onclick="toggleEdit('personal')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form id="personalForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input type="text" class="form-input" value="{{ current_user. first_name or '' }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name</label>
+                                    <input type="text" class="form-input" value="{{ current_user.last_name or '' }}" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" class="form-input" value="{{ current_user. email }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" class="form-input" value="+91 98765 43210" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>City</label>
+                                    <input type="text" class="form-input" value="Mumbai" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>State</label>
+                                    <input type="text" class="form-input" value="Maharashtra" disabled>
+                                </div>
+                            </div>
+                            <div class="form-actions hidden" id="personalActions">
+                                <button type="button" class="btn-secondary" onclick="cancelEdit('personal')">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Professional Credentials -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-certificate"></i> Professional Credentials</h3>
+                        <button class="btn-icon" onclick="toggleEdit('credentials')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form id="credentialsForm" class="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>ICAI Membership Number</label>
+                                    <input type="text" class="form-input" value="123456" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label>Registration Year</label>
+                                    <input type="text" class="form-input" value="2016" disabled>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>CA Type</label>
+                                    <select class="form-input" disabled>
+                                        <option selected>Individual Practitioner</option>
+                                        <option>Firm Partner</option>
+                                        <option>Employee CA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Years of Experience</label>
+                                    <input type="number" class="form-input" value="8" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Firm Name (if applicable)</label>
+                                <input type="text" class="form-input" value="Sharma & Associates" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Practice Address</label>
+                                <textarea class="form-input" rows="2" disabled>123 Business Center, Andheri West, Mumbai - 400058</textarea>
+                            </div>
+                            <div class="form-actions hidden" id="credentialsActions">
+                                <button type="button" class="btn-secondary" onclick="cancelEdit('credentials')">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Services Offered -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tags"></i> Services Offered</h3>
+                        <button class="btn-icon" onclick="toggleEdit('services')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="services-grid" id="servicesGrid">
+                            <label class="service-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span class="checkbox-label">Tax Planning</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span class="checkbox-label">ITR Filing</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span class="checkbox-label">GST Filing</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span class="checkbox-label">Audit Services</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" checked disabled>
+                                <span class="checkbox-label">Business Advisory</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" disabled>
+                                <span class="checkbox-label">Company Registration</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" disabled>
+                                <span class="checkbox-label">Startup Compliance</span>
+                            </label>
+                            <label class="service-checkbox">
+                                <input type="checkbox" disabled>
+                                <span class="checkbox-label">NRI Taxation</span>
+                            </label>
+                        </div>
+                        <div class="form-actions hidden" id="servicesActions">
+                            <button type="button" class="btn-secondary" onclick="cancelEdit('services')">Cancel</button>
+                            <button type="button" class="btn-primary" onclick="saveServices()">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Types -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-users"></i> Client Types</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="client-types">
+                            <div class="client-type active">
+                                <i class="fas fa-user"></i>
+                                <span>Individuals</span>
+                            </div>
+                            <div class="client-type active">
+                                <i class="fas fa-store"></i>
+                                <span>SMEs</span>
+                            </div>
+                            <div class="client-type active">
+                                <i class="fas fa-building"></i>
+                                <span>Corporates</span>
+                            </div>
+                            <div class="client-type">
+                                <i class="fas fa-rocket"></i>
+                                <span>Startups</span>
+                            </div>
+                            <div class="client-type">
+                                <i class="fas fa-globe"></i>
+                                <span>NRIs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bio / About -->
+                <div class="card full-width">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle"></i> Professional Bio</h3>
+                        <button class="btn-icon" onclick="toggleEdit('bio')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form id="bioForm">
+                            <textarea class="form-input bio-textarea" rows="4" disabled>Experienced Chartered Accountant with over 8 years of expertise in tax planning, GST compliance, and business advisory services.  Committed to providing personalized financial guidance to individuals and businesses across India.  Specializing in helping startups and SMEs navigate complex regulatory requirements while optimizing their tax positions.</textarea>
+                            <div class="form-actions hidden" id="bioActions">
+                                <button type="button" class="btn-secondary" onclick="cancelEdit('bio')">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function toggleEdit(section) {
+            const form = document.getElementById(section + 'Form') || document.getElementById(section + 'Grid')?. closest('.card-body');
+            const actions = document.getElementById(section + 'Actions');
+            const inputs = form ?  form.querySelectorAll('input, select, textarea') : [];
+            
+            inputs.forEach(input => {
+                input. disabled = !input.disabled;
+            });
+            
+            if (actions) {
+                actions.classList.toggle('hidden');
+            }
+        }
+
+        function cancelEdit(section) {
+            toggleEdit(section);
+            // Reset form values here if needed
+        }
+
+        function saveServices() {
+            // Save services logic
+            toggleEdit('services');
+            showToast('Services updated successfully', 'success');
+        }
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast. innerHTML = '<i class="fas fa-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '"></i>' + message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

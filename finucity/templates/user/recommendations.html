@@ -1,0 +1,647 @@
+<! DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations | Finucity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display: wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+    <style>
+        .recommendations-page {
+            padding:  32px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            max-width: 600px;
+        }
+
+        .personalized-banner {
+            display: flex;
+            align-items: center;
+            gap:  20px;
+            padding: 28px 32px;
+            background: linear-gradient(135deg, var(--accent-gold-soft), rgba(251, 160, 2, 0.05));
+            border:  1px solid var(--border-accent);
+            border-radius: var(--border-radius-xl);
+            margin-bottom: 32px;
+        }
+
+        .personalized-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-gold-soft);
+            border:  1px solid var(--border-accent);
+            border-radius:  16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:  28px;
+            color: var(--accent-gold);
+        }
+
+        .personalized-content h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .personalized-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .recommendations-grid {
+            display:  grid;
+            grid-template-columns:  repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .recommendation-card {
+            background: var(--bg-card);
+            border:  1px solid var(--border-primary);
+            border-radius: var(--border-radius-lg);
+            padding:  28px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        . recommendation-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .recommendation-card:: before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .recommendation-card. urgent:: before {
+            background: var(--warning);
+        }
+
+        .recommendation-card. opportunity::before {
+            background: var(--success);
+        }
+
+        .recommendation-card.info::before {
+            background: var(--info);
+        }
+
+        .recommendation-card.tip::before {
+            background: var(--accent-gold);
+        }
+
+        .rec-header {
+            display:  flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .rec-icon {
+            width:  52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:  22px;
+        }
+
+        .recommendation-card.urgent . rec-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .recommendation-card.opportunity .rec-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .recommendation-card.info .rec-icon {
+            background: var(--info-soft);
+            color: var(--info);
+        }
+
+        .recommendation-card.tip . rec-icon {
+            background: var(--accent-gold-soft);
+            color: var(--accent-gold);
+        }
+
+        .rec-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .rec-badge.urgent {
+            background: var(--warning-soft);
+            color:  var(--warning);
+        }
+
+        .rec-badge. opportunity {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .rec-badge.info {
+            background: var(--info-soft);
+            color: var(--info);
+        }
+
+        . rec-badge.tip {
+            background:  var(--accent-gold-soft);
+            color: var(--accent-gold);
+        }
+
+        .rec-content h4 {
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .rec-content p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height:  1.7;
+            margin-bottom: 20px;
+        }
+
+        .rec-details {
+            display:  flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding:  16px 0;
+            border-top: 1px solid var(--border-soft);
+            margin-bottom: 20px;
+        }
+
+        .rec-detail {
+            display: flex;
+            align-items: center;
+            gap:  8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .rec-detail i {
+            color: var(--accent-gold);
+        }
+
+        .rec-actions {
+            display:  flex;
+            gap: 12px;
+        }
+
+        .rec-actions . btn-primary,
+        .rec-actions .btn-secondary {
+            flex: 1;
+            justify-content: center;
+            padding: 12px 20px;
+            font-size: 13px;
+        }
+
+        /* Featured Section */
+        .featured-section {
+            background: var(--bg-card);
+            border:  1px solid var(--border-primary);
+            border-radius: var(--border-radius-xl);
+            padding:  32px;
+            margin-bottom:  40px;
+        }
+
+        .featured-header {
+            display:  flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .featured-header h3 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap:  10px;
+        }
+
+        .featured-header h3 i {
+            color: var(--accent-gold);
+        }
+
+        . featured-cas {
+            display:  grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .featured-ca-card {
+            background:  var(--bg-elevated);
+            border:  1px solid var(--border-soft);
+            border-radius: var(--border-radius-lg);
+            padding:  24px;
+            text-align: center;
+            transition: all var(--transition);
+        }
+
+        .featured-ca-card:hover {
+            border-color: var(--border-accent);
+            transform: translateY(-2px);
+        }
+
+        .featured-ca-avatar {
+            width:  72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:  24px;
+            font-weight: 700;
+            color:  var(--text-primary);
+            margin:  0 auto 16px;
+        }
+
+        .featured-ca-card h4 {
+            font-size:  15px;
+            margin-bottom: 6px;
+        }
+
+        .featured-ca-card . speciality {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .featured-ca-rating {
+            display:  flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 16px;
+            color: var(--accent-gold);
+            font-size: 13px;
+        }
+
+        .featured-ca-card .btn-primary {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        /* Insights Section */
+        . insights-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--border-radius-xl);
+            padding: 32px;
+        }
+
+        .insights-header {
+            display: flex;
+            justify-content:  space-between;
+            align-items:  center;
+            margin-bottom: 24px;
+        }
+
+        .insights-header h3 {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap:  10px;
+        }
+
+        . insights-header h3 i {
+            color: var(--accent-gold);
+        }
+
+        .insights-grid {
+            display:  grid;
+            grid-template-columns:  repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .insight-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            background: var(--bg-elevated);
+            border-radius: var(--border-radius);
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        .insight-icon {
+            width:  44px;
+            height: 44px;
+            background: var(--accent-gold-soft);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .insight-content h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .insight-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1200px) {
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .featured-cas {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            . insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .featured-cas {
+                grid-template-columns: 1fr;
+            }
+            
+            .personalized-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/partials/sidebar.html' %}
+
+    <main class="main-content">
+        {% include 'user/partials/header.html' %}
+
+        <div class="recommendations-page">
+            <div class="page-header">
+                <h1>Personalized Recommendations</h1>
+                <p>Tailored suggestions to help you make smarter financial decisions.  Based on your profile and activity. </p>
+            </div>
+
+            <div class="personalized-banner">
+                <div class="personalized-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <div class="personalized-content">
+                    <h3>Smart Recommendations Just for You</h3>
+                    <p>Our AI analyzes your financial profile, past consultations, and upcoming deadlines to provide personalized guidance. These recommendations are updated regularly based on your activity. </p>
+                </div>
+            </div>
+
+            <!-- Recommendations Grid -->
+            <div class="recommendations-grid">
+                <!-- Urgent Recommendation -->
+                <div class="recommendation-card urgent">
+                    <div class="rec-header">
+                        <div class="rec-icon">
+                            <i class="fas fa-calendar-exclamation"></i>
+                        </div>
+                        <span class="rec-badge urgent">Action Required</span>
+                    </div>
+                    <div class="rec-content">
+                        <h4>Advance Tax Payment Due</h4>
+                        <p>The third installment of advance tax for FY 2024-25 is due by December 15th. Missing this deadline may result in interest charges under Section 234C. </p>
+                        <div class="rec-details">
+                            <div class="rec-detail">
+                                <i class="fas fa-clock"></i>
+                                <span>Due in 5 days</span>
+                            </div>
+                            <div class="rec-detail">
+                                <i class="fas fa-rupee-sign"></i>
+                                <span>Estimated:  ₹45,000</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rec-actions">
+                        <button class="btn-primary">Calculate & Pay</button>
+                        <button class="btn-secondary">Get CA Help</button>
+                    </div>
+                </div>
+
+                <!-- Opportunity Recommendation -->
+                <div class="recommendation-card opportunity">
+                    <div class="rec-header">
+                        <div class="rec-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <span class="rec-badge opportunity">Tax Saving</span>
+                    </div>
+                    <div class="rec-content">
+                        <h4>Maximize Your 80C Deductions</h4>
+                        <p>Based on your Form 16, you've utilized only ₹85,000 of your ₹1.5L limit under Section 80C. Consider investing ₹65,000 more before March 31st to save up to ₹20,000 in taxes.</p>
+                        <div class="rec-details">
+                            <div class="rec-detail">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Potential savings: ₹20,000</span>
+                            </div>
+                            <div class="rec-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span>Before March 31, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rec-actions">
+                        <button class="btn-primary">Explore Options</button>
+                        <button class="btn-secondary">Talk to CA</button>
+                    </div>
+                </div>
+
+                <!-- Info Recommendation -->
+                <div class="recommendation-card info">
+                    <div class="rec-header">
+                        <div class="rec-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <span class="rec-badge info">GST Update</span>
+                    </div>
+                    <div class="rec-content">
+                        <h4>E-Invoicing Threshold Change</h4>
+                        <p>Starting January 2025, e-invoicing becomes mandatory for businesses with turnover above ₹5 crore. Based on your GST filings, this may affect your business operations.</p>
+                        <div class="rec-details">
+                            <div class="rec-detail">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Effective:  Jan 1, 2025</span>
+                            </div>
+                            <div class="rec-detail">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Compliance update</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rec-actions">
+                        <button class="btn-primary">Learn More</button>
+                        <button class="btn-secondary">Ask CA</button>
+                    </div>
+                </div>
+
+                <!-- Tip Recommendation -->
+                <div class="recommendation-card tip">
+                    <div class="rec-header">
+                        <div class="rec-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <span class="rec-badge tip">Pro Tip</span>
+                    </div>
+                    <div class="rec-content">
+                        <h4>Early ITR Filing Benefits</h4>
+                        <p>You usually file your ITR in July. Consider filing earlier this year to get faster refund processing, more time for corrections, and peace of mind.  Start gathering documents now.</p>
+                        <div class="rec-details">
+                            <div class="rec-detail">
+                                <i class="fas fa-rocket"></i>
+                                <span>Faster refunds</span>
+                            </div>
+                            <div class="rec-detail">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Avoid last-minute stress</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rec-actions">
+                        <button class="btn-primary">Start Preparation</button>
+                        <button class="btn-secondary">Find CA</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended CAs Section -->
+            <section class="featured-section">
+                <div class="featured-header">
+                    <h3><i class="fas fa-star"></i> Recommended CAs for You</h3>
+                    <a href="{{ url_for('main.find_ca') }}" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="featured-cas">
+                    <div class="featured-ca-card">
+                        <div class="featured-ca-avatar">RS</div>
+                        <h4>CA Rajesh Sharma</h4>
+                        <p class="speciality">Tax Planning • GST Expert</p>
+                        <div class="featured-ca-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.9 (89 reviews)</span>
+                        </div>
+                        <button class="btn-primary">View Profile</button>
+                    </div>
+
+                    <div class="featured-ca-card">
+                        <div class="featured-ca-avatar">PM</div>
+                        <h4>CA Priya Mehta</h4>
+                        <p class="speciality">Investment Advisory • NRI Tax</p>
+                        <div class="featured-ca-rating">
+                            <i class="fas fa-star"></i>
+                            <span>5.0 (156 reviews)</span>
+                        </div>
+                        <button class="btn-primary">View Profile</button>
+                    </div>
+
+                    <div class="featured-ca-card">
+                        <div class="featured-ca-avatar">AK</div>
+                        <h4>CA Amit Kumar</h4>
+                        <p class="speciality">Startup Compliance • Audit</p>
+                        <div class="featured-ca-rating">
+                            <i class="fas fa-star"></i>
+                            <span>4.8 (52 reviews)</span>
+                        </div>
+                        <button class="btn-primary">View Profile</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Financial Insights -->
+            <section class="insights-section">
+                <div class="insights-header">
+                    <h3><i class="fas fa-chart-pie"></i> Your Financial Insights</h3>
+                </div>
+
+                <div class="insights-grid">
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>GST Compliance:  On Track</h4>
+                            <p>All your GST returns have been filed on time for the last 6 months. Keep up the good work! </p>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Tax Efficiency Score:  78%</h4>
+                            <p>You're utilizing most available deductions.  A few optimizations could improve your score further.</p>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Document Readiness: 85%</h4>
+                            <p>Most documents for FY 2024-25 filing are ready. Upload your investment proofs to complete. </p>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Next Deadline: Dec 15, 2024</h4>
+                            <p>Advance tax third installment is due.  We'll remind you 3 days before. </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        function toggleSidebar() {
+            document. getElementById('sidebar').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
