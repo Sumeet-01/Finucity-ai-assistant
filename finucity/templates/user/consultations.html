@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,13 +6,78 @@
     <title>My Consultations | Finucity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display: wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-primary: #0a0c0a;
+            --bg-card: #141a14;
+            --bg-elevated: #1a221a;
+            --bg-hover: rgba(251, 160, 2, 0.08);
+            --accent-gold: #fba002;
+            --accent-gold-soft: rgba(251, 160, 2, 0.15);
+            --accent-green: #22c55e;
+            --accent-green-light: #4ade80;
+            --text-primary: #ffffff;
+            --text-secondary: #a1b0a1;
+            --text-muted: #6b7a6b;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --success: #22c55e;
+            --success-soft: rgba(34, 197, 94, 0.15);
+            --warning: #f59e0b;
+            --warning-soft: rgba(245, 158, 11, 0.15);
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles (if not included in partial) */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
         .consultations-page {
-            padding:  32px;
+            padding: 32px;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .page-header {
@@ -24,83 +89,154 @@
 
         .page-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
             color: var(--text-secondary);
             font-size: 15px;
+            max-width: 600px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            color: #0a0c0a;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(251, 160, 2, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
         }
 
         .filter-tabs {
-            display:  flex;
+            display: flex;
             gap: 8px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             background: var(--bg-card);
-            padding:  6px;
+            padding: 6px;
             border-radius: var(--border-radius);
             width: fit-content;
+            border: 1px solid var(--border-primary);
         }
 
         .filter-tab {
-            padding:  10px 20px;
+            padding: 10px 20px;
             background: transparent;
-            border:  none;
+            border: none;
             border-radius: 8px;
             color: var(--text-secondary);
             font-size: 13px;
             font-weight: 500;
-            cursor:  pointer;
+            cursor: pointer;
             transition: all var(--transition);
+            display: flex;
+            align-items: center;
         }
 
-        .filter-tab: hover {
+        .filter-tab:hover {
             color: var(--text-primary);
         }
 
         .filter-tab.active {
             background: var(--accent-gold-soft);
-            color:  var(--accent-gold);
+            color: var(--accent-gold);
         }
 
-        .filter-tab . count {
+        .filter-tab .count {
             margin-left: 6px;
             padding: 2px 8px;
             background: var(--bg-elevated);
             border-radius: 10px;
             font-size: 11px;
+            font-weight: 600;
         }
 
-        .filter-tab.active . count {
+        .filter-tab.active .count {
             background: var(--accent-gold);
             color: #0a0c0a;
         }
 
         .consultations-list {
-            display:  flex;
+            display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 24px;
         }
 
         .consultation-card-lg {
             background: var(--bg-card);
-            border:  1px solid var(--border-primary);
+            border: 1px solid var(--border-primary);
             border-radius: var(--border-radius-lg);
             padding: 28px;
             transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
         .consultation-card-lg:hover {
-            border-color: var(--border-accent);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(251, 160, 2, 0.1);
         }
 
-        .consultation-card-lg. active {
+        .consultation-card-lg.active {
             border-left: 4px solid var(--accent-gold);
         }
 
+        .consultation-card-lg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .consultation-card-lg:hover::before {
+            opacity: 1;
+        }
+
         .card-lg-header {
-            display:  flex;
+            display: flex;
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 20px;
@@ -109,6 +245,7 @@
         .ca-profile {
             display: flex;
             gap: 16px;
+            align-items: center;
         }
 
         .ca-avatar-lg {
@@ -119,28 +256,46 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size:  22px;
+            font-size: 22px;
             font-weight: 700;
-            color:  var(--text-primary);
+            color: var(--text-primary);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .ca-avatar-lg::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border: 3px solid var(--bg-card);
+            border-radius: 50%;
         }
 
         .ca-info-lg h3 {
             font-size: 18px;
             margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .ca-meta {
-            display:  flex;
+            display: flex;
             align-items: center;
             gap: 16px;
             font-size: 13px;
             color: var(--text-muted);
+            flex-wrap: wrap;
         }
 
         .ca-meta span {
             display: flex;
             align-items: center;
-            gap:  6px;
+            gap: 6px;
         }
 
         .status-badge {
@@ -148,6 +303,9 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .status-badge.in-progress {
@@ -156,20 +314,20 @@
         }
 
         .status-badge.waiting {
-            background:  var(--warning-soft);
+            background: var(--warning-soft);
             color: var(--warning);
         }
 
-        .status-badge. completed {
+        .status-badge.completed {
             background: var(--success-soft);
             color: var(--success);
         }
 
         .card-lg-body {
-            display:  grid;
+            display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 32px;
-            padding: 20px 0;
+            padding: 24px 0;
             border-top: 1px solid var(--border-soft);
             border-bottom: 1px solid var(--border-soft);
             margin-bottom: 20px;
@@ -179,29 +337,33 @@
             font-size: 14px;
             color: var(--text-muted);
             margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .service-name {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap:  10px;
+            gap: 10px;
         }
 
         .service-name i {
-            color:  var(--accent-gold);
+            color: var(--accent-gold);
+            font-size: 16px;
         }
 
         .service-description {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.6;
+            max-width: 600px;
         }
 
         .consultation-timeline {
-            display:  flex;
+            display: flex;
             flex-direction: column;
             gap: 12px;
         }
@@ -209,79 +371,267 @@
         .timeline-item {
             display: flex;
             align-items: center;
-            gap:  12px;
+            gap: 12px;
             font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(4px);
         }
 
         .timeline-icon {
-            width:  32px;
+            width: 32px;
             height: 32px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size:  12px;
+            font-size: 12px;
+            flex-shrink: 0;
         }
 
-        .timeline-icon. done {
-            background:  var(--success-soft);
+        .timeline-icon.done {
+            background: var(--success-soft);
             color: var(--success);
         }
 
         .timeline-icon.current {
-            background:  var(--accent-gold-soft);
+            background: var(--accent-gold-soft);
             color: var(--accent-gold);
+            animation: pulse 2s infinite;
         }
 
         .timeline-icon.pending {
-            background:  var(--bg-elevated);
+            background: var(--bg-elevated);
             color: var(--text-muted);
         }
 
         .card-lg-footer {
             display: flex;
-            justify-content:  space-between;
-            align-items:  center;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
         .last-activity {
             font-size: 13px;
             color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-actions {
-            display:  flex;
+            display: flex;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .card-actions . btn-primary,
-        .card-actions .btn-secondary {
-            padding:  10px 20px;
-            font-size: 13px;
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            border: none;
+            color: black;
+            font-size: 20px;
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.5);
+            cursor: pointer;
+            z-index: 90;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 1200px) {
+            .consultations-page {
+                padding: 24px;
+            }
         }
 
         @media (max-width: 900px) {
+            .sidebar {
+                left: -280px;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
             .card-lg-body {
-                grid-template-columns:  1fr;
+                grid-template-columns: 1fr;
+                gap: 24px;
             }
 
             .filter-tabs {
                 flex-wrap: wrap;
+                width: 100%;
             }
+
+            .filter-tab {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .consultations-page {
+                padding: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .card-lg-header {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .status-badge {
+                align-self: flex-start;
+            }
+
+            .ca-profile {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .ca-meta {
+                gap: 12px;
+            }
+
+            .card-lg-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .card-actions .btn-primary,
+            .card-actions .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body>
-    {% include 'user/partials/sidebar.html' %}
+    <!-- Sidebar (if not using partial) -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo" style="display: flex; gap: 12px; text-decoration: none; color: white; align-items: center;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-gold), #e69200); color: black; font-size: 20px; box-shadow: 0 10px 30px rgba(251, 160, 2, 0.4);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 22px; font-weight: 800;">Finucity</h1>
+                    <span style="color: var(--text-muted); font-size: 12px; display: block;">Financial Companion</span>
+                </div>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; margin-top: 24px;">
+            <a href="/user/dashboard" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="/user/find-ca" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-user-tie"></i> Find CA
+            </a>
+            <a href="/user/documents" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-file-alt"></i> Documents
+                <span style="margin-left: auto; background: var(--accent-gold-soft); color: var(--accent-gold); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">12</span>
+            </a>
+            <a href="/user/messages" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-comments"></i> Messages
+                <span style="margin-left: auto; background: var(--accent-gold-soft); color: var(--accent-gold); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">3</span>
+            </a>
+            <a href="/user/consultations" class="nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; background: var(--accent-gold-soft); color: white; text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px; position: relative;">
+                <i class="fas fa-calendar-check"></i> Consultations
+            </a>
+            <a href="/user/settings" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+    </aside>
 
     <main class="main-content">
-        {% include 'user/partials/header.html' %}
+        <!-- Header (if not using partial) -->
+        <div style="background: var(--bg-card); border-bottom: 1px solid var(--border-primary); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="font-size: 18px; font-weight: 600;">Welcome back, <span style="color: var(--accent-gold);">John Doe</span></h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Track and manage your consultations</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="position: relative;">
+                    <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary); cursor: pointer;"></i>
+                    <span style="position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--accent-gold); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; font-weight: bold;">3</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 600;">JD</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 600;">John Doe</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Premium User</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="consultations-page">
             <div class="page-header">
                 <div>
                     <h1>My Consultations</h1>
-                    <p>Track and manage all your ongoing and past consultations with verified CAs.</p>
+                    <p>Track and manage all your ongoing and past consultations with verified Chartered Accountants.</p>
                 </div>
                 <a href="{{ url_for('main.find_ca') }}" class="btn-primary">
                     <i class="fas fa-plus"></i> New Consultation
@@ -305,12 +655,15 @@
                                 <h3>CA Rajesh Sharma</h3>
                                 <div class="ca-meta">
                                     <span><i class="fas fa-check-circle" style="color: var(--success);"></i> Verified</span>
-                                    <span><i class="fas fa-star" style="color:  var(--accent-gold);"></i> 4.9</span>
+                                    <span><i class="fas fa-star" style="color: var(--accent-gold);"></i> 4.9 (128 reviews)</span>
                                     <span><i class="fas fa-map-marker-alt"></i> Mumbai</span>
                                 </div>
                             </div>
                         </div>
-                        <span class="status-badge in-progress">In Progress</span>
+                        <span class="status-badge in-progress">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            In Progress
+                        </span>
                     </div>
 
                     <div class="card-lg-body">
@@ -321,11 +674,11 @@
                                 GST Compliance & Monthly Filing
                             </div>
                             <p class="service-description">
-                                Comprehensive GST compliance services including monthly GSTR-1 and GSTR-3B filing, ITC reconciliation, and e-way bill management for e-commerce business operations.
+                                Comprehensive GST compliance services including monthly GSTR-1 and GSTR-3B filing, ITC reconciliation, and e-way bill management for e-commerce business operations. Includes advisory on GST optimization strategies.
                             </p>
                         </div>
                         <div class="consultation-timeline">
-                            <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Progress</h4>
+                            <h4>Progress Timeline</h4>
                             <div class="timeline-item">
                                 <div class="timeline-icon done"><i class="fas fa-check"></i></div>
                                 <span>Request Accepted</span>
@@ -335,18 +688,21 @@
                                 <span>Documents Reviewed</span>
                             </div>
                             <div class="timeline-item">
-                                <div class="timeline-icon current"><i class="fas fa-spinner"></i></div>
+                                <div class="timeline-icon current"><i class="fas fa-spinner fa-spin"></i></div>
                                 <span>Filing in Progress</span>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-icon pending"><i class="fas fa-circle"></i></div>
-                                <span>Completion</span>
+                                <span>Completion & Review</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-lg-footer">
-                        <span class="last-activity"><i class="fas fa-clock"></i> Last activity: 2 hours ago</span>
+                        <span class="last-activity">
+                            <i class="fas fa-clock"></i> 
+                            Last activity: 2 hours ago
+                        </span>
                         <div class="card-actions">
                             <button class="btn-secondary"><i class="fas fa-file-alt"></i> Documents</button>
                             <button class="btn-primary"><i class="fas fa-comment"></i> Chat with CA</button>
@@ -363,12 +719,15 @@
                                 <h3>CA Priya Mehta</h3>
                                 <div class="ca-meta">
                                     <span><i class="fas fa-check-circle" style="color: var(--success);"></i> Verified</span>
-                                    <span><i class="fas fa-star" style="color: var(--accent-gold);"></i> 5.0</span>
+                                    <span><i class="fas fa-star" style="color: var(--accent-gold);"></i> 5.0 (96 reviews)</span>
                                     <span><i class="fas fa-map-marker-alt"></i> Delhi</span>
                                 </div>
                             </div>
                         </div>
-                        <span class="status-badge waiting">Awaiting Response</span>
+                        <span class="status-badge waiting">
+                            <i class="fas fa-hourglass-half"></i>
+                            Awaiting Response
+                        </span>
                     </div>
 
                     <div class="card-lg-body">
@@ -379,11 +738,11 @@
                                 Tax Planning FY 2024-25
                             </div>
                             <p class="service-description">
-                                Comprehensive tax planning consultation to optimize tax liability for the current financial year, including investment recommendations and salary structure optimization.
+                                Comprehensive tax planning consultation to optimize tax liability for the current financial year, including investment recommendations, salary structure optimization, and compliance planning for ₹15L+ annual income.
                             </p>
                         </div>
                         <div class="consultation-timeline">
-                            <h4 style="font-size: 14px; color:  var(--text-muted); margin-bottom: 8px;">Progress</h4>
+                            <h4>Progress Timeline</h4>
                             <div class="timeline-item">
                                 <div class="timeline-icon done"><i class="fas fa-check"></i></div>
                                 <span>Request Sent</span>
@@ -394,13 +753,20 @@
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-icon pending"><i class="fas fa-circle"></i></div>
-                                <span>Consultation</span>
+                                <span>Initial Consultation</span>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon pending"><i class="fas fa-circle"></i></div>
+                                <span>Plan Delivery</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-lg-footer">
-                        <span class="last-activity"><i class="fas fa-clock"></i> Request sent:  Yesterday</span>
+                        <span class="last-activity">
+                            <i class="fas fa-clock"></i> 
+                            Request sent: Yesterday, 3:45 PM
+                        </span>
                         <div class="card-actions">
                             <button class="btn-secondary"><i class="fas fa-edit"></i> Edit Request</button>
                             <button class="btn-secondary"><i class="fas fa-times"></i> Cancel</button>
@@ -409,7 +775,7 @@
                 </div>
 
                 <!-- Completed Consultation -->
-                <div class="consultation-card-lg" style="opacity: 0.8;">
+                <div class="consultation-card-lg">
                     <div class="card-lg-header">
                         <div class="ca-profile">
                             <div class="ca-avatar-lg">AK</div>
@@ -417,12 +783,15 @@
                                 <h3>CA Amit Kumar</h3>
                                 <div class="ca-meta">
                                     <span><i class="fas fa-check-circle" style="color: var(--success);"></i> Verified</span>
-                                    <span><i class="fas fa-star" style="color: var(--accent-gold);"></i> 4.8</span>
+                                    <span><i class="fas fa-star" style="color: var(--accent-gold);"></i> 4.8 (214 reviews)</span>
                                     <span><i class="fas fa-map-marker-alt"></i> Bangalore</span>
                                 </div>
                             </div>
                         </div>
-                        <span class="status-badge completed">Completed</span>
+                        <span class="status-badge completed">
+                            <i class="fas fa-check-circle"></i>
+                            Completed
+                        </span>
                     </div>
 
                     <div class="card-lg-body">
@@ -433,28 +802,35 @@
                                 ITR Filing FY 2023-24
                             </div>
                             <p class="service-description">
-                                Income tax return preparation and e-filing for FY 2023-24 including salary income, capital gains from mutual funds, and rental income.
+                                Income tax return preparation and e-filing for FY 2023-24 including salary income, capital gains from mutual funds and stocks, rental income, and deductions under 80C, 80D. Filed with ₹42,500 tax refund.
                             </p>
                         </div>
                         <div class="consultation-timeline">
-                            <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 8px;">Completed</h4>
+                            <h4>Completion Summary</h4>
                             <div class="timeline-item">
                                 <div class="timeline-icon done"><i class="fas fa-check"></i></div>
-                                <span>All steps completed</span>
+                                <span>Documents Collected</span>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-icon done"><i class="fas fa-check"></i></div>
-                                <span>ITR filed successfully</span>
+                                <span>ITR Prepared & Reviewed</span>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-icon done"><i class="fas fa-check"></i></div>
-                                <span>Acknowledgement received</span>
+                                <span>E-filed Successfully</span>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon done"><i class="fas fa-check"></i></div>
+                                <span>Acknowledgement Received</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-lg-footer">
-                        <span class="last-activity"><i class="fas fa-check-circle" style="color: var(--success);"></i> Completed: December 10, 2024</span>
+                        <span class="last-activity">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            Completed: December 10, 2024 • Refund: ₹42,500
+                        </span>
                         <div class="card-actions">
                             <button class="btn-secondary"><i class="fas fa-download"></i> Download Documents</button>
                             <button class="btn-primary"><i class="fas fa-star"></i> Leave Review</button>
@@ -474,11 +850,44 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // Filter tabs
+        // Filter tabs functionality
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList. remove('active'));
-                this.classList. add('active');
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Here you would filter the consultation cards based on the selected filter
+                // For now, just show all cards
+                document.querySelectorAll('.consultation-card-lg').forEach(card => {
+                    card.style.display = 'block';
+                });
+            });
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.consultation-card-lg').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Button actions
+        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.textContent.includes('Chat with CA')) {
+                    alert('Opening chat with CA...');
+                    e.preventDefault();
+                } else if (this.textContent.includes('Documents')) {
+                    alert('Opening documents...');
+                    e.preventDefault();
+                } else if (this.textContent.includes('Leave Review')) {
+                    alert('Opening review form...');
+                    e.preventDefault();
+                }
             });
         });
     </script>

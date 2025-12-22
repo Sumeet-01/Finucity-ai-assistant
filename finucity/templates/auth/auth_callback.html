@@ -7,14 +7,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2? family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         : root {
             --bg:  #0a0d0a;
             --card:  #131814;
-            --text:  #f0f2f0;
+            --text: #f0f2f0;
             --text-muted: #6b7a6b;
-            --accent:  #FBA002;
+            --accent: #FBA002;
             --error: #f87171;
             --success: #4ade80;
             --border: rgba(255, 255, 255, 0.08);
@@ -85,20 +85,20 @@
             display: none;
             align-items: center;
             justify-content: center;
-            margin:  0 auto 28px;
+            margin: 0 auto 28px;
             font-size: 1.8rem;
             color: var(--success);
         }
 
-        .icon-success. visible { display: flex; }
+        .icon-success.visible { display: flex; }
 
         . icon-error {
-            width:  56px;
+            width: 56px;
             height: 56px;
             background: rgba(248, 113, 113, 0.15);
-            border-radius: 50%;
-            display:  none;
-            align-items: center;
+            border-radius:  50%;
+            display: none;
+            align-items:  center;
             justify-content: center;
             margin: 0 auto 28px;
             font-size: 1.8rem;
@@ -116,12 +116,12 @@
         p {
             color: var(--text-muted);
             font-size: 0.95rem;
-            line-height:  1.6;
+            line-height: 1.6;
         }
 
         .error-box {
             background:  rgba(248, 113, 113, 0.1);
-            border: 1px solid rgba(248, 113, 113, 0.3);
+            border:  1px solid rgba(248, 113, 113, 0.3);
             border-radius: 12px;
             padding: 16px;
             margin-top: 24px;
@@ -137,13 +137,13 @@
         }
 
         .btn {
-            display: inline-flex;
+            display:  inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             padding: 12px 24px;
-            background: transparent;
-            border: 1px solid var(--border);
+            background:  transparent;
+            border:  1px solid var(--border);
             border-radius: 10px;
             color: var(--text);
             font-size: 0.9rem;
@@ -159,21 +159,21 @@
         }
 
         .progress-steps {
-            display:  flex;
-            justify-content: center;
+            display: flex;
+            justify-content:  center;
             gap:  8px;
             margin-top: 32px;
         }
 
         .step-dot {
-            width:  8px;
+            width: 8px;
             height: 8px;
             border-radius: 50%;
             background: var(--border);
             transition: all 0.3s ease;
         }
 
-        . step-dot.active {
+        .step-dot.active {
             background: var(--accent);
             width: 24px;
             border-radius: 4px;
@@ -197,7 +197,7 @@
 
             <div class="error-box" id="errorBox">
                 <p id="errorText"></p>
-                <a href="{{ url_for('auth.login') }}" class="btn">
+                <a href="/auth/login" class="btn">
                     <i class="fas fa-arrow-left"></i> Try again
                 </a>
             </div>
@@ -211,94 +211,170 @@
     </div>
 
     <script>
-        const supabaseClient = window.supabase. createClient("{{ SUPABASE_URL }}", "{{ SUPABASE_ANON_KEY }}");
+        // Get Supabase credentials from Jinja2 template
+        var SUPABASE_URL = "{{ SUPABASE_URL | default('', true) }}";
+        var SUPABASE_ANON_KEY = "{{ SUPABASE_ANON_KEY | default('', true) }}";
+        
+        // Get role from URL params
+        var urlParams = new URLSearchParams(window.location.search);
+        var requestedRole = urlParams.get('role') || 'user';
+
+        // Check if credential is valid
+        function isValidCredential(val) {
+            if (!val || val === '') return false;
+            if (val.indexOf('{') !== -1 || val.indexOf('}') !== -1) return false;
+            return true;
+        }
+
+        // Initialize Supabase client
+        var supabaseClient = null;
+        if (isValidCredential(SUPABASE_URL) && isValidCredential(SUPABASE_ANON_KEY)) {
+            try {
+                supabaseClient = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } catch (e) {
+                console.error('Failed to initialize Supabase:', e);
+            }
+        }
 
         function updateStep(stepNum) {
-            for (let i = 1; i <= 3; i++) {
-                const dot = document.getElementById('step' + i);
-                dot.classList.remove('active', 'completed');
+            for (var i = 1; i <= 3; i++) {
+                var dot = document.getElementById('step' + i);
+                dot. classList.remove('active', 'completed');
                 if (i < stepNum) {
-                    dot.classList.add('completed');
+                    dot. classList.add('completed');
                 } else if (i === stepNum) {
-                    dot.classList.add('active');
+                    dot.classList. add('active');
                 }
             }
         }
 
         function showError(message) {
             document.getElementById('spinner').classList.add('hidden');
-            document.getElementById('iconError').classList.add('visible');
-            document.getElementById('statusTitle').textContent = 'Something went wrong';
+            document. getElementById('iconError').classList.add('visible');
+            document. getElementById('statusTitle').textContent = 'Something went wrong';
             document.getElementById('statusText').style.display = 'none';
             document. getElementById('progressSteps').style.display = 'none';
             document. getElementById('errorBox').classList.add('visible');
-            document.getElementById('errorText').textContent = message;
+            document. getElementById('errorText').textContent = message;
         }
 
         function showSuccess() {
-            document. getElementById('spinner').classList.add('hidden');
+            document.getElementById('spinner').classList.add('hidden');
             document.getElementById('iconSuccess').classList.add('visible');
             document.getElementById('statusTitle').textContent = 'Welcome back! ';
             document. getElementById('statusText').textContent = 'Redirecting you now...';
             updateStep(3);
         }
 
-        async function run() {
-            try {
-                // Step 1: Get session
-                updateStep(1);
-                document.getElementById('statusText').textContent = 'Retrieving session...';
-
-                const { data:  { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (error) throw error;
-                if (!session) {
-                    showError('No session found.  Please try logging in again.');
-                    return;
-                }
-
-                // Step 2: Bridge to Flask
-                updateStep(2);
-                document.getElementById('statusText').textContent = 'Creating your session...';
-
-                const token = session.access_token;
-
-                const res = await fetch('/auth/supabase-login', {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                if (! res.ok) {
-                    const data = await res.json();
-                    throw new Error(data. detail || data.error || 'Login failed');
-                }
-
-                const userData = await res.json();
-
-                // Step 3:  Redirect
-                updateStep(3);
-                showSuccess();
-
-                // Small delay for visual feedback
-                await new Promise(resolve => setTimeout(resolve, 800));
-
-                // Redirect based on role
-                if (userData.role === 'ca' || userData.role === 'admin') {
-                    window. location.href = '/ca/dashboard';
-                } else if (userData.role === 'ca_pending') {
-                    window.location.href = '/auth/ca-pending';
-                } else {
-                    window.location.href = '/';
-                }
-
-            } catch (error) {
-                console.error('Auth callback error:', error);
-                showError(error.message || 'An unexpected error occurred.');
+        function redirectUser(userData) {
+            var redirectUrl = userData.redirect_url;
+            
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else if (userData.role === 'ca' || userData.role === 'admin') {
+                window.location.href = '/ca/dashboard';
+            } else if (userData.role === 'ca_pending') {
+                window.location.href = '/auth/ca-pending';
+            } else if (requestedRole === 'ca' && userData.role === 'user') {
+                // User selected CA but isn't verified - redirect to apply
+                window.location.href = '/auth/ca-apply';
+            } else {
+                window.location.href = '/user/dashboard';
             }
         }
 
+        function run() {
+            // Check if Supabase is available
+            if (!supabaseClient) {
+                showError('Authentication service not configured. Please try again later.');
+                return;
+            }
+
+            // Step 1: Get session
+            updateStep(1);
+            document.getElementById('statusText').textContent = 'Retrieving session...';
+
+            supabaseClient.auth.getSession()
+                .then(function(result) {
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+                    var session = result.data.session;
+
+                    // If no session, try to get from URL hash (OAuth callback)
+                    if (!session) {
+                        var hashParams = new URLSearchParams(window.location.hash. substring(1));
+                        var accessToken = hashParams. get('access_token');
+                        var refreshToken = hashParams.get('refresh_token');
+
+                        if (! accessToken) {
+                            throw new Error('No session found. Please try logging in again.');
+                        }
+
+                        // Set session from hash
+                        return supabaseClient. auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: refreshToken || ''
+                        }).then(function(setResult) {
+                            if (setResult. error) {
+                                throw setResult. error;
+                            }
+                            return setResult.data. session;
+                        });
+                    }
+
+                    return session;
+                })
+                .then(function(session) {
+                    if (!session) {
+                        throw new Error('Failed to establish session');
+                    }
+
+                    // Step 2: Bridge to Flask
+                    updateStep(2);
+                    document.getElementById('statusText').textContent = 'Creating your session...';
+
+                    var token = session.access_token;
+
+                    return fetch('/auth/supabase-login', {
+                        method:  'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                            'Content-Type': 'application/json'
+                        },
+                        body:  JSON.stringify({ role: requestedRole })
+                    });
+                })
+                .then(function(response) {
+                    return response.json().then(function(data) {
+                        return { ok: response.ok, data: data };
+                    });
+                })
+                .then(function(result) {
+                    if (!result.ok) {
+                        throw new Error(result.data. detail || result.data.error || 'Login failed');
+                    }
+
+                    // Step 3: Redirect
+                    updateStep(3);
+                    showSuccess();
+
+                    // Small delay for visual feedback
+                    setTimeout(function() {
+                        redirectUser(result.data);
+                    }, 800);
+                })
+                .catch(function(error) {
+                    console.error('Auth callback error:', error);
+                    showError(error.message || 'An unexpected error occurred.');
+                });
+        }
+
         // Run on page load
-        run();
+        document.addEventListener('DOMContentLoaded', function() {
+            run();
+        });
     </script>
 </body>
 </html>

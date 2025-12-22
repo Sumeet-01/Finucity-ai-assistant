@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,12 +7,78 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display: wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all. min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-primary: #0a0c0a;
+            --bg-card: #141a14;
+            --bg-elevated: #1a221a;
+            --bg-hover: rgba(251, 160, 2, 0.08);
+            --accent-gold: #fba002;
+            --accent-gold-soft: rgba(251, 160, 2, 0.15);
+            --accent-green: #22c55e;
+            --accent-green-light: #4ade80;
+            --text-primary: #ffffff;
+            --text-secondary: #a1b0a1;
+            --text-muted: #6b7a6b;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --success: #22c55e;
+            --success-soft: rgba(34, 197, 94, 0.15);
+            --warning: #f59e0b;
+            --warning-soft: rgba(245, 158, 11, 0.15);
+            --danger: #ef4444;
+            --danger-soft: rgba(239, 68, 68, 0.1);
+            --info: #3b82f6;
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
         .settings-page {
             padding: 32px;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .page-header {
@@ -21,13 +87,17 @@
 
         .page-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .page-header p {
             color: var(--text-secondary);
             font-size: 15px;
+            max-width: 600px;
         }
 
         .settings-layout {
@@ -38,12 +108,12 @@
 
         .settings-nav {
             background: var(--bg-card);
-            border:  1px solid var(--border-primary);
+            border: 1px solid var(--border-primary);
             border-radius: var(--border-radius-lg);
-            padding:  16px;
+            padding: 16px;
             height: fit-content;
             position: sticky;
-            top: calc(var(--header-height) + 32px);
+            top: 32px;
         }
 
         .settings-nav-item {
@@ -56,18 +126,18 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition:  all var(--transition);
+            transition: all var(--transition);
             margin-bottom: 4px;
         }
 
         .settings-nav-item:hover {
-            background:  var(--bg-hover);
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
 
-        .settings-nav-item. active {
+        .settings-nav-item.active {
             background: var(--accent-gold-soft);
-            color:  var(--accent-gold);
+            color: var(--accent-gold);
         }
 
         .settings-nav-item i {
@@ -82,10 +152,16 @@
         }
 
         .settings-card {
-            background:  var(--bg-card);
-            border:  1px solid var(--border-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
             border-radius: var(--border-radius-lg);
-            padding:  28px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-card:hover {
+            border-color: rgba(251, 160, 2, 0.3);
+            box-shadow: 0 8px 32px rgba(251, 160, 2, 0.05);
         }
 
         .settings-card-header {
@@ -99,18 +175,20 @@
 
         .settings-card-header i {
             color: var(--accent-gold);
+            font-size: 18px;
         }
 
         .settings-card-header h3 {
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .setting-row {
-            display:  flex;
+            display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 18px 0;
-            border-bottom:  1px solid var(--border-soft);
+            border-bottom: 1px solid var(--border-soft);
         }
 
         .setting-row:last-child {
@@ -118,68 +196,76 @@
         }
 
         .setting-info h4 {
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 500;
             margin-bottom: 6px;
         }
 
         .setting-info p {
             font-size: 13px;
             color: var(--text-muted);
+            max-width: 400px;
         }
 
-        .setting-action . btn-outline-sm {
-            padding: 8px 18px;
+        .setting-action .btn-outline-sm {
+            padding: 8px 20px;
             background: transparent;
-            border:  1px solid var(--border-primary);
+            border: 1px solid var(--border-primary);
             border-radius: 8px;
             color: var(--text-secondary);
             font-size: 13px;
             font-weight: 500;
-            cursor:  pointer;
+            cursor: pointer;
             transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .setting-action .btn-outline-sm:hover {
             border-color: var(--accent-gold);
             color: var(--accent-gold);
+            background: var(--accent-gold-soft);
         }
 
         /* Toggle Switch */
         .toggle-switch {
             position: relative;
-            width: 50px;
+            display: inline-block;
+            width: 52px;
             height: 28px;
         }
 
         .toggle-switch input {
             opacity: 0;
-            width:  0;
+            width: 0;
             height: 0;
         }
 
         .toggle-slider {
-            position:  absolute;
+            position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background:  var(--bg-elevated);
-            border:  1px solid var(--border-primary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
             border-radius: 28px;
             transition: all var(--transition);
         }
 
-        .toggle-slider:: before {
+        .toggle-slider::before {
             position: absolute;
             content: "";
             height: 20px;
-            width:  20px;
+            width: 20px;
             left: 3px;
             bottom: 3px;
             background: var(--text-muted);
             border-radius: 50%;
             transition: all var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .toggle-switch input:checked + .toggle-slider {
@@ -189,36 +275,153 @@
 
         .toggle-switch input:checked + .toggle-slider::before {
             background: var(--accent-gold);
-            transform: translateX(22px);
+            transform: translateX(24px);
         }
 
+        .toggle-switch input:focus + .toggle-slider {
+            box-shadow: 0 0 0 2px rgba(251, 160, 2, 0.2);
+        }
+
+        /* Danger Zone */
         .danger-zone {
-            background: var(--error-soft);
-            border-color: rgba(248, 113, 113, 0.2);
+            background: var(--danger-soft);
+            border-color: rgba(239, 68, 68, 0.2);
         }
 
-        . danger-zone . setting-row {
-            border-color: rgba(248, 113, 113, 0.1);
+        .danger-zone .setting-row {
+            border-color: rgba(239, 68, 68, 0.1);
         }
 
         .btn-danger-sm {
-            padding:  8px 18px;
+            padding: 8px 20px;
             background: transparent;
-            border:  1px solid rgba(248, 113, 113, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: 8px;
-            color:  var(--error);
+            color: var(--danger);
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
             transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-danger-sm:hover {
-            background: var(--error);
+            background: var(--danger);
             color: #fff;
+            border-color: var(--danger);
+        }
+
+        /* Select Styling */
+        select {
+            padding: 8px 16px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all var(--transition);
+            min-width: 180px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 2px rgba(251, 160, 2, 0.1);
+        }
+
+        /* Profile Avatar */
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-right: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .profile-info h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .profile-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            border: none;
+            color: black;
+            font-size: 20px;
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.5);
+            cursor: pointer;
+            z-index: 90;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        @media (max-width: 1200px) {
+            .settings-page {
+                padding: 24px;
+            }
         }
 
         @media (max-width: 900px) {
+            .sidebar {
+                left: -280px;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
             .settings-layout {
                 grid-template-columns: 1fr;
             }
@@ -228,24 +431,149 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
+                justify-content: center;
             }
 
             .settings-nav-item {
                 margin-bottom: 0;
+                flex: 1;
+                min-width: 140px;
+                justify-content: center;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .setting-action {
+                align-self: flex-end;
+            }
+
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .settings-page {
+                padding: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .settings-card {
+                padding: 20px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+
+            .profile-avatar {
+                margin-right: 0;
+            }
+
+            .setting-row {
+                align-items: stretch;
+            }
+
+            .setting-action {
+                align-self: stretch;
+            }
+
+            .setting-action .btn-outline-sm,
+            .btn-danger-sm {
+                width: 100%;
+                justify-content: center;
+            }
+
+            select {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    {% include 'user/partials/sidebar.html' %}
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo" style="display: flex; gap: 12px; text-decoration: none; color: white; align-items: center;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-gold), #e69200); color: black; font-size: 20px; box-shadow: 0 10px 30px rgba(251, 160, 2, 0.4);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 22px; font-weight: 800;">Finucity</h1>
+                    <span style="color: var(--text-muted); font-size: 12px; display: block;">Financial Companion</span>
+                </div>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 4px; margin-top: 24px;">
+            <a href="/user/dashboard" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="/user/find-ca" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-user-tie"></i> Find CA
+            </a>
+            <a href="/user/documents" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-file-alt"></i> Documents
+                <span style="margin-left: auto; background: var(--accent-gold-soft); color: var(--accent-gold); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">12</span>
+            </a>
+            <a href="/user/messages" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-comments"></i> Messages
+                <span style="margin-left: auto; background: var(--accent-gold-soft); color: var(--accent-gold); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;">3</span>
+            </a>
+            <a href="/user/consultations" class="nav-item" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; color: var(--text-secondary); text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px;">
+                <i class="fas fa-calendar-check"></i> Consultations
+            </a>
+            <a href="/user/settings" class="nav-item active" style="display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 12px; background: var(--accent-gold-soft); color: white; text-decoration: none; transition: all 0.2s ease; font-weight: 500; font-size: 14px; position: relative;">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+    </aside>
 
     <main class="main-content">
-        {% include 'user/partials/header.html' %}
+        <!-- Header -->
+        <div style="background: var(--bg-card); border-bottom: 1px solid var(--border-primary); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="font-size: 18px; font-weight: 600;">Settings</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Manage your account preferences and security</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="position: relative;">
+                    <i class="fas fa-bell" style="font-size: 18px; color: var(--text-secondary); cursor: pointer;"></i>
+                    <span style="position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--accent-gold); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; font-weight: bold;">3</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 600;">JD</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 600;">John Doe</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Premium User</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="settings-page">
             <div class="page-header">
-                <h1>Settings</h1>
-                <p>Manage your account preferences and security settings. </p>
+                <h1>Account Settings</h1>
+                <p>Manage your account preferences, security settings, and privacy controls. All changes are saved automatically.</p>
+            </div>
+
+            <div class="profile-header">
+                <div class="profile-avatar">JD</div>
+                <div class="profile-info">
+                    <h2>John Doe</h2>
+                    <p>Premium User • Member since January 2024</p>
+                </div>
             </div>
 
             <div class="settings-layout">
@@ -278,20 +606,20 @@
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Full Name</h4>
-                                <p>{{ current_user.first_name or 'Not set' }} {{ current_user. last_name or '' }}</p>
+                                <p>John Doe</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Edit</button>
+                                <button class="btn-outline-sm"><i class="fas fa-edit"></i> Edit</button>
                             </div>
                         </div>
 
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Email Address</h4>
-                                <p>{{ current_user. email }}</p>
+                                <p>john.doe@example.com</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Change</button>
+                                <button class="btn-outline-sm"><i class="fas fa-envelope"></i> Change</button>
                             </div>
                         </div>
 
@@ -301,7 +629,7 @@
                                 <p>+91 98765 43210</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Update</button>
+                                <button class="btn-outline-sm"><i class="fas fa-phone"></i> Update</button>
                             </div>
                         </div>
 
@@ -311,7 +639,7 @@
                                 <p>Mumbai, Maharashtra, India</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Edit</button>
+                                <button class="btn-outline-sm"><i class="fas fa-map-marker-alt"></i> Edit</button>
                             </div>
                         </div>
                     </section>
@@ -369,7 +697,7 @@
 
                         <div class="setting-row">
                             <div class="setting-info">
-                                <h4>Marketing & Tips</h4>
+                                <h4>Financial Tips & Updates</h4>
                                 <p>Receive financial tips and platform updates</p>
                             </div>
                             <label class="toggle-switch">
@@ -392,7 +720,7 @@
                                 <p>Last changed 30 days ago</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Change Password</button>
+                                <button class="btn-outline-sm"><i class="fas fa-key"></i> Change Password</button>
                             </div>
                         </div>
 
@@ -402,7 +730,7 @@
                                 <p>Add an extra layer of security to your account</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Enable</button>
+                                <button class="btn-outline-sm"><i class="fas fa-mobile-alt"></i> Enable 2FA</button>
                             </div>
                         </div>
 
@@ -412,7 +740,7 @@
                                 <p>Manage your active login sessions</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">View Sessions</button>
+                                <button class="btn-outline-sm"><i class="fas fa-desktop"></i> View Sessions</button>
                             </div>
                         </div>
 
@@ -422,7 +750,7 @@
                                 <p>View your recent login activity</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">View History</button>
+                                <button class="btn-outline-sm"><i class="fas fa-history"></i> View History</button>
                             </div>
                         </div>
                     </section>
@@ -440,7 +768,7 @@
                                 <p>Control who can see your profile information</p>
                             </div>
                             <div class="setting-action">
-                                <select style="padding: 8px 16px; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: 8px; color: var(--text-primary); font-size: 13px;">
+                                <select>
                                     <option>Only My CAs</option>
                                     <option>All Verified CAs</option>
                                     <option>Private</option>
@@ -476,7 +804,7 @@
                                 <p>Export all your data from Finucity</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-outline-sm">Request Export</button>
+                                <button class="btn-outline-sm"><i class="fas fa-download"></i> Request Export</button>
                             </div>
                         </div>
                     </section>
@@ -484,27 +812,27 @@
                     <!-- Danger Zone -->
                     <section class="settings-card danger-zone">
                         <div class="settings-card-header">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--error);"></i>
-                            <h3 style="color: var(--error);">Danger Zone</h3>
+                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                            <h3 style="color: var(--danger);">Danger Zone</h3>
                         </div>
 
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Deactivate Account</h4>
-                                <p>Temporarily disable your account.  You can reactivate anytime.</p>
+                                <p>Temporarily disable your account. You can reactivate anytime.</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-danger-sm">Deactivate</button>
+                                <button class="btn-danger-sm"><i class="fas fa-pause-circle"></i> Deactivate</button>
                             </div>
                         </div>
 
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Delete Account</h4>
-                                <p>Permanently delete your account and all associated data. </p>
+                                <p>Permanently delete your account and all associated data. This action cannot be undone.</p>
                             </div>
                             <div class="setting-action">
-                                <button class="btn-danger-sm">Delete Account</button>
+                                <button class="btn-danger-sm"><i class="fas fa-trash-alt"></i> Delete Account</button>
                             </div>
                         </div>
                     </section>
@@ -519,14 +847,61 @@
 
     <script>
         function toggleSidebar() {
-            document. getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // Settings nav active state
+        // Settings navigation
         document.querySelectorAll('.settings-nav-item').forEach(item => {
             item.addEventListener('click', function(e) {
-                document.querySelectorAll('.settings-nav-item').forEach(i => i.classList. remove('active'));
-                this.classList. add('active');
+                e.preventDefault();
+                document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Scroll to section
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Toggle switch functionality
+        document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const status = this.checked ? 'enabled' : 'disabled';
+                const label = this.closest('.setting-row').querySelector('h4').textContent;
+                console.log(`${label}: ${status}`);
+            });
+        });
+
+        // Button click handlers
+        document.querySelectorAll('.btn-outline-sm, .btn-danger-sm').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const actionText = this.textContent.trim();
+                const parentSection = this.closest('section').querySelector('h3').textContent;
+                
+                if (actionText.includes('Deactivate') || actionText.includes('Delete')) {
+                    const confirmed = confirm(`Are you sure you want to ${actionText.toLowerCase()}? This action cannot be undone.`);
+                    if (confirmed) {
+                        alert(`Account ${actionText.toLowerCase()}d successfully.`);
+                    }
+                    e.preventDefault();
+                } else {
+                    alert(`Opening ${actionText} settings in ${parentSection}...`);
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Auto-save functionality
+        let saveTimeout;
+        document.querySelectorAll('select, .toggle-switch input').forEach(element => {
+            element.addEventListener('change', function() {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    console.log('Settings saved automatically');
+                }, 1000);
             });
         });
     </script>

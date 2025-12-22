@@ -189,7 +189,7 @@ def security():
 def contact():
     """Renders the contact page."""
     try:
-        return render_template('contact. html')
+        return render_template('contact.html')
     except:
         try:
             return render_template('Support/contact.html')
@@ -263,7 +263,7 @@ def business_finance():
         return render_template('financial-services/bussiness-finance.html')
     except:
         try: 
-            return render_template('bussiness_finance. html')
+            return render_template('bussiness_finance.html')
         except:
             return render_template('Errors/404.html'), 404
 
@@ -364,7 +364,7 @@ def tax_calculator():
     except Exception as e:
         print(f"Error loading tax calculator: {e}")
         try: 
-            return render_template('tax_calculator. html')
+            return render_template('tax_calculator.html')
         except:
             return render_template('Errors/404.html'), 404
 
@@ -390,7 +390,7 @@ def retirement_planning():
     except Exception as e:
         print(f"Error loading retirement planning: {e}")
         try: 
-            return render_template('retirement_planning. html')
+            return render_template('retirement_planning.html')
         except:
             return render_template('Errors/404.html'), 404
 
@@ -435,7 +435,7 @@ def sip_calculator():
 def financial_glossary():
     """Renders the financial glossary page."""
     try:
-        return render_template('Resources/financial_glossary. html')
+        return render_template('Resources/financial_glossary.html')
     except: 
         try: 
             return render_template('financial_glossary.html')
@@ -582,7 +582,7 @@ def ca_clients():
     """CA Client requests page."""
     if not check_ca_access():
         flash('Access denied.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template(
         'ca/clients.html',
@@ -601,7 +601,7 @@ def ca_messages():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/messages. html',
+        'ca/messages.html',
         user=current_user,
         SUPABASE_URL=os.getenv('SUPABASE_URL'),
         SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
@@ -646,7 +646,7 @@ def ca_insights():
     """CA Insights and analytics page."""
     if not check_ca_access():
         flash('Access denied.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template(
         'ca/insights.html',
@@ -665,7 +665,7 @@ def ca_settings():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/settings. html',
+        'ca/settings.html',
         user=current_user,
         SUPABASE_URL=os.getenv('SUPABASE_URL'),
         SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
@@ -678,7 +678,7 @@ def ca_earnings():
     """CA Earnings and billing page."""
     if not check_ca_access():
         flash('Access denied.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template(
         'ca/earnings.html',
@@ -694,7 +694,7 @@ def ca_calendar():
     """CA Calendar and appointments page."""
     if not check_ca_access():
         flash('Access denied.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template(
         'ca/calendar.html',
@@ -710,7 +710,7 @@ def ca_reviews():
     """CA Reviews and ratings page."""
     if not check_ca_access():
         flash('Access denied.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template(
         'ca/reviews.html',
@@ -729,7 +729,7 @@ def ca_notifications():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/notifications. html',
+        'ca/notifications.html',
         user=current_user,
         SUPABASE_URL=os.getenv('SUPABASE_URL'),
         SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
@@ -760,7 +760,7 @@ def find_ca():
 @login_required
 def user_consultations():
     """User's consultations page."""
-    return render_template('user/consultations. html', user=current_user)
+    return render_template('user/consultations.html', user=current_user)
 
 
 @main_bp.route('/user/messages', endpoint='user_messages')
@@ -781,14 +781,14 @@ def user_documents():
 @login_required
 def user_recommendations():
     """Personalized recommendations page."""
-    return render_template('user/recommendations. html', user=current_user)
+    return render_template('user/recommendations.html', user=current_user)
 
 
 @main_bp.route('/user/settings', endpoint='user_settings')
 @login_required
 def user_settings():
     """User settings page."""
-    return render_template('user/settings. html', user=current_user)
+    return render_template('user/settings.html', user=current_user)
 
 
 @main_bp.route('/user/notifications', endpoint='user_notifications')
@@ -897,7 +897,7 @@ def ca_pending():
 @auth_bp.route('/supabase-login', methods=['POST'])
 def supabase_login():
     """Bridge Supabase auth to Flask session."""
-    auth_header = request. headers.get('Authorization', '')
+    auth_header = request.headers. get('Authorization', '')
     if not auth_header. startswith('Bearer '):
         return jsonify({'error': 'missing token'}), 401
 
@@ -906,7 +906,21 @@ def supabase_login():
     if err or not claims:
         return jsonify({'error': 'invalid token', 'detail': err}), 401
 
-    role = claims.get('user_metadata', {}).get('role', 'user')
+    # Get role from request body or claims
+    try:
+        body_data = request.get_json() or {}
+        requested_role = body_data.get('role', 'user')
+    except: 
+        requested_role = 'user'
+
+    # Get role from claims if available
+    claims_role = claims. get('user_metadata', {}).get('role', 'user')
+
+    # Use claims role if it's a privileged role, otherwise use requested role for new users
+    if claims_role in ['ca', 'admin', 'ca_pending']:
+        role = claims_role
+    else:
+        role = 'user'  # Default to user, CA requires application
 
     try:
         user = ensure_local_user_from_claims(claims, role=role)
@@ -916,23 +930,157 @@ def supabase_login():
     login_user(user, remember=True)
 
     user_role = getattr(user, 'role', 'user') if hasattr(user, 'role') else 'user'
-    
-    # Determine redirect URL
+
+    # Determine redirect URL based on role
     if user_role in ['ca', 'admin']:
         redirect_url = url_for('main.ca_dashboard')
-    elif user_role == 'ca_pending':
-        redirect_url = url_for('auth. ca_pending')
+    elif user_role == 'ca_pending': 
+        redirect_url = url_for('auth.ca_pending')
+    elif requested_role == 'ca' and user_role == 'user':
+        # User selected CA but isn't verified - redirect to apply
+        redirect_url = url_for('auth.ca_apply')
     else:
-        redirect_url = url_for('main. user_dashboard')
-    
+        redirect_url = url_for('main.user_dashboard')
+
     return jsonify({
         'ok': True,
+        'success': True,
         'id': user.id,
         'email':  user.email,
         'role': user_role,
         'redirect_url':  redirect_url
     })
 
+# ==================== FLASK EMAIL/PASSWORD AUTH ====================
+
+@auth_bp. route('/flask-login', methods=['POST'])
+def flask_login():
+    """Handle email/password login via Flask."""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        requested_role = data. get('role', 'user')
+
+        if not email or not password:
+            return jsonify({'success': False, 'error': 'Email and password are required'}), 400
+
+        # Find user by email
+        user = User.query.filter_by(email=email).first()
+
+        if not user: 
+            return jsonify({'success': False, 'error': 'Invalid email or password'}), 401
+
+        # Check password
+        if not user.check_password(password):
+            return jsonify({'success':  False, 'error': 'Invalid email or password'}), 401
+
+        # Login user
+        login_user(user, remember=True)
+
+        # Get user role
+        user_role = getattr(user, 'role', 'user')
+
+        # Determine redirect URL
+        if user_role in ['ca', 'admin']:
+            redirect_url = url_for('main.ca_dashboard')
+        elif user_role == 'ca_pending':
+            redirect_url = url_for('auth.ca_pending')
+        elif requested_role == 'ca' and user_role == 'user':
+            # User selected CA but isn't verified - redirect to apply
+            redirect_url = url_for('auth.ca_apply')
+        else:
+            redirect_url = url_for('main.user_dashboard')
+
+        return jsonify({
+            'success': True,
+            'ok': True,
+            'message': 'Login successful',
+            'id': user.id,
+            'email': user.email,
+            'role':  user_role,
+            'redirect_url': redirect_url
+        })
+
+    except Exception as e:
+        print(f"Flask login error: {e}")
+        return jsonify({'success': False, 'error':  'An error occurred during login'}), 500
+
+
+@auth_bp. route('/flask-signup', methods=['POST'])
+def flask_signup():
+    """Handle email/password signup via Flask."""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        first_name = data.get('first_name', '').strip().title()
+        last_name = data. get('last_name', '').strip().title()
+        requested_role = data. get('role', 'user')
+
+        if not email or not password:
+            return jsonify({'success':  False, 'error': 'Email and password are required'}), 400
+
+        if len(password) < 8:
+            return jsonify({'success':  False, 'error': 'Password must be at least 8 characters'}), 400
+
+        # Validate email format
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return jsonify({'success': False, 'error':  'Please enter a valid email address'}), 400
+
+        # Check if user already exists
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({'success': False, 'error':  'An account with this email already exists'}), 400
+
+        # Generate username from email
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        while User.query.filter_by(username=username. lower()).first():
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        # Create new user
+        new_user = User(
+            username=username. lower(),
+            email=email,
+            first_name=first_name if first_name else username. title(),
+            last_name=last_name
+        )
+
+        # Set role if the model supports it (CAs need to apply separately)
+        if hasattr(new_user, 'role'):
+            new_user.role = 'user'  # Always user for direct signup
+
+        new_user.set_password(password)
+
+        db.session.add(new_user)
+        db.session. commit()
+
+        # Auto-login the new user
+        login_user(new_user, remember=True)
+
+        # Determine redirect URL
+        if requested_role == 'ca': 
+            redirect_url = url_for('auth.ca_apply')
+        else:
+            redirect_url = url_for('main.user_dashboard')
+
+        return jsonify({
+            'success': True,
+            'ok':  True,
+            'message': 'Account created successfully',
+            'id': new_user.id,
+            'email': new_user.email,
+            'role':  'user',
+            'redirect_url':  redirect_url
+        })
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Flask signup error: {e}")
+        return jsonify({'success': False, 'error': 'An error occurred during registration'}), 500
 
 @auth_bp.route('/redirect-after-login')
 @login_required
@@ -946,11 +1094,11 @@ def redirect_after_auth():
     user_role = getattr(current_user, 'role', 'user')
     
     if user_role == 'ca': 
-        return redirect(url_for('main. ca_dashboard'))
+        return redirect(url_for('main.ca_dashboard'))
     elif user_role == 'admin': 
         return redirect(url_for('main.ca_dashboard'))  # or admin dashboard
     elif user_role == 'ca_pending': 
-        return redirect(url_for('auth. ca_pending'))
+        return redirect(url_for('auth.ca_pending'))
     else:
         return redirect(url_for('main.user_dashboard'))
 
@@ -1836,7 +1984,7 @@ def admin_dashboard():
     """Admin Dashboard."""
     if not check_admin_access():
         flash('Access denied. Admin only.', 'error')
-        return redirect(url_for('main. home'))
+        return redirect(url_for('main.home'))
 
     return render_template('admin/dashboard.html', user=current_user)
 
@@ -1861,7 +2009,7 @@ def admin_ca_applications():
         flash('Access denied. Admin only. ', 'error')
         return redirect(url_for('main.home'))
 
-    return render_template('admin/ca_applications. html', user=current_user)
+    return render_template('admin/ca_applications.html', user=current_user)
 
 
 @main_bp.route('/admin/settings', endpoint='admin_settings')
@@ -1872,7 +2020,7 @@ def admin_settings():
         flash('Access denied. Admin only.', 'error')
         return redirect(url_for('main.home'))
 
-    return render_template('admin/settings. html', user=current_user)
+    return render_template('admin/settings.html', user=current_user)
 
 
 @api_bp.route('/admin/users', methods=['GET'])
@@ -2139,7 +2287,7 @@ def unauthorized(e):
         }), 401
     
     flash('Please log in to access this page.', 'error')
-    return redirect(url_for('auth. login'))
+    return redirect(url_for('auth.login'))
 
 
 # ==================== TEMPLATE CONTEXT PROCESSORS ====================
@@ -2183,7 +2331,7 @@ def inject_navigation_data():
             'services': [
                 {'name': 'Tax Planning', 'endpoint': 'main.tax_planning', 'icon': 'fa-calculator', 'description': 'Strategic tax planning and optimization'},
                 {'name': 'Investment Advisory', 'endpoint':  'main.investment_advisory', 'icon': 'fa-chart-line', 'description': 'Expert investment guidance'},
-                {'name':  'GST Compliance', 'endpoint': 'main. gst_compliance', 'icon': 'fa-file-invoice', 'description': 'GST filing and compliance'},
+                {'name':  'GST Compliance', 'endpoint': 'main.gst_compliance', 'icon': 'fa-file-invoice', 'description': 'GST filing and compliance'},
                 {'name': 'Business Finance', 'endpoint':  'main.business_finance', 'icon': 'fa-building', 'description':  'Business financial management'},
                 {'name': 'Audit Services', 'endpoint':  'main.audit_services', 'icon': 'fa-search-dollar', 'description':  'Statutory and internal audits'},
                 {'name': 'Startup Advisory', 'endpoint':  'main.startup_advisory', 'icon': 'fa-rocket', 'description': 'Startup compliance and advisory'},
@@ -2192,11 +2340,11 @@ def inject_navigation_data():
                 {'name': 'Financial Blog', 'endpoint':  'main.financial_blog', 'icon': 'fa-book', 'description':  'Latest financial insights'},
                 {'name':  'Learning Center', 'endpoint':  'main.learning_centre', 'icon':  'fa-graduation-cap', 'description': 'Financial education resources'},
                 {'name': 'Tax Calculator', 'endpoint':  'main.tax_calculator', 'icon': 'fa-calculator', 'description': 'Calculate your taxes'},
-                {'name': 'Retirement Planning', 'endpoint': 'main. retirement_planning', 'icon': 'fa-umbrella-beach', 'description': 'Plan for your future'},
+                {'name': 'Retirement Planning', 'endpoint': 'main.retirement_planning', 'icon': 'fa-umbrella-beach', 'description': 'Plan for your future'},
                 {'name': 'Investment Tools', 'endpoint':  'main.investment_tools', 'icon': 'fa-tools', 'description':  'Investment analysis tools'},
             ],
             'support': [
-                {'name': 'Help Center', 'endpoint': 'main. help_center', 'icon':  'fa-question-circle'},
+                {'name': 'Help Center', 'endpoint': 'main.help_center', 'icon':  'fa-question-circle'},
                 {'name':  'Contact Us', 'endpoint':  'main.contact', 'icon': 'fa-envelope'},
                 {'name':  'FAQ', 'endpoint':  'main.faq', 'icon': 'fa-comments'},
             ],
@@ -2211,14 +2359,14 @@ def inject_navigation_data():
                 {'name': 'Earnings', 'endpoint':  'main.ca_earnings', 'icon': 'fa-rupee-sign'},
                 {'name': 'Calendar', 'endpoint':  'main.ca_calendar', 'icon': 'fa-calendar'},
                 {'name': 'Reviews', 'endpoint':  'main.ca_reviews', 'icon': 'fa-star'},
-                {'name': 'Settings', 'endpoint': 'main. ca_settings', 'icon': 'fa-cog'},
+                {'name': 'Settings', 'endpoint': 'main.ca_settings', 'icon': 'fa-cog'},
             ],
             'user_menu': [
                 {'name': 'Dashboard', 'endpoint':  'main.user_dashboard', 'icon': 'fa-home'},
                 {'name': 'Find CA', 'endpoint':  'main.find_ca', 'icon': 'fa-user-tie'},
-                {'name': 'My Consultations', 'endpoint': 'main. user_consultations', 'icon': 'fa-folder-open'},
+                {'name': 'My Consultations', 'endpoint': 'main.user_consultations', 'icon': 'fa-folder-open'},
                 {'name': 'Messages', 'endpoint':  'main.user_messages', 'icon': 'fa-comments'},
-                {'name': 'Documents', 'endpoint': 'main. user_documents', 'icon': 'fa-file-alt'},
+                {'name': 'Documents', 'endpoint': 'main.user_documents', 'icon': 'fa-file-alt'},
                 {'name': 'Recommendations', 'endpoint':  'main.user_recommendations', 'icon': 'fa-lightbulb'},
                 {'name': 'Settings', 'endpoint': 'main.user_settings', 'icon': 'fa-cog'},
             ]

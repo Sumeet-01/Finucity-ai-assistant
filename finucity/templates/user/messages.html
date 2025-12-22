@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,18 +6,195 @@
     <title>Messages | Finucity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2? family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all. min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/user-dashboard.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        . messages-page {
-            height: calc(100vh - var(--header-height));
+        :root {
+            --bg-primary: #0a0c0a;
+            --bg-card: #141a14;
+            --bg-elevated: #1a221a;
+            --bg-hover: rgba(251, 160, 2, 0.08);
+            --accent-gold: #fba002;
+            --accent-gold-soft: rgba(251, 160, 2, 0.15);
+            --accent-gold-glow: rgba(251, 160, 2, 0.1);
+            --accent-green: #22c55e;
+            --accent-green-light: #4ade80;
+            --text-primary: #ffffff;
+            --text-secondary: #a1b0a1;
+            --text-muted: #6b7a6b;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-soft: rgba(255, 255, 255, 0.05);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --border-radius: 12px;
+            --transition: 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             display: flex;
-            overflow:  hidden;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            align-items: center;
+        }
+
+        .sidebar-logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            color: black;
+            font-size: 20px;
+            box-shadow: 0 10px 30px rgba(251, 160, 2, 0.4);
+        }
+
+        .sidebar-logo-text h1 {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .sidebar-logo-text span {
+            color: var(--text-muted);
+            font-size: 12px;
+            display: block;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 16px;
+            width: 20px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--accent-gold-soft);
+            color: white;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: var(--accent-gold);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent-gold-soft);
+            color: var(--accent-gold);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+            text-decoration: none;
+            color: #f87171;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .messages-page {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
         }
 
         .conversations-sidebar {
-            width:  340px;
+            width: 360px;
             background: var(--bg-card);
             border-right: 1px solid var(--border-primary);
             display: flex;
@@ -31,27 +208,46 @@
         }
 
         .conversations-header h2 {
-            font-size: 20px;
+            font-size: 22px;
+            font-weight: 700;
             margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .conversations-header h2 i {
+            color: var(--accent-gold);
         }
 
         .search-conversations {
-            position:  relative;
+            position: relative;
         }
 
         .search-conversations input {
             width: 100%;
-            padding: 12px 16px 12px 42px;
+            padding: 14px 18px 14px 46px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-primary);
-            border-radius: var(--border-radius);
+            border-radius: 14px;
             color: var(--text-primary);
             font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-conversations input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(251, 160, 2, 0.1);
+        }
+
+        .search-conversations input::placeholder {
+            color: var(--text-muted);
         }
 
         .search-conversations i {
-            position:  absolute;
-            left: 16px;
+            position: absolute;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
@@ -67,8 +263,9 @@
             gap: 14px;
             padding: 18px 24px;
             cursor: pointer;
-            transition: background var(--transition);
+            transition: all 0.2s ease;
             border-bottom: 1px solid var(--border-soft);
+            align-items: center;
         }
 
         .conversation-item:hover {
@@ -76,38 +273,38 @@
         }
 
         .conversation-item.active {
-            background:  var(--accent-gold-glow);
+            background: var(--accent-gold-glow);
             border-left: 3px solid var(--accent-gold);
         }
 
-        . conversation-item.unread {
+        .conversation-item.unread {
             background: rgba(251, 160, 2, 0.04);
         }
 
         .conv-avatar {
-            width:  48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light));
-            border-radius: 12px;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size:  16px;
+            font-size: 18px;
             font-weight: 700;
-            color:  var(--text-primary);
+            color: white;
             flex-shrink: 0;
             position: relative;
         }
 
-        .conv-avatar. online:: after {
+        .conv-avatar.online::after {
             content: '';
             position: absolute;
             bottom: 2px;
             right: 2px;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background: var(--success);
-            border:  2px solid var(--bg-card);
+            border: 2px solid var(--bg-card);
             border-radius: 50%;
         }
 
@@ -117,19 +314,19 @@
         }
 
         .conv-header {
-            display:  flex;
+            display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
         }
 
         .conv-header h4 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
         }
 
         .conv-time {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
@@ -137,7 +334,7 @@
             font-size: 13px;
             color: var(--text-secondary);
             white-space: nowrap;
-            overflow:  hidden;
+            overflow: hidden;
             text-overflow: ellipsis;
         }
 
@@ -147,19 +344,19 @@
         }
 
         .unread-badge {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             background: var(--accent-gold);
             border-radius: 50%;
             font-size: 11px;
             font-weight: 700;
-            color:  #0a0c0a;
+            color: #0a0c0a;
             display: flex;
-            align-items:  center;
+            align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
-        /* Chat Area */
         .chat-area {
             flex: 1;
             display: flex;
@@ -172,36 +369,38 @@
             background: var(--bg-card);
             border-bottom: 1px solid var(--border-primary);
             display: flex;
-            justify-content:  space-between;
-            align-items:  center;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .chat-user {
-            display:  flex;
+            display: flex;
             align-items: center;
             gap: 14px;
         }
 
         .chat-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent-green), var(--accent-green-light));
-            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size:  16px;
-            font-weight:  700;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
         }
 
         .chat-user-info h3 {
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: 600;
             margin-bottom: 4px;
         }
 
         .chat-user-info span {
-            font-size: 12px;
-            color:  var(--success);
+            font-size: 13px;
+            color: var(--success);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -212,45 +411,49 @@
         }
 
         .chat-actions {
-            display:  flex;
+            display: flex;
             gap: 10px;
         }
 
         .chat-action-btn {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-primary);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .chat-action-btn:hover {
             color: var(--accent-gold);
             border-color: var(--accent-gold);
+            background: var(--accent-gold-soft);
         }
 
         .chat-messages {
-            flex:  1;
+            flex: 1;
             padding: 28px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap:  20px;
+            gap: 20px;
         }
 
         .message-group {
-            display:  flex;
+            display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
         .message {
-            max-width: 65%;
-            padding:  14px 18px;
-            border-radius: 16px;
+            max-width: 70%;
+            padding: 16px 20px;
+            border-radius: 18px;
             font-size: 14px;
             line-height: 1.6;
         }
@@ -258,25 +461,25 @@
         .message.received {
             align-self: flex-start;
             background: var(--bg-card);
-            border:  1px solid var(--border-primary);
-            border-bottom-left-radius: 4px;
+            border: 1px solid var(--border-primary);
+            border-bottom-left-radius: 6px;
         }
 
-        .message. sent {
+        .message.sent {
             align-self: flex-end;
             background: linear-gradient(135deg, var(--accent-gold), #e69200);
             color: #0a0c0a;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 6px;
         }
 
         .message-time {
             font-size: 11px;
             opacity: 0.7;
-            margin-top: 6px;
+            margin-top: 8px;
             display: block;
         }
 
-        .message. sent .message-time {
+        .message.sent .message-time {
             text-align: right;
         }
 
@@ -292,8 +495,8 @@
         .date-divider::after {
             content: '';
             position: absolute;
-            top:  50%;
-            width: 40%;
+            top: 50%;
+            width: 35%;
             height: 1px;
             background: var(--border-primary);
         }
@@ -301,27 +504,38 @@
         .date-divider::before { left: 0; }
         .date-divider::after { right: 0; }
 
-        . chat-input-area {
+        .date-divider span {
+            background: var(--bg-primary);
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-input-area {
             padding: 20px 28px;
             background: var(--bg-card);
             border-top: 1px solid var(--border-primary);
         }
 
         .chat-input-container {
-            display:  flex;
+            display: flex;
             gap: 14px;
             align-items: center;
         }
 
         .attachment-btn {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-primary);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
 
         .attachment-btn:hover {
@@ -331,117 +545,250 @@
 
         .chat-input {
             flex: 1;
-            padding: 14px 20px;
+            padding: 16px 20px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-primary);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text-primary);
-            font-size:  14px;
+            font-size: 14px;
             font-family: inherit;
-            resize: none;
+            transition: all 0.2s ease;
         }
 
         .chat-input:focus {
             outline: none;
-            border-color:  var(--accent-gold);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(251, 160, 2, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
         }
 
         .send-btn {
-            padding: 14px 24px;
+            padding: 16px 28px;
             background: linear-gradient(135deg, var(--accent-gold), #e69200);
             color: #0a0c0a;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 14px;
-            font-weight: 600;
-            cursor:  pointer;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap:  8px;
-            transition: all var(--transition);
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(251, 160, 2, 0.3);
         }
 
         .send-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.3);
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.4);
         }
 
         .security-note {
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top:  12px;
+            margin-top: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .security-note i {
             color: var(--success);
         }
 
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), #e69200);
+            border: none;
+            color: black;
+            font-size: 20px;
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.5);
+            cursor: pointer;
+            z-index: 90;
+        }
+
+        @media (max-width: 1200px) {
+            .conversations-sidebar {
+                width: 320px;
+            }
+        }
+
         @media (max-width: 900px) {
+            .sidebar {
+                left: -280px;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
             .conversations-sidebar {
                 position: fixed;
                 left: 0;
-                top: var(--header-height);
+                top: 0;
                 bottom: 0;
                 z-index: 80;
                 transform: translateX(-100%);
-                transition: transform var(--transition);
+                transition: transform 0.3s ease;
             }
 
-            . conversations-sidebar.open {
-                transform:  translateX(0);
+            .conversations-sidebar.open {
+                transform: translateX(0);
             }
+
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .chat-header {
+                padding: 16px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .chat-input-area {
+                padding: 16px;
+            }
+
+            .chat-actions {
+                display: none;
+            }
+
+            .send-btn span {
+                display: none;
+            }
+
+            .send-btn {
+                padding: 16px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body>
-    {% include 'user/partials/sidebar. html' %}
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-logo">
+                <div class="sidebar-logo-icon"><i class="fas fa-calculator"></i></div>
+                <div class="sidebar-logo-text">
+                    <h1>Finucity</h1>
+                    <span>Financial Companion</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/user/dashboard" class="nav-item">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a href="/user/find-ca" class="nav-item">
+                <i class="fas fa-user-tie"></i> Find CA
+            </a>
+            <a href="/user/documents" class="nav-item">
+                <i class="fas fa-file-alt"></i> Documents
+                <span class="nav-badge">12</span>
+            </a>
+            <a href="/user/messages" class="nav-item active">
+                <i class="fas fa-comments"></i> Messages
+                <span class="nav-badge">3</span>
+            </a>
+            <a href="/user/consultations" class="nav-item">
+                <i class="fas fa-calendar-check"></i> Consultations
+            </a>
+            <a href="/user/settings" class="nav-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="/auth/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </aside>
 
     <main class="main-content">
-        {% include 'user/partials/header.html' %}
-
         <div class="messages-page">
-            <!-- Conversations Sidebar -->
             <div class="conversations-sidebar" id="conversationsSidebar">
                 <div class="conversations-header">
-                    <h2>Messages</h2>
+                    <h2><i class="fas fa-comments"></i> Messages</h2>
                     <div class="search-conversations">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search conversations... ">
+                        <input type="text" placeholder="Search conversations...">
                     </div>
                 </div>
 
                 <div class="conversations-list">
-                    <div class="conversation-item active">
+                    <div class="conversation-item active" data-id="1">
                         <div class="conv-avatar online">RS</div>
                         <div class="conv-content">
                             <div class="conv-header">
                                 <h4>CA Rajesh Sharma</h4>
                                 <span class="conv-time">2m</span>
                             </div>
-                            <p class="conv-preview">I've reviewed your GST documents.  Everything looks good... </p>
+                            <p class="conv-preview">I've reviewed your GST documents. Everything looks good...</p>
                         </div>
                         <div class="unread-badge">2</div>
                     </div>
 
-                    <div class="conversation-item unread">
-                        <div class="conv-avatar">PM</div>
+                    <div class="conversation-item unread" data-id="2">
+                        <div class="conv-avatar" style="background: linear-gradient(135deg, #ec4899, #f472b6);">PM</div>
                         <div class="conv-content">
                             <div class="conv-header">
                                 <h4>CA Priya Mehta</h4>
                                 <span class="conv-time">5h</span>
                             </div>
-                            <p class="conv-preview">Thank you for sharing the Form 16. I'll prepare... </p>
+                            <p class="conv-preview">Thank you for sharing the Form 16. I'll prepare...</p>
                         </div>
                         <div class="unread-badge">1</div>
                     </div>
 
-                    <div class="conversation-item">
-                        <div class="conv-avatar">AK</div>
+                    <div class="conversation-item" data-id="3">
+                        <div class="conv-avatar" style="background: linear-gradient(135deg, #22c55e, #4ade80);">AK</div>
                         <div class="conv-content">
                             <div class="conv-header">
                                 <h4>CA Amit Kumar</h4>
@@ -451,20 +798,21 @@
                         </div>
                     </div>
 
-                    <div class="conversation-item">
-                        <div class="conv-avatar" style="background: var(--accent-gold-soft); color: var(--accent-gold);">F</div>
+                    <div class="conversation-item" data-id="4">
+                        <div class="conv-avatar" style="background: rgba(251, 160, 2, 0.15); color: #fba002;">
+                            <i class="fas fa-headset"></i>
+                        </div>
                         <div class="conv-content">
                             <div class="conv-header">
                                 <h4>Finucity Support</h4>
                                 <span class="conv-time">1w</span>
                             </div>
-                            <p class="conv-preview">Welcome to Finucity!  We're here to help you with... </p>
+                            <p class="conv-preview">Welcome to Finucity! We're here to help you with...</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Chat Area -->
             <div class="chat-area">
                 <div class="chat-header">
                     <div class="chat-user">
@@ -478,17 +826,17 @@
                         <button class="chat-action-btn" title="Video Call"><i class="fas fa-video"></i></button>
                         <button class="chat-action-btn" title="Voice Call"><i class="fas fa-phone"></i></button>
                         <button class="chat-action-btn" title="View Profile"><i class="fas fa-user"></i></button>
-                        <button class="chat-action-btn" title="More"><i class="fas fa-ellipsis-v"></i></button>
+                        <button class="chat-action-btn" title="More Options"><i class="fas fa-ellipsis-v"></i></button>
                     </div>
                 </div>
 
-                <div class="chat-messages">
-                    <div class="date-divider">Today</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="date-divider"><span>Today</span></div>
 
                     <div class="message-group">
                         <div class="message received">
-                            <p>Good morning! I've received all your GST documents for November filing. </p>
-                            <span class="message-time">10: 30 AM</span>
+                            <p>Good morning! I've received all your GST documents for November filing.</p>
+                            <span class="message-time">10:30 AM</span>
                         </div>
                         <div class="message received">
                             <p>I've reviewed them and everything looks in order. The sales data matches with your GSTR-1 entries from last month.</p>
@@ -508,8 +856,18 @@
                             <p>I'll complete the GSTR-1 by today evening and GSTR-3B by tomorrow morning. You'll receive the acknowledgement as soon as it's done.</p>
                             <span class="message-time">10:48 AM</span>
                         </div>
+                    </div>
+
+                    <div class="message-group">
+                        <div class="message sent">
+                            <p>Perfect, thank you for the quick turnaround! Please let me know if you need any additional documents.</p>
+                            <span class="message-time">10:50 AM</span>
+                        </div>
+                    </div>
+
+                    <div class="message-group">
                         <div class="message received">
-                            <p>I've reviewed your GST documents.  Everything looks good.  Please confirm if you want me to proceed with the filing.</p>
+                            <p>I've reviewed your GST documents. Everything looks good. Please confirm if you want me to proceed with the filing.</p>
                             <span class="message-time">Just now</span>
                         </div>
                     </div>
@@ -518,8 +876,11 @@
                 <div class="chat-input-area">
                     <div class="chat-input-container">
                         <button class="attachment-btn" title="Attach File"><i class="fas fa-paperclip"></i></button>
-                        <input type="text" class="chat-input" placeholder="Type your message...">
-                        <button class="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+                        <input type="text" class="chat-input" id="messageInput" placeholder="Type your message...">
+                        <button class="send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send</span>
+                        </button>
                     </div>
                     <p class="security-note">
                         <i class="fas fa-lock"></i>
@@ -536,39 +897,47 @@
 
     <script>
         function toggleSidebar() {
-            document. getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // Conversation switching
-        document.querySelectorAll('.conversation-item').forEach(item => {
+        document.querySelectorAll('.conversation-item').forEach(function(item) {
             item.addEventListener('click', function() {
-                document.querySelectorAll('.conversation-item').forEach(i => i.classList. remove('active'));
-                this.classList. add('active');
+                document.querySelectorAll('.conversation-item').forEach(function(i) {
+                    i.classList.remove('active');
+                });
+                this.classList.add('active');
                 this.classList.remove('unread');
-                const badge = this.querySelector('. unread-badge');
+                var badge = this.querySelector('.unread-badge');
                 if (badge) badge.remove();
             });
         });
 
-        // Send message
-        document. querySelector('.send-btn').addEventListener('click', function() {
-            const input = document.querySelector('. chat-input');
-            if (input.value. trim()) {
-                const messagesDiv = document.querySelector('. chat-messages');
-                const newMessage = document.createElement('div');
+        function sendMessage() {
+            var input = document.getElementById('messageInput');
+            var message = input.value.trim();
+            
+            if (message) {
+                var messagesDiv = document.getElementById('chatMessages');
+                var newMessage = document.createElement('div');
                 newMessage.className = 'message-group';
-                newMessage.innerHTML = '<div class="message sent"><p>' + input.value + '</p><span class="message-time">Just now</span></div>';
+                newMessage.innerHTML = '<div class="message sent"><p>' + message + '</p><span class="message-time">Just now</span></div>';
                 messagesDiv.appendChild(newMessage);
                 input.value = '';
-                messagesDiv.scrollTop = messagesDiv. scrollHeight;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         });
 
-        // Enter key to send
-        document. querySelector('.chat-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.querySelector('. send-btn').click();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            var messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         });
     </script>
 </body>
