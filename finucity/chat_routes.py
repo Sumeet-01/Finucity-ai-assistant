@@ -13,7 +13,8 @@ import traceback
 import random
 import requests
 
-from finucity.models import db, User, ChatQuery
+from finucity.models import User
+from finucity.database import ChatService, UserService, get_supabase
 from finucity.ai import get_ai_response
 
 # Create blueprint
@@ -153,21 +154,19 @@ def chat_interface():
 @login_required
 def view_conversation(conversation_id):
     """View a specific conversation"""
-    # Get conversation with messages
-    conversation = ChatQuery.query.filter_by(
-        id=conversation_id,
-        user_id=current_user.id
-    ).first_or_404()
+    # Get conversation from Supabase
+    conversation_data = ChatService.get_query_by_id(conversation_id)
+    if not conversation_data or conversation_data.get('user_id') != current_user.id:
+        from flask import abort
+        abort(404)
     
     # Get all messages in this conversation (using session_id to group)
-    messages = ChatQuery.query.filter_by(
-        session_id=conversation.session_id,
-        user_id=current_user.id
-    ).order_by(ChatQuery.timestamp.asc()).all()
+    session_id = conversation_data.get('session_id')
+    messages_data = ChatService.get_queries_by_session(session_id, current_user.id) if session_id else []
     
     return render_template('chat.html', 
-                         conversation=conversation,
-                         messages=messages,
+                         conversation=conversation_data,
+                         messages=messages_data,
                          user=current_user)
 
 @chat_bp.route('/history')
@@ -177,23 +176,32 @@ def chat_history():
     page = request.args.get('page', 1, type=int)
     per_page = 20
     
-    # Get paginated conversations (unique by session_id)
-    conversations_query = db.session.query(ChatQuery).filter(
-        ChatQuery.user_id == current_user.id
-    ).order_by(ChatQuery.timestamp.desc())
+    # Get conversations from Supabase
+    all_conversations = ChatService.get_user_queries(current_user.id, limit=100)
     
-    conversations = conversations_query.paginate(
-        page=page, 
-        per_page=per_page, 
-        error_out=False
-    )
+    # Simple pagination
+    start = (page - 1) * per_page
+    end = start + per_page
+    conversations_page = all_conversations[start:end] if all_conversations else []
+    
+    # Create pagination object-like structure
+    class Pagination:
+        def __init__(self, items, page, per_page, total):
+            self.items = items
+            self.page = page
+            self.per_page = per_page
+            self.total = total
+            self.pages = (total + per_page - 1) // per_page
+            self.has_prev = page > 1
+            self.has_next = page < self.pages
+    
+    conversations = Pagination(conversations_page, page, per_page, len(all_conversations) if all_conversations else 0)
     
     return render_template('chat_history.html', 
                          conversations=conversations,
                          user=current_user,
                          datetime=datetime,
-                         timedelta=timedelta,
-                         ChatQuery=ChatQuery)
+                         timedelta=timedelta)
 
 # ===== API ROUTES (Backend functionality) =====
 
@@ -230,13 +238,10 @@ def api_send_message():
         if not conversation_id:
             session_id = f"conv_{current_user.id}_{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:8]}"
         else:
-            # Get existing conversation's session_id
-            existing_conv = ChatQuery.query.filter_by(
-                id=conversation_id,
-                user_id=current_user.id
-            ).first()
-            if existing_conv:
-                session_id = existing_conv.session_id
+            # Get existing conversation's session_id from Supabase
+            existing_conv = ChatService.get_query_by_id(conversation_id)
+            if existing_conv and existing_conv.get('user_id') == current_user.id:
+                session_id = existing_conv.get('session_id') or f"conv_{current_user.id}_{int(datetime.now().timestamp())}_{uuid.uuid4().hex[:8]}"
             else:
                 return jsonify({
                     'success': False,
@@ -258,35 +263,14 @@ def api_send_message():
                     except Exception as e:
                         current_app.logger.warning(f"Error processing file {file.filename}: {e}")
         
-        # Create a dict of values to pass to ChatQuery
+        # Store initial message data (will be updated with AI response)
         query_data = {
             'user_id': current_user.id,
             'question': message or "[File Upload]",
             'category': category,
             'response': "",  # Will be updated with AI response
-            'timestamp': datetime.utcnow()
+            'session_id': session_id
         }
-
-        # Check schema for session_id and conversation_id
-        try:
-            # Try to use both fields for compatibility
-            query_data['session_id'] = session_id
-            query_data['conversation_id'] = session_id
-        except Exception as e:
-            current_app.logger.warning(f"Schema might be missing conversation_id: {e}")
-
-        # Create user message with safe construction
-        try:
-            user_message = ChatQuery(**query_data)
-            db.session.add(user_message)
-            db.session.flush()  # Get the ID
-        except Exception as schema_error:
-            # If that fails, try without conversation_id
-            current_app.logger.warning(f"Falling back to legacy schema: {schema_error}")
-            del query_data['conversation_id']
-            user_message = ChatQuery(**query_data)
-            db.session.add(user_message)
-            db.session.flush()  # Get the ID
         
         # Prepare context for AI
         context = {
@@ -332,20 +316,13 @@ def api_send_message():
                 'disclaimer': "Our service is temporarily experiencing issues. Please try again later."
             }
         
-        # Update user message with AI response
-        user_message.response = ai_response['response']
+        # Update query data with AI response
+        query_data['response'] = ai_response['response']
         
-        # Safely update optional fields
-        try:
-            if hasattr(user_message, 'confidence_score'):
-                user_message.confidence_score = ai_response.get('confidence', 0.95)
-            if hasattr(user_message, 'response_time'):
-                user_message.response_time = response_time
-        except:
-            pass  # Ignore if columns don't exist
-        
-        # Commit to database
-        db.session.commit()
+        # Save to Supabase
+        saved_query = ChatService.create_query(**query_data)
+        if not saved_query:
+            raise Exception("Failed to save chat query to Supabase")
         
         # Generate conversation title if this is the first message
         conversation_title = generate_conversation_title(message, category)
@@ -357,14 +334,13 @@ def api_send_message():
             'confidence': ai_response.get('confidence', 0.95),
             'disclaimer': ai_response.get('disclaimer', 'This is AI-generated advice. Please consult professionals for personalized guidance.'),
             'follow_up_suggestions': ai_response.get('follow_up_suggestions', []),
-            'conversation_id': user_message.id,
+            'conversation_id': saved_query.get('id'),
             'conversation_title': conversation_title,
             'session_id': session_id,
             'response_time_ms': round(response_time * 1000, 2)
         })
         
     except Exception as e:
-        db.session.rollback()
         current_app.logger.error(f"Chat API error: {e}")
         current_app.logger.error(f"Traceback: {traceback.format_exc()}")
         
@@ -390,29 +366,20 @@ def api_send_message():
 def api_get_conversations():
     """Get user's conversation list"""
     try:
-        # Safe query that doesn't rely on new columns
-        query = """
-        SELECT id, user_id, session_id, question, category, timestamp
-        FROM chat_queries
-        WHERE user_id = :user_id
-        ORDER BY timestamp DESC
-        LIMIT 50
-        """
-        
-        result = db.session.execute(db.text(query), {'user_id': current_user.id})
-        conversations = []
+        # Get conversations from Supabase
+        queries = ChatService.get_user_queries(current_user.id, limit=50)
         
         # Group by session_id
         conversation_dict = {}
-        for row in result:
-            session_id = row.session_id
+        for query in queries:
+            session_id = query.get('session_id')
             if session_id and session_id not in conversation_dict:
                 conversation_dict[session_id] = {
-                    'id': row.id,
-                    'title': generate_conversation_title(row.question, row.category),
-                    'category': row.category,
-                    'preview': row.question[:100] + "..." if len(row.question) > 100 else row.question,
-                    'created_at': row.timestamp.isoformat() if hasattr(row.timestamp, 'isoformat') else str(row.timestamp),
+                    'id': query.get('id'),
+                    'title': generate_conversation_title(query.get('question', ''), query.get('category', 'general')),
+                    'category': query.get('category'),
+                    'preview': query.get('question', '')[:100] + "..." if len(query.get('question', '')) > 100 else query.get('question', ''),
+                    'created_at': query.get('created_at'),
                 }
         
         # Convert to list
@@ -436,48 +403,44 @@ def api_get_conversations():
 def api_get_conversation(conversation_id):
     """Get specific conversation details"""
     try:
-        conversation = ChatQuery.query.filter_by(
-            id=conversation_id,
-            user_id=current_user.id
-        ).first()
+        # Get conversation from Supabase
+        conversation = ChatService.get_query_by_id(conversation_id)
         
-        if not conversation:
+        if not conversation or conversation.get('user_id') != current_user.id:
             return jsonify({
                 'success': False,
                 'error': 'Conversation not found'
             }), 404
         
         # Get all messages in this conversation
-        messages = ChatQuery.query.filter_by(
-            session_id=conversation.session_id,
-            user_id=current_user.id
-        ).order_by(ChatQuery.timestamp.asc()).all()
+        session_id = conversation.get('session_id')
+        messages = ChatService.get_queries_by_session(session_id, current_user.id) if session_id else []
         
         message_list = []
         for msg in messages:
             message_list.append({
-                'id': msg.id,
+                'id': msg.get('id'),
                 'role': 'user',
-                'content': msg.question,
-                'timestamp': msg.timestamp.isoformat()
+                'content': msg.get('question'),
+                'timestamp': msg.get('created_at')
             })
-            if msg.response:
+            if msg.get('response'):
                 message_list.append({
-                    'id': f"{msg.id}_response",
+                    'id': f"{msg.get('id')}_response",
                     'role': 'assistant',
-                    'content': msg.response,
-                    'timestamp': msg.timestamp.isoformat(),
-                    'confidence': msg.confidence_score if hasattr(msg, 'confidence_score') else 0.9,
-                    'category': msg.category
+                    'content': msg.get('response'),
+                    'timestamp': msg.get('created_at'),
+                    'confidence': 0.9,
+                    'category': msg.get('category')
                 })
         
         return jsonify({
             'success': True,
             'conversation': {
-                'id': conversation.id,
-                'title': generate_conversation_title(conversation.question, conversation.category),
-                'category': conversation.category,
-                'created_at': conversation.timestamp.isoformat(),
+                'id': conversation.get('id'),
+                'title': generate_conversation_title(conversation.get('question', ''), conversation.get('category', 'general')),
+                'category': conversation.get('category'),
+                'created_at': conversation.get('created_at'),
                 'message_count': len(message_list)
             },
             'messages': message_list
@@ -485,12 +448,6 @@ def api_get_conversation(conversation_id):
         
     except Exception as e:
         current_app.logger.error(f"Get conversation API error: {e}")
-        return jsonify({
-            'success': False,
-            'error': 'Failed to load conversation'
-        }), 500
-
-@chat_bp.route('/api/conversation/<int:conversation_id>/rename', methods=['POST'])
 @login_required
 def api_rename_conversation(conversation_id):
     """Rename a conversation"""
@@ -504,24 +461,22 @@ def api_rename_conversation(conversation_id):
                 'error': 'Title is required'
             }), 400
         
-        conversation = ChatQuery.query.filter_by(
-            id=conversation_id,
-            user_id=current_user.id
-        ).first()
+        # Get conversation from Supabase
+        conversation = ChatService.get_query_by_id(conversation_id)
         
-        if not conversation:
+        if not conversation or conversation.get('user_id') != current_user.id:
             return jsonify({
                 'success': False,
                 'error': 'Conversation not found'
             }), 404
         
-        # For now, we'll store the custom title in the response field
-        # In a full implementation, you'd add a title field to the model
+        # Note: Custom titles would require a title field in the schema
+        # For now, just return success with the new title
         
         return jsonify({
             'success': True,
             'new_title': new_title,
-            'category': conversation.category
+            'category': conversation.get('category')
         })
         
     except Exception as e:
@@ -529,105 +484,6 @@ def api_rename_conversation(conversation_id):
         return jsonify({
             'success': False,
             'error': 'Failed to rename conversation'
-        }), 500
-
-@chat_bp.route('/api/conversation/<int:conversation_id>', methods=['DELETE'])
-@login_required
-def api_delete_conversation(conversation_id):
-    """Delete a conversation"""
-    try:
-        conversation = ChatQuery.query.filter_by(
-            id=conversation_id,
-            user_id=current_user.id
-        ).first()
-        
-        if not conversation:
-            return jsonify({
-                'success': False,
-                'error': 'Conversation not found'
-            }), 404
-        
-        # Delete all messages in this conversation
-        ChatQuery.query.filter_by(
-            session_id=conversation.session_id,
-            user_id=current_user.id
-        ).delete()
-        
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Conversation deleted successfully'
-        })
-        
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"Delete conversation API error: {e}")
-        return jsonify({
-            'success': False,
-            'error': 'Failed to delete conversation'
-        }), 500
-
-@chat_bp.route('/api/conversation/<int:conversation_id>/export')
-@login_required
-def api_export_conversation(conversation_id):
-    """Export conversation as JSON"""
-    try:
-        conversation = ChatQuery.query.filter_by(
-            id=conversation_id,
-            user_id=current_user.id
-        ).first()
-        
-        if not conversation:
-            return jsonify({
-                'success': False,
-                'error': 'Conversation not found'
-            }), 404
-        
-        # Get all messages
-        messages = ChatQuery.query.filter_by(
-            session_id=conversation.session_id,
-            user_id=current_user.id
-        ).order_by(ChatQuery.timestamp.asc()).all()
-        
-        export_data = {
-            'conversation_id': conversation_id,
-            'title': generate_conversation_title(conversation.question, conversation.category),
-            'category': conversation.category,
-            'created_at': conversation.timestamp.isoformat(),
-            'user': {
-                'name': current_user.full_name,
-                'email': current_user.email
-            },
-            'messages': []
-        }
-        
-        for msg in messages:
-            export_data['messages'].extend([
-                {
-                    'role': 'user',
-                    'content': msg.question,
-                    'timestamp': msg.timestamp.isoformat()
-                },
-                {
-                    'role': 'assistant',
-                    'content': msg.response,
-                    'category': msg.category,
-                    'confidence': msg.confidence_score if hasattr(msg, 'confidence_score') else 0.9,
-                    'timestamp': msg.timestamp.isoformat()
-                }
-            ])
-        
-        return jsonify({
-            'success': True,
-            'data': export_data
-        })
-        
-    except Exception as e:
-        current_app.logger.error(f"Export conversation API error: {e}")
-        return jsonify({
-            'success': False,
-            'error': 'Failed to export conversation'
         }), 500
 
 @chat_bp.route('/api/feedback', methods=['POST'])
@@ -647,30 +503,26 @@ def api_submit_feedback():
                 'error': 'Query ID and rating are required'
             }), 400
         
-        # Find the query
-        query = ChatQuery.query.filter_by(
-            id=query_id,
-            user_id=current_user.id
-        ).first()
+        # Find the query from Supabase
+        query = ChatService.get_query_by_id(query_id)
         
-        if not query:
+        if not query or query.get('user_id') != current_user.id:
             return jsonify({
                 'success': False,
                 'error': 'Query not found'
             }), 404
         
-        # Update with feedback
-        try:
-            if hasattr(query, 'rating'):
-                query.rating = rating
-            if hasattr(query, 'is_helpful'):
-                query.is_helpful = is_helpful if is_helpful is not None else (rating >= 4)
-            if hasattr(query, 'feedback_text'):
-                query.feedback_text = feedback_text
-        except Exception as e:
-            print(f"Warning: Could not update all feedback fields: {e}")
+        # Submit feedback via FeedbackService
+        from finucity.database import FeedbackService
+        feedback_data = {
+            'user_id': current_user.id,
+            'query_id': query_id,
+            'rating': rating,
+            'is_helpful': is_helpful if is_helpful is not None else (rating >= 4),
+            'feedback_text': feedback_text
+        }
         
-        db.session.commit()
+        FeedbackService.create_feedback(**feedback_data)
         
         return jsonify({
             'success': True,
@@ -678,7 +530,6 @@ def api_submit_feedback():
         })
         
     except Exception as e:
-        db.session.rollback()
         current_app.logger.error(f"Submit feedback API error: {e}")
         return jsonify({
             'success': False,
@@ -690,16 +541,17 @@ def api_submit_feedback():
 def get_user_recent_history(user_id, current_session_id, limit=5):
     """Get recent chat history for context"""
     try:
-        recent_messages = ChatQuery.query.filter(
-            ChatQuery.user_id == user_id,
-            ChatQuery.session_id == current_session_id
-        ).order_by(ChatQuery.timestamp.desc()).limit(limit).all()
+        # Get recent messages from Supabase
+        recent_messages = ChatService.get_queries_by_session(current_session_id, user_id)
+        
+        # Limit and reverse to get most recent
+        recent_messages = recent_messages[-limit:] if len(recent_messages) > limit else recent_messages
         
         history = []
-        for msg in reversed(recent_messages):  # Reverse to chronological order
+        for msg in recent_messages:
             history.extend([
-                {'role': 'user', 'content': msg.question},
-                {'role': 'assistant', 'content': msg.response}
+                {'role': 'user', 'content': msg.get('question', '')},
+                {'role': 'assistant', 'content': msg.get('response', '')}
             ])
         
         return history
@@ -707,11 +559,6 @@ def get_user_recent_history(user_id, current_session_id, limit=5):
     except Exception as e:
         current_app.logger.warning(f"Error getting user history: {e}")
         return []
-
-def generate_conversation_title(question, category):
-    """Generate a conversation title based on the first question"""
-    if len(question) <= 50:
-        return question
     
     # Truncate and add category prefix
     category_prefixes = {

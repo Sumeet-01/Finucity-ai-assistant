@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Finucity Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0d0a 0%, #1a1f1a 100%);
+            color: #f0f2f0;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #FBA002, #e69200);
+            color: #0a0c0a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0 40px;
+            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 18px 0;
+            color: #9ca89c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #FBA002;
+            border-bottom-color: #FBA002;
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #9ca89c;
+            font-size: 16px;
+        }
+
+        .users-table-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 160, 2, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 24px 32px;
+            background: rgba(251, 160, 2, 0.1);
+            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            color: #f0f2f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 32px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #9ca89c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+        }
+
+        td {
+            padding: 20px 32px;
+            border-bottom: 1px solid rgba(251, 160, 2, 0.05);
+        }
+
+        tr:hover {
+            background: rgba(251, 160, 2, 0.05);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .role-admin {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .role-ca {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .role-user {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .role-ca_pending {
+            background: rgba(251, 160, 2, 0.2);
+            color: #FBA002;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .empty-state {
+            padding: 60px 32px;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #9ca89c;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            color: #9ca89c;
+            font-size: 16px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(26, 31, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 160, 2, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #9ca89c;
+            margin-bottom: 8px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(251, 160, 2, 0.2);
+            border-radius: 8px;
+            color: #f0f2f0;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca89c;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #FBA002, #e69200);
+            border: none;
+            color: #0a0c0a;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="admin-logo">
+            <div class="admin-badge">🔐 ADMIN</div>
+            <h1 class="admin-title">Finucity Admin</h1>
+        </div>
+        <div class="admin-user">
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('main.admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('main.admin_users') }}" class="active">Users</a></li>
+            <li><a href="{{ url_for('main.admin_ca_applications') }}">CA Applications</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>👥 User Management</h1>
+            <p>Manage all registered users and their roles</p>
+        </div>
+
+        <div class="users-table-container">
+            <div class="table-header">
+                <h2>All Users ({{ users|length }})</h2>
+            </div>
+
+            {% if users %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_item in users %}
+                    <tr>
+                        <td>{{ user_item.first_name or 'N/A' }} {{ user_item.last_name or '' }}</td>
+                        <td>{{ user_item.email }}</td>
+                        <td>{{ user_item.username or 'N/A' }}</td>
+                        <td>
+                            <span class="role-badge role-{{ user_item.role or 'user' }}">
+                                {{ user_item.role or 'user' }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if user_item.is_active %}
+                                <span style="color: #86efac;">● Active</span>
+                            {% else %}
+                                <span style="color: #fca5a5;">● Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user_item.created_at[:10] if user_item.created_at else 'N/A' }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit" onclick="editUser('{{ user_item.id }}', '{{ user_item.email }}', '{{ user_item.role or 'user' }}')">
+                                    <i class="fas fa-edit"></i> Edit Role
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>No users found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User Role</h3>
+                <p id="userEmail" style="color: #9ca89c; font-size: 14px;"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Select Role</label>
+                <select id="userRole" class="form-select">
+                    <option value="user">User</option>
+                    <option value="ca">CA (Chartered Accountant)</option>
+                    <option value="ca_pending">CA Pending Verification</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="saveUserRole()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        function editUser(userId, email, role) {
+            currentUserId = userId;
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userRole').value = role;
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+            currentUserId = null;
+        }
+
+        async function saveUserRole() {
+            if (!currentUserId) return;
+
+            const newRole = document.getElementById('userRole').value;
+
+            try {
+                const response = await fetch(`/api/admin/users/${currentUserId}/role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert('User role updated successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Failed to update role: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error updating role:', error);
+                alert('Error updating user role');
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

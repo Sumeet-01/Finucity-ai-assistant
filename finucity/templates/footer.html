@@ -39,9 +39,10 @@
                             <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a></li>
                             <li><a href="{{ url_for('main.about') }}"><i class="fas fa-info-circle"></i> About Us</a></li>
                             {% if current_user.is_authenticated %}
+                                <li><a href="{% if current_user.role == 'user' %}{{ url_for('main.user_dashboard') }}{% elif current_user.role == 'ca' %}{{ url_for('main.ca_dashboard') }}{% else %}{{ url_for('main.admin_dashboard') }}{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
                                 <li><a href="{{ url_for('chat.chat_interface') }}"><i class="fas fa-robot"></i> AI Chat</a></li>
-                                <li><a href="{{ url_for('main.profile') }}"><i class="fas fa-user"></i> My Profile</a></li>
                                 <li><a href="{{ url_for('chat.chat_history') }}"><i class="fas fa-history"></i> Chat History</a></li>
+                                <li><a href="{{ url_for('main.user_settings') if current_user.role == 'user' else url_for('main.ca_settings') if current_user.role == 'ca' else url_for('main.profile') }}"><i class="fas fa-cog"></i> Settings</a></li>
                                 <li><a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                             {% else %}
                                 <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a></li>

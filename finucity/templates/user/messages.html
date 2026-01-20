@@ -762,7 +762,7 @@
                     </div>
                 </div>
 
-                <div class="conversations-list">
+                <div class="conversations-list" id="conversationsList">
                     <div class="conversation-item active" data-id="1">
                         <div class="conv-avatar online">RS</div>
                         <div class="conv-content">
@@ -900,17 +900,71 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
-        document.querySelectorAll('.conversation-item').forEach(function(item) {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.conversation-item').forEach(function(i) {
-                    i.classList.remove('active');
-                });
-                this.classList.add('active');
-                this.classList.remove('unread');
-                var badge = this.querySelector('.unread-badge');
-                if (badge) badge.remove();
-            });
+        // Load conversations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConversations();
+            var messagesDiv = document.getElementById('chatMessages');
+            if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
         });
+
+        async function loadConversations() {
+            try {
+                const response = await fetch('/api/messages');
+                const result = await response.json();
+                
+                if (result.success && result.data && result.data.length > 0) {
+                    displayConversations(result.data);
+                } else {
+                    showEmptyMessagesState();
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                // Keep placeholder conversations as fallback
+            }
+        }
+
+        function displayConversations(conversations) {
+            // Update conversation list with real data
+            console.log('Conversations loaded:', conversations);
+            // For now, keep mock conversations as UI placeholder
+            attachConversationHandlers();
+        }
+
+        function showEmptyMessagesState() {
+            const listContainer = document.getElementById('conversationsList');
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <i class="fas fa-comments" style="font-size: 48px; color: var(--text-muted); margin-bottom: 16px;"></i>
+                    <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--text-primary);">No Messages Yet</h3>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Start a consultation with a CA to begin messaging</p>
+                </div>
+            `;
+            
+            const chatArea = document.querySelector('.chat-area');
+            if (chatArea) {
+                chatArea.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 16px;">
+                        <i class="fas fa-envelope-open" style="font-size: 64px; color: var(--text-muted);"></i>
+                        <h3 style="color: var(--text-primary);">Select a conversation to start messaging</h3>
+                        <p style="color: var(--text-secondary);">Your messages with CAs will appear here</p>
+                    </div>
+                `;
+            }
+        }
+
+        function attachConversationHandlers() {
+            document.querySelectorAll('.conversation-item').forEach(function(item) {
+                item.addEventListener('click', function() {
+                    document.querySelectorAll('.conversation-item').forEach(function(i) {
+                        i.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    this.classList.remove('unread');
+                    var badge = this.querySelector('.unread-badge');
+                    if (badge) badge.remove();
+                });
+            });
+        }
 
         function sendMessage() {
             var input = document.getElementById('messageInput');
@@ -935,10 +989,7 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            var messagesDiv = document.getElementById('chatMessages');
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        });
+        console.log('%c Messages page loaded', 'color: #22c55e; font-weight: bold;');
     </script>
 </body>
 </html>

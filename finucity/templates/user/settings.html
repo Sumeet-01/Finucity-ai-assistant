@@ -553,10 +553,10 @@
                     <span style="position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--accent-gold); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; font-weight: bold;">3</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 600;">JD</div>
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-gold), #e69200); display: flex; align-items: center; justify-content: center; font-weight: 600;">{{ user.first_name[0] | upper if user.first_name else 'U' }}{{ user.last_name[0] | upper if user.last_name else '' }}</div>
                     <div>
-                        <div style="font-size: 14px; font-weight: 600;">John Doe</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Premium User</div>
+                        <div style="font-size: 14px; font-weight: 600;">{{ user.first_name or 'User' }} {{ user.last_name or '' }}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ user.role | title if user.role else 'User' }}</div>
                     </div>
                 </div>
             </div>
@@ -569,10 +569,10 @@
             </div>
 
             <div class="profile-header">
-                <div class="profile-avatar">JD</div>
+                <div class="profile-avatar">{{ user.first_name[0] | upper if user.first_name else 'U' }}{{ user.last_name[0] | upper if user.last_name else '' }}</div>
                 <div class="profile-info">
-                    <h2>John Doe</h2>
-                    <p>Premium User • Member since January 2024</p>
+                    <h2>{{ user.first_name or 'User' }} {{ user.last_name or '' }}</h2>
+                    <p>{{ user.role | title if user.role else 'User' }} • Member since {{ user.created_at[:10] if user.created_at else 'Recently' }}</p>
                 </div>
             </div>
 
@@ -606,7 +606,7 @@
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Full Name</h4>
-                                <p>John Doe</p>
+                                <p>{{ user.first_name or 'User' }} {{ user.last_name or '' }}</p>
                             </div>
                             <div class="setting-action">
                                 <button class="btn-outline-sm"><i class="fas fa-edit"></i> Edit</button>
@@ -616,7 +616,7 @@
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Email Address</h4>
-                                <p>john.doe@example.com</p>
+                                <p>{{ user.email }}</p>
                             </div>
                             <div class="setting-action">
                                 <button class="btn-outline-sm"><i class="fas fa-envelope"></i> Change</button>
@@ -626,7 +626,7 @@
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Phone Number</h4>
-                                <p>+91 98765 43210</p>
+                                <p>{{ user.phone or 'Not provided' }}</p>
                             </div>
                             <div class="setting-action">
                                 <button class="btn-outline-sm"><i class="fas fa-phone"></i> Update</button>
@@ -636,7 +636,7 @@
                         <div class="setting-row">
                             <div class="setting-info">
                                 <h4>Location</h4>
-                                <p>Mumbai, Maharashtra, India</p>
+                                <p>{{ user.location or 'Not provided' }}</p>
                             </div>
                             <div class="setting-action">
                                 <button class="btn-outline-sm"><i class="fas fa-map-marker-alt"></i> Edit</button>
@@ -894,16 +894,59 @@
             });
         });
 
-        // Auto-save functionality
-        let saveTimeout;
-        document.querySelectorAll('select, .toggle-switch input').forEach(element => {
-            element.addEventListener('change', function() {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(() => {
-                    console.log('Settings saved automatically');
-                }, 1000);
-            });
-        });
+        async function saveSettings(settingName, settingValue) {
+            try {
+                const response = await fetch('/api/user/settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        setting: settingName,
+                        value: settingValue
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log(`✅ ${settingName} saved:`, settingValue);
+                    showToast('Settings saved successfully', 'success');
+                } else {
+                    console.error('Failed to save settings:', result.error);
+                    showToast('Failed to save settings', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showToast('Error saving settings', 'error');
+            }
+        }
+
+        function showToast(message, type) {
+            // Simple toast notification
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--danger)'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        console.log('%c✅ Settings page loaded', 'color: #22c55e; font-weight: bold;');
     </script>
 </body>
 </html>

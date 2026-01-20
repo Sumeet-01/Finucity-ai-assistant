@@ -517,11 +517,11 @@
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-calendar-alt"></i>
-                        <span>Joined {{ user.created_at.strftime('%B %Y') if user.created_at else 'Recently' }}</span>
+                        <span>Joined {{ user.created_at[:10] if user.created_at else 'Recently' }}</span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-clock"></i>
-                        <span>Last seen {{ user.last_login.strftime('%B %d, %Y') if user.last_login else 'Never' }}</span>
+                        <span>Last seen {{ user.last_login[:10] if user.last_login else 'Never' }}</span>
                     </div>
                     {% if user.city %}
                     <div class="meta-item">
@@ -601,7 +601,7 @@
                             </div>
                             <div class="activity-content">
                                 <div class="activity-title">{{ query.question[:60] }}{% if query.question|length > 60 %}...{% endif %}</div>
-                                <div class="activity-time">{{ query.timestamp.strftime('%B %d, %Y at %I:%M %p') if query.timestamp else 'Recently' }}</div>
+                                <div class="activity-time">{{ query.created_at[:19] if query.created_at else 'Recently' }}</div>
                             </div>
                         </li>
                         {% endfor %}

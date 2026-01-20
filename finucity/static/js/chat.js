@@ -11,8 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentConversationId = initialConversationId || null;
     let isLoading = false;
     let conversations = [];
-    let currentTheme = localStorage.getItem('finucity-theme') || 'wine';
+    let currentTheme = localStorage.getItem('finucity-theme') || 'finucity';
     let isInitialLoad = true;
+    
+    // Theme configurations
+    const themes = {
+        finucity: { name: 'Finucity Original', class: '' },
+        dark: { name: 'Dark', class: 'theme-dark' },
+        light: { name: 'Light', class: 'theme-light' }
+    };
     
     // --- DOM ELEMENTS ---
     const elements = {
@@ -1236,9 +1243,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- THEME FUNCTIONS ---
+    function applyTheme(themeName) {
+        // Remove all theme classes
+        document.body.classList.remove('theme-dark', 'theme-light', 'theme-finucity');
+        
+        // Add the selected theme class
+        if (themes[themeName] && themes[themeName].class) {
+            document.body.classList.add(themes[themeName].class);
+        }
+        
+        // Add smooth transition
+        document.body.classList.add('theme-transitioning');
+        setTimeout(() => {
+            document.body.classList.remove('theme-transitioning');
+        }, 300);
+        
+        // Save to localStorage
+        localStorage.setItem('finucity-theme', themeName);
+        currentTheme = themeName;
+        
+        console.log('🎨 Theme applied:', themeName);
+    }
+    
+    function initializeThemeSelector() {
+        const themeSelector = document.getElementById('themeSelector');
+        const currentThemeBtn = document.getElementById('currentThemeBtn');
+        const themeDropdown = document.getElementById('themeDropdown');
+        const currentThemeName = document.getElementById('currentThemeName');
+        
+        if (!themeSelector || !currentThemeBtn || !themeDropdown) {
+            console.warn('⚠️ Theme selector elements not found');
+            return;
+        }
+        
+        // Set initial theme name
+        if (currentThemeName && themes[currentTheme]) {
+            currentThemeName.textContent = themes[currentTheme].name;
+        }
+        
+        // Toggle dropdown
+        currentThemeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            themeSelector.classList.toggle('open');
+            themeDropdown.classList.toggle('show');
+        });
+        
+        // Theme option clicks
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const selectedTheme = option.dataset.theme;
+                
+                // Update active state
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                // Update current theme display
+                if (currentThemeName) {
+                    currentThemeName.textContent = themes[selectedTheme].name;
+                }
+                
+                // Apply theme
+                applyTheme(selectedTheme);
+                
+                // Close dropdown
+                themeSelector.classList.remove('open');
+                themeDropdown.classList.remove('show');
+                
+                // Show toast
+                ui.showToast(`Theme changed to ${themes[selectedTheme].name}`, 'success');
+            });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!themeSelector.contains(e.target)) {
+                themeSelector.classList.remove('open');
+                themeDropdown.classList.remove('show');
+            }
+        });
+        
+        // Set active theme in dropdown
+        themeOptions.forEach(option => {
+            option.classList.toggle('active', option.dataset.theme === currentTheme);
+        });
+        
+        console.log('✅ Theme selector initialized');
+    }
+
     // --- INITIALIZATION ---
     async function initialize() {
-        console.log('🚀 Initializing Finucity AI Chat Interface v2.2.0...');
+        console.log('🚀 Initializing Finucity AI Chat Interface v3.0.0 - ChatGPT Style...');
         
         // Remove loading class after animation completes
         setTimeout(() => {
@@ -1262,7 +1358,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initial conversation ID:', initialConversationId);
         
         // Apply saved theme
-        document.documentElement.className = `theme-${currentTheme}`;
+        applyTheme(currentTheme);
+        
+        // Initialize theme selector
+        initializeThemeSelector();
         
         // Apply saved font size
         const savedFontSize = localStorage.getItem('font-size');

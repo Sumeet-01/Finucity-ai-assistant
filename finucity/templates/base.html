@@ -174,6 +174,11 @@
                             <a href="{{ url_for('main.home') }}" class="dropdown-item">
                                 <i class="fas fa-home"></i> Home
                             </a>
+                            {% if current_user.role in ['user', 'ca', 'admin'] %}
+                            <a href="{% if current_user.role == 'user' %}{{ url_for('main.user_dashboard') }}{% elif current_user.role == 'ca' %}{{ url_for('main.ca_dashboard') }}{% else %}{{ url_for('main.admin_dashboard') }}{% endif %}" class="dropdown-item">
+                                <i class="fas fa-th-large"></i> Dashboard
+                            </a>
+                            {% endif %}
                             <a href="{{ url_for('main.profile') }}" class="dropdown-item">
                                 <i class="fas fa-user"></i> My Profile
                             </a>

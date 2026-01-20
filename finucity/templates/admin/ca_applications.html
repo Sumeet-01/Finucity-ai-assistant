@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Applications - Finucity Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0d0a 0%, #1a1f1a 100%);
+            color: #f0f2f0;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #FBA002, #e69200);
+            color: #0a0c0a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .admin-nav {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0 40px;
+            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 18px 0;
+            color: #9ca89c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #FBA002;
+            border-bottom-color: #FBA002;
+        }
+
+        .container {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #9ca89c;
+        }
+
+        .applications-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .application-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 160, 2, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .application-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.2);
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .app-info h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .app-info p {
+            color: #9ca89c;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(251, 160, 2, 0.2);
+            color: #FBA002;
+        }
+
+        .app-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            color: #9ca89c;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #f0f2f0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .app-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(251, 160, 2, 0.1);
+        }
+
+        .btn-approve {
+            flex: 1;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-reject {
+            flex: 1;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reject:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-state {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(251, 160, 2, 0.2);
+            border-radius: 16px;
+            padding: 60px;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #9ca89c;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #9ca89c;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="admin-logo">
+            <div class="admin-badge">🔐 ADMIN</div>
+            <h1 class="admin-title">Finucity Admin</h1>
+        </div>
+        <div class="admin-user">
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Navigation -->
+    <nav class="admin-nav">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('main.admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('main.admin_users') }}">Users</a></li>
+            <li><a href="{{ url_for('main.admin_ca_applications') }}" class="active">CA Applications</a></li>
+        </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1>📋 CA Applications</h1>
+            <p>Review and verify Chartered Accountant applications</p>
+        </div>
+
+        <div class="applications-grid" id="applicationsContainer">
+            <!-- Applications will be loaded here -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-inbox"></i>
+            <h3>No Pending Applications</h3>
+            <p>All CA applications have been reviewed</p>
+        </div>
+    </div>
+
+    <script>
+        async function loadApplications() {
+            try {
+                const response = await fetch('/api/admin/ca-applications');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data && data.data.length > 0) {
+                        renderApplications(data.data);
+                    } else {
+                        document.getElementById('emptyState').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('emptyState').style.display = 'block';
+            }
+        }
+
+        function renderApplications(applications) {
+            const container = document.getElementById('applicationsContainer');
+            container.innerHTML = applications.map(app => `
+                <div class="application-card">
+                    <div class="app-header">
+                        <div class="app-info">
+                            <h3>${app.full_name}</h3>
+                            <p>${app.email}</p>
+                        </div>
+                        <span class="status-badge status-${app.status}">${app.status}</span>
+                    </div>
+                    <div class="app-details">
+                        <div class="detail-item">
+                            <span class="detail-label">ICAI Number</span>
+                            <span class="detail-value">${app.icai_number}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">City</span>
+                            <span class="detail-value">${app.city}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">State</span>
+                            <span class="detail-value">${app.state}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Submitted</span>
+                            <span class="detail-value">${new Date(app.submitted_at).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                    <div class="app-actions">
+                        <button class="btn-approve" onclick="approveApplication('${app.id}')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn-reject" onclick="rejectApplication('${app.id}')">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function approveApplication(appId) {
+            if (!confirm('Approve this CA application?')) return;
+
+            try {
+                const response = await fetch(`/api/admin/ca-application/${appId}/approve`, {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Application approved successfully!');
+                    loadApplications();
+                } else {
+                    alert('Failed to approve: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error approving application:', error);
+                alert('Error approving application');
+            }
+        }
+
+        async function rejectApplication(appId) {
+            const reason = prompt('Enter rejection reason:');
+            if (!reason) return;
+
+            try {
+                const response = await fetch(`/api/admin/ca-application/${appId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Application rejected');
+                    loadApplications();
+                } else {
+                    alert('Failed to reject: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error rejecting application:', error);
+                alert('Error rejecting application');
+            }
+        }
+
+        loadApplications();
+    </script>
+</body>
+</html>

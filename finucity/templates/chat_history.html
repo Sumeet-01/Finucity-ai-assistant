@@ -266,7 +266,7 @@
                                 <span class="query-category">{{ query.category.title() }}</span>
                                 <span>
                                     <i class="fas fa-clock"></i>
-                                    {{ query.timestamp.strftime('%B %d, %Y at %I:%M %p') }}
+                                    {{ query.created_at[:19] if query.created_at else 'Recently' }}
                                 </span>
                                 {% if query.response_time %}
                                 <span>

@@ -1154,19 +1154,17 @@ opacity: 1;
 <a href="{{ url_for('main.find_ca') }}" class="nav-item">
 <i class="fas fa-user-tie"></i> Find CA
 </a>
-<a href="{{ url_for('main.user_documents') }}" class="nav-item">
-<i class="fas fa-file-alt"></i> Documents
-<span class="nav-badge">12</span>
+<a href="{{ url_for('chat.chat_interface') }}" class="nav-item">
+<i class="fas fa-message-bot"></i> AI Chat
 </a>
-<a href="{{ url_for('main.user_messages') }}" class="nav-item">
-<i class="fas fa-comments"></i> Messages
-<span class="nav-badge">5</span>
+<a href="{{ url_for('chat.chat_history') }}" class="nav-item">
+<i class="fas fa-clock-rotate-left"></i> Chat History
 </a>
 <a href="{{ url_for('main.user_consultations') }}" class="nav-item">
 <i class="fas fa-calendar-check"></i> Consultations
 </a>
-<a href="{{ url_for('main.user_recommendations') }}" class="nav-item">
-<i class="fas fa-lightbulb"></i> Recommendations
+<a href="{{ url_for('main.profile') }}" class="nav-item">
+<i class="fas fa-user-circle"></i> Profile
 </a>
 </nav>
 
@@ -1211,36 +1209,11 @@ opacity: 1;
 <button class="mark-read-btn" onclick="markAllRead()">Mark all read</button>
 </div>
 
-<div class="notification-item">
-<div class="notification-icon success">
-<i class="fas fa-check-circle"></i>
-</div>
-<div class="notification-content">
-<h5>Document Verified</h5>
-<p>Your ITR filing document has been verified</p>
-<span class="notification-time">2 hours ago</span>
-</div>
-</div>
-
-<div class="notification-item">
-<div class="notification-icon info">
-<i class="fas fa-message"></i>
-</div>
-<div class="notification-content">
-<h5>New Message</h5>
-<p>You have a new message from your CA</p>
-<span class="notification-time">5 hours ago</span>
-</div>
-</div>
-
-<div class="notification-item">
-<div class="notification-icon warning">
-<i class="fas fa-calendar"></i>
-</div>
-<div class="notification-content">
-<h5>Upcoming Appointment</h5>
-<p>Consultation scheduled for tomorrow</p>
-<span class="notification-time">1 day ago</span>
+<div id="notificationsList">
+<div style="text-align: center; padding: 40px; color: var(--muted);">
+<i class="fas fa-bell-slash" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+<p>No new notifications</p>
+<span style="font-size: 12px;">Check back later for updates</span>
 </div>
 </div>
 </div>
@@ -1266,47 +1239,47 @@ opacity: 1;
 
 <!-- QUICK STATS -->
 <section class="quick-stats">
-<a href="{{ url_for('main.user_messages') }}" class="stat-card">
+<a href="{{ url_for('chat.chat_interface') }}" class="stat-card">
 <div class="stat-icon">
-<i class="fas fa-comments"></i>
+<i class="fas fa-robot"></i>
 </div>
 <div class="stat-content">
-<span class="stat-value">5</span>
-<p>Messages</p>
-<span class="stat-change"><i class="fas fa-arrow-up"></i> 2 new today</span>
+<span class="stat-value" id="queriesCount">0</span>
+<p>AI Queries</p>
+<span class="stat-change"><i class="fas fa-chart-line"></i> Total asked</span>
 </div>
 </a>
 
 <a href="{{ url_for('main.user_consultations') }}" class="stat-card">
 <div class="stat-icon">
-<i class="fas fa-folder-open"></i>
+<i class="fas fa-handshake"></i>
 </div>
 <div class="stat-content">
-<span class="stat-value">3</span>
+<span class="stat-value" id="consultationsCount">0</span>
 <p>Consultations</p>
-<span class="stat-change"><i class="fas fa-arrow-up"></i> 1 active</span>
+<span class="stat-change"><i class="fas fa-calendar-check"></i> Active sessions</span>
 </div>
 </a>
 
 <a href="{{ url_for('main.user_documents') }}" class="stat-card">
 <div class="stat-icon">
-<i class="fas fa-file"></i>
+<i class="fas fa-folder-open"></i>
 </div>
 <div class="stat-content">
-<span class="stat-value">12</span>
+<span class="stat-value" id="documentsCount">0</span>
 <p>Documents</p>
-<span class="stat-change negative"><i class="fas fa-arrow-down"></i> 2 pending</span>
+<span class="stat-change"><i class="fas fa-cloud-arrow-up"></i> Uploaded</span>
 </div>
 </a>
 
-<a href="{{ url_for('main.user_consultations') }}" class="stat-card">
+<a href="{{ url_for('chat.chat_history') }}" class="stat-card">
 <div class="stat-icon">
-<i class="fas fa-check-circle"></i>
+<i class="fas fa-star"></i>
 </div>
 <div class="stat-content">
-<span class="stat-value">8</span>
-<p>Completed</p>
-<span class="stat-change"><i class="fas fa-arrow-up"></i> +2 this week</span>
+<span class="stat-value" id="helpfulCount">0</span>
+<p>Helpful Responses</p>
+<span class="stat-change"><i class="fas fa-thumbs-up"></i> Satisfaction</span>
 </div>
 </a>
 </section>
@@ -1344,79 +1317,61 @@ opacity: 1;
 </div>
 </section>
 
-<!-- CONSULTATIONS -->
+<!-- RECENT QUERIES -->
 <section class="section-card">
 <div class="section-header">
-<h3><i class="fas fa-folder-open"></i> Active Consultations</h3>
-<a href="{{ url_for('main.user_consultations') }}" class="view-all-link">View All</a>
+<h3><i class="fas fa-comment-dots"></i> Recent AI Queries</h3>
+<a href="{{ url_for('chat.chat_history') }}" class="view-all-link">View All</a>
 </div>
 
-<div class="consultation-list">
-<a href="{{ url_for('main.user_consultations') }}" class="consultation-item">
-<div class="consultation-info">
-<div class="consultation-avatar">RK</div>
-<div class="consultation-details">
-<h4>CA Rajesh Kumar</h4>
-<p>ITR Filing - AY 2024-25</p>
+<div class="consultation-list" id="recentQueriesList">
+<div style="text-align: center; padding: 40px; color: var(--muted);">
+<i class="fas fa-spinner fa-spin" style="font-size: 24px; color: var(--gold);"></i>
+<p style="margin-top: 12px;">Loading your recent queries...</p>
 </div>
-</div>
-<span class="consultation-status active">Active</span>
-</a>
-
-<a href="{{ url_for('main.user_consultations') }}" class="consultation-item">
-<div class="consultation-info">
-<div class="consultation-avatar">PS</div>
-<div class="consultation-details">
-<h4>CA Priya Singh</h4>
-<p>GST Registration</p>
-</div>
-</div>
-<span class="consultation-status pending">Pending</span>
-</a>
 </div>
 </section>
 </div>
 
 <!-- SECOND ROW -->
 <div class="dashboard-grid">
-<!-- RECENT ACTIVITY -->
+<!-- INSIGHTS & STATS -->
 <section class="section-card">
 <div class="section-header">
-<h3><i class="fas fa-clock"></i> Recent Activity</h3>
-<a href="{{ url_for('main.user_documents') }}" class="view-all-link">View All</a>
+<h3><i class="fas fa-chart-pie"></i> Your Financial Insights</h3>
 </div>
 
-<div class="activity-list">
+<div class="activity-list" id="insightsList">
 <div class="activity-item">
-<div class="activity-icon upload">
-<i class="fas fa-file-upload"></i>
+<div class="activity-icon complete">
+<i class="fas fa-brain"></i>
 </div>
 <div class="activity-content">
-<h5>Document Uploaded</h5>
-<p>PAN Card uploaded successfully</p>
-<span class="activity-time">2 hours ago</span>
+<h5>AI Accuracy Rate</h5>
+<p id="accuracyInsight">Your queries have 95% helpful response rate</p>
+<span class="activity-time">Updated now</span>
+</div>
+</div>
+
+<div class="activity-item">
+<div class="activity-icon upload">
+<i class="fas fa-clock"></i>
+</div>
+<div class="activity-content">
+<h5>Member Since</h5>
+<p id="memberSince">{{ user.created_at[:10] if user.created_at else 'Recently' }}</p>
+<span class="activity-time">Account status: Active</span>
 </div>
 </div>
 
 <div class="activity-item">
 <div class="activity-icon message">
-<i class="fas fa-message"></i>
+<i class="fas fa-shield-check"></i>
 </div>
 <div class="activity-content">
-<h5>Message Received</h5>
-<p>New message from CA Rajesh Kumar</p>
-<span class="activity-time">5 hours ago</span>
-</div>
-</div>
-
-<div class="activity-item">
-<div class="activity-icon complete">
-<i class="fas fa-check-circle"></i>
-</div>
-<div class="activity-content">
-<h5>Consultation Completed</h5>
-<p>Tax planning consultation finished</p>
-<span class="activity-time">1 day ago</span>
+<h5>Account Security</h5>
+<p>All security features enabled</p>
+<span class="activity-time">Last login: Today</span>
 </div>
 </div>
 </div>
@@ -1429,43 +1384,43 @@ opacity: 1;
 </div>
 
 <div class="quick-actions">
-<a href="{{ url_for('main.user_documents') }}" class="action-card">
+<a href="{{ url_for('chat.chat_interface') }}" class="action-card">
 <div class="action-icon">
-<i class="fas fa-file-upload"></i>
+<i class="fas fa-comments"></i>
 </div>
 <div class="action-content">
-<h5>Upload Document</h5>
-<p>Add files quickly</p>
-</div>
-</a>
-
-<a href="{{ url_for('main.user_messages') }}" class="action-card">
-<div class="action-icon">
-<i class="fas fa-paper-plane"></i>
-</div>
-<div class="action-content">
-<h5>Send Message</h5>
-<p>Contact your CA</p>
+<h5>Ask AI</h5>
+<p>Get instant answers</p>
 </div>
 </a>
 
 <a href="{{ url_for('main.find_ca') }}" class="action-card">
 <div class="action-icon">
-<i class="fas fa-calendar-plus"></i>
+<i class="fas fa-user-tie"></i>
 </div>
 <div class="action-content">
-<h5>Book Appointment</h5>
-<p>Schedule meeting</p>
+<h5>Find CA</h5>
+<p>Connect with experts</p>
 </div>
 </a>
 
-<a href="{{ url_for('main.user_recommendations') }}" class="action-card">
+<a href="{{ url_for('chat.chat_history') }}" class="action-card">
 <div class="action-icon">
-<i class="fas fa-lightbulb"></i>
+<i class="fas fa-history"></i>
 </div>
 <div class="action-content">
-<h5>Get Suggestions</h5>
-<p>AI recommendations</p>
+<h5>View History</h5>
+<p>Past conversations</p>
+</div>
+</a>
+
+<a href="{{ url_for('main.profile') }}" class="action-card">
+<div class="action-icon">
+<i class="fas fa-user-cog"></i>
+</div>
+<div class="action-content">
+<h5>Settings</h5>
+<p>Manage account</p>
 </div>
 </a>
 </div>
@@ -1473,7 +1428,7 @@ opacity: 1;
 </div>
 
 <footer>
-<div>© Finucity {{ current_year }} - Your Trusted Financial Companion</div>
+<div> Finucity {{ current_year }} - Your Trusted Financial Companion</div>
 <div class="footer-links">
 <a href="{{ url_for('main.privacy_policy') }}">Privacy Policy</a>
 <a href="{{ url_for('main.terms_of_service') }}">Terms of Service</a>
@@ -1530,8 +1485,132 @@ function markAllRead() {
     alert('All notifications marked as read!');
 }
 
+// Load Real-Time Dashboard Data
+async function loadDashboardData() {
+    try {
+        // Load user stats
+        const statsResponse = await fetch('/api/user/dashboard-stats');
+        if (statsResponse.ok) {
+            const statsResult = await statsResponse.json();
+            if (statsResult.success && statsResult.data) {
+                updateDashboardStats(statsResult.data);
+            }
+        }
+
+        // Load recent queries
+        await loadRecentQueries();
+
+        console.log('%c Dashboard loaded with real-time data', 'color: #22c55e; font-size: 14px; font-weight: bold;');
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function updateDashboardStats(stats) {
+    // Update stat cards
+    const queriesEl = document.getElementById('queriesCount');
+    const consultationsEl = document.getElementById('consultationsCount');
+    const documentsEl = document.getElementById('documentsCount');
+    const helpfulEl = document.getElementById('helpfulCount');
+
+    if (queriesEl) queriesEl.textContent = stats.total_queries || 0;
+    if (consultationsEl) consultationsEl.textContent = stats.active_consultations || 0;
+    if (documentsEl) documentsEl.textContent = stats.documents_count || 0;
+    if (helpfulEl) helpfulEl.textContent = stats.helpful_responses || 0;
+
+    // Update accuracy insight
+    const accuracyEl = document.getElementById('accuracyInsight');
+    if (accuracyEl && stats.accuracy_rate !== undefined) {
+        accuracyEl.textContent = `Your queries have ${stats.accuracy_rate}% helpful response rate`;
+    }
+}
+
+async function loadRecentQueries() {
+    try {
+        const response = await fetch('/api/user/recent-queries?limit=3');
+        if (!response.ok) {
+            showNoQueriesMessage();
+            return;
+        }
+
+        const result = await response.json();
+        const queriesList = document.getElementById('recentQueriesList');
+
+        if (!result.success || !result.data || result.data.length === 0) {
+            showNoQueriesMessage();
+            return;
+        }
+
+        // Build queries HTML
+        let html = '';
+        result.data.forEach((query, index) => {
+            const initials = query.question ? query.question.substring(0, 2).toUpperCase() : 'AI';
+            const timeAgo = formatTimeAgo(query.created_at);
+            const questionPreview = query.question ? (query.question.length > 50 ? query.question.substring(0, 50) + '...' : query.question) : 'Query';
+
+            html += `
+                <a href="{{ url_for('chat.chat_history') }}" class="consultation-item">
+                    <div class="consultation-info">
+                        <div class="consultation-avatar" style="background: linear-gradient(135deg, #fba002, #e69200);">${initials}</div>
+                        <div class="consultation-details">
+                            <h4>${questionPreview}</h4>
+                            <p>${timeAgo}</p>
+                        </div>
+                    </div>
+                    <span class="consultation-status ${query.is_helpful ? 'active' : 'pending'}">
+                        ${query.is_helpful ? '<i class="fas fa-thumbs-up"></i> Helpful' : 'Answered'}
+                    </span>
+                </a>
+            `;
+        });
+
+        queriesList.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading recent queries:', error);
+        showNoQueriesMessage();
+    }
+}
+
+function showNoQueriesMessage() {
+    const queriesList = document.getElementById('recentQueriesList');
+    if (queriesList) {
+        queriesList.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--muted);">
+                <i class="fas fa-comment-slash" style="font-size: 32px; color: var(--gold); margin-bottom: 12px;"></i>
+                <p style="margin-bottom: 8px;">No queries yet</p>
+                <span style="font-size: 13px;">Start by asking your first question!</span>
+                <br><br>
+                <a href="{{ url_for('chat.chat_interface') }}" class="btn-primary" style="display: inline-flex; padding: 12px 24px;">
+                    <i class="fas fa-plus"></i> Ask AI Now
+                </a>
+            </div>
+        `;
+    }
+}
+
+function formatTimeAgo(dateString) {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
+}
+
+// Load dashboard data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+});
+
 // Console welcome message
-console.log('%c🎉 Welcome to Finucity Dashboard!', 'color: #fba002; font-size: 20px; font-weight: bold;');
+console.log('%c Welcome to Finucity Dashboard!', 'color: #fba002; font-size: 20px; font-weight: bold;');
 console.log('%cYour financial companion is ready.', 'color: #8d9c8d; font-size: 14px;');
 </script>
 

@@ -1,151 +1,198 @@
 """
-Enhanced database models for Finucity AI
-Optimized for chat functionality and user management
-Author: Sumeet Sangwan
+Supabase Database Schema Documentation
+Finucity uses ONLY Supabase for all data persistence
+Author: Sumeet Sangwan (Refactored for production)
 """
 
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash, check_password_hash
-import secrets
+from werkzeug.security import check_password_hash
+from typing import Optional, Dict, Any
 
-# Import the globally defined 'db' object
-from . import db
+# =====================================================================
+# SUPABASE SCHEMA DOCUMENTATION
+# =====================================================================
+# This file documents the Supabase tables used by Finucity.
+# All database operations use the Supabase client via database.py
+# NO SQLAlchemy or local database is used.
+# =====================================================================
 
-class User(UserMixin, db.Model):
-    """Enhanced User model with comprehensive fields"""
-    __tablename__ = 'users'
+"""
+SUPABASE TABLES:
 
-    # Primary fields
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    password_hash = db.Column(db.String(200), nullable=False)
+1. profiles (extends auth.users)
+   - id: UUID (primary key, references auth.users)
+   - email: TEXT (unique, not null)
+   - username: TEXT (unique)
+   - first_name: TEXT
+   - last_name: TEXT
+   - phone: TEXT
+   - profession: TEXT
+   - city: TEXT
+   - state: TEXT
+   - role: TEXT (user|ca|ca_pending|admin)
+   - is_active: BOOLEAN (default true)
+   - email_verified: BOOLEAN (default false)
+   - created_at: TIMESTAMP (default now())
+   - last_login: TIMESTAMP
+   - last_seen: TIMESTAMP
+   
+2. chat_queries
+   - id: UUID (primary key)
+   - user_id: UUID (references profiles)
+   - session_id: TEXT
+   - conversation_id: TEXT
+   - question: TEXT (not null)
+   - response: TEXT (not null)
+   - category: TEXT (default 'general')
+   - confidence_score: FLOAT
+   - response_time: FLOAT
+   - rating: INTEGER
+   - is_helpful: BOOLEAN
+   - feedback_text: TEXT
+   - created_at: TIMESTAMP (default now())
+   
+3. user_feedback
+   - id: UUID (primary key)
+   - user_id: UUID (references profiles)
+   - admin_user_id: UUID (references profiles, nullable)
+   - subject: TEXT (not null)
+   - message: TEXT (not null)
+   - rating: INTEGER
+   - created_at: TIMESTAMP (default now())
+   
+4. ca_applications
+   - id: UUID (primary key)
+   - user_id: UUID (references profiles)
+   - full_name: TEXT (not null)
+   - email: TEXT (not null)
+   - phone: TEXT (not null)
+   - city: TEXT
+   - state: TEXT
+   - icai_number: TEXT (not null)
+   - registration_year: INTEGER
+   - ca_type: TEXT
+   - experience_years: INTEGER
+   - firm_name: TEXT
+   - practice_address: TEXT
+   - services: JSONB
+   - client_types: JSONB
+   - status: TEXT (pending|approved|rejected)
+   - reviewed_by: UUID (references profiles, nullable)
+   - rejection_reason: TEXT
+   - created_at: TIMESTAMP (default now())
+   - updated_at: TIMESTAMP
 
-    # Personal information
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    phone = db.Column(db.String(15))
-    profession = db.Column(db.String(100))
-    city = db.Column(db.String(50))
-    state = db.Column(db.String(50))
+5. conversations (optional - for grouping chat messages)
+   - id: UUID (primary key)
+   - user_id: UUID (references profiles)
+   - session_id: TEXT (unique)
+   - title: TEXT
+   - category: TEXT
+   - created_at: TIMESTAMP (default now())
+   - updated_at: TIMESTAMP
+"""
 
-    # Account status
-    is_active = db.Column(db.Boolean, default=True)
-    is_admin = db.Column(db.Boolean, default=False)
-    email_verified = db.Column(db.Boolean, default=False)
+# =====================================================================
+# USER ADAPTER FOR FLASK-LOGIN
+# =====================================================================
 
-    # Timestamps
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime)
-    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Relationships
-    chat_queries = db.relationship('ChatQuery', backref='user', lazy='dynamic', cascade='all, delete-orphan')
-    conversations = db.relationship('Conversation', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+class User(UserMixin):
+    """
+    User adapter class for Flask-Login compatibility
+    Wraps Supabase user data to work with Flask-Login's session management
+    This is NOT a database model - just an adapter
+    """
     
-    # =================================================================
-    # DEFINITIVE FIX for AmbiguousForeignKeysError
-    # We explicitly tell SQLAlchemy which foreign key to use for this relationship.
-    # =================================================================
-    feedback_entries = db.relationship(
-        'UserFeedback', 
-        foreign_keys='UserFeedback.user_id', 
-        backref='user', 
-        lazy='dynamic', 
-        cascade='all, delete-orphan'
-    )
-    admin_responses = db.relationship(
-        'UserFeedback',
-        foreign_keys='UserFeedback.admin_user_id',
-        backref='admin',
-        lazy='dynamic'
-    )
-    # =================================================================
-
+    def __init__(self, user_data: Dict[str, Any]):
+        """Initialize from Supabase profile data"""
+        self.id = user_data.get('id')
+        self.email = user_data.get('email')
+        self.username = user_data.get('username', '')
+        self.first_name = user_data.get('first_name', '')
+        self.last_name = user_data.get('last_name', '')
+        self.phone = user_data.get('phone')
+        self.profession = user_data.get('profession')
+        self.city = user_data.get('city')
+        self.state = user_data.get('state')
+        self.role = user_data.get('role', 'user')
+        self._is_active = user_data.get('is_active', True)
+        self.email_verified = user_data.get('email_verified', False)
+        self.created_at = user_data.get('created_at')
+        self.last_login = user_data.get('last_login')
+        self.last_seen = user_data.get('last_seen')
+        
+        # Store original data
+        self._data = user_data
+    
+    @property
+    def is_active(self) -> bool:
+        """Override Flask-Login's is_active property"""
+        return self._is_active
+    
+    @is_active.setter
+    def is_active(self, value: bool):
+        """Allow setting is_active"""
+        self._is_active = value
+    
     @property
     def full_name(self) -> str:
         """Get user's full name"""
-        return f"{self.first_name} {self.last_name}"
-
-    def set_password(self, password: str) -> None:
-        """Hash and set password"""
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password: str) -> bool:
-        """Check if password matches hash"""
-        return check_password_hash(self.password_hash, password)
-
-
-class Conversation(db.Model):
-    """Model for organizing chat sessions."""
-    __tablename__ = 'conversations'
+        return f"{self.first_name} {self.last_name}".strip() or self.username or 'User'
     
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    session_id = db.Column(db.String(100), nullable=False, unique=True, index=True)
-    title = db.Column(db.String(200))
-    category = db.Column(db.String(50), default='general')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-
-class ChatQuery(db.Model):
-    """Model for storing chat messages and AI responses"""
-    __tablename__ = 'chat_queries'
+    @property
+    def is_admin(self) -> bool:
+        """Check if user is admin"""
+        return self.role == 'admin'
     
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
-    session_id = db.Column(db.String(100), index=True)
-    conversation_id = db.Column(db.String(64), nullable=True, index=True)
-    question = db.Column(db.Text, nullable=False)
-    response = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    category = db.Column(db.String(50), default='general')
+    @property
+    def is_ca(self) -> bool:
+        """Check if user is CA"""
+        return self.role in ('ca', 'admin')
     
-    # Additional fields for analytics
-    confidence_score = db.Column(db.Float, default=0.9)
-    response_time = db.Column(db.Float)
-    rating = db.Column(db.Integer)
-    is_helpful = db.Column(db.Boolean)
-    feedback_text = db.Column(db.Text)
-
-
-class UserFeedback(db.Model):
-    """Model for tracking user feedback."""
-    __tablename__ = 'user_feedback'
-    id = db.Column(db.Integer, primary_key=True)
-    # This is the foreign key for the user who SUBMITTED the feedback
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
-    # This is the foreign key for the user who RESPONDED to the feedback (if they are an admin)
-    admin_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    def get_id(self) -> str:
+        """Required by Flask-Login"""
+        return str(self.id)
     
-    subject = db.Column(db.String(200), nullable=False)
-    message = db.Column(db.Text, nullable=False)
-    rating = db.Column(db.Integer)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    @staticmethod
+    def check_password(password: str) -> bool:
+        """
+        Password checking is handled by Supabase Auth
+        This method is here for compatibility but should not be used
+        """
+        raise NotImplementedError(
+            "Password authentication is handled by Supabase Auth. "
+            "Use supabase.auth.sign_in_with_password() instead."
+        )
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary"""
+        return self._data
 
-def create_sample_data():
-    """Create sample data for development."""
-    if User.query.first():
-        return  # Data already exists
+# =====================================================================
+# MIGRATION NOTES
+# =====================================================================
+"""
+IMPORTANT:
 
-    # Create admin user
-    admin_user = User(
-        username='admin', email='admin@finucity.com',
-        first_name='Admin', last_name='User', is_admin=True
+1. All database queries must use the Supabase client from database.py
+2. User authentication is handled by Supabase Auth (not Flask-Login passwords)
+3. The User class above is ONLY for Flask-Login session management
+4. DO NOT create SQLAlchemy models or use db.session anywhere
+5. All data persistence goes through Supabase REST API
+
+Example usage:
+
+    from finucity.database import UserService, ChatService
+    
+    # Get user
+    user_data = UserService.get_by_email('user@example.com')
+    if user_data:
+        user = User(user_data)  # Wrap for Flask-Login
+    
+    # Store chat query
+    ChatService.create_query(
+        user_id=user.id,
+        question='How to save tax?',
+        response='Use Section 80C...'
     )
-    admin_user.set_password('admin123')
-    db.session.add(admin_user)
-
-    # Create demo user
-    demo_user = User(
-        username='demo', email='demo@finucity.com',
-        first_name='Demo', last_name='User'
-    )
-    demo_user.set_password('demo123')
-    db.session.add(demo_user)
-    
-    db.session.commit()
-    print("✅ Sample users (admin, demo) created successfully.")
+"""

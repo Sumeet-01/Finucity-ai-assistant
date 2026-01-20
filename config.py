@@ -15,37 +15,66 @@ class Config:
     """Base configuration class"""
     
     # ===== Core Flask Settings =====
-    SECRET_KEY = os.getenv('SECRET_KEY', 'finucity-super-secret-key-change-in-production-sumeet-2025')
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    if not SECRET_KEY:
+        raise RuntimeError(
+            "SECRET_KEY environment variable must be set. "
+            "Generate a secure key: python -c 'import secrets; print(secrets.token_hex(32))'"
+        )
     FLASK_ENV = os.getenv('FLASK_ENV', 'development')
     FLASK_DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() in ['true', '1', 'yes']
     
     # ===== Database Configuration =====
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_recycle': 300,
-        'pool_pre_ping': True,
-        'pool_timeout': 30,
-    }
+    # Finucity uses ONLY Supabase for data persistence
+    # No SQLAlchemy or local database configuration needed
     
     # ===== AI Configuration =====
     GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+    if not GROQ_API_KEY:
+        raise RuntimeError(
+            "GROQ_API_KEY environment variable must be set."
+        )
     AI_MODEL_NAME = os.getenv('AI_MODEL_NAME', 'llama-3.1-8b-instant')
     AI_MAX_TOKENS = int(os.getenv('AI_MAX_TOKENS', '1500'))
     AI_TEMPERATURE = float(os.getenv('AI_TEMPERATURE', '0.7'))
     
     # ===== Supabase Configuration =====
     SUPABASE_URL = os.getenv('SUPABASE_URL')
+    if not SUPABASE_URL:
+        raise RuntimeError(
+            "SUPABASE_URL environment variable must be set."
+        )
     SUPABASE_ANON_KEY = os.getenv('SUPABASE_ANON_KEY')
+    if not SUPABASE_ANON_KEY:
+        raise RuntimeError(
+            "SUPABASE_ANON_KEY environment variable must be set."
+        )
     SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
-    USE_SUPABASE = os.getenv('USE_SUPABASE', 'false').lower() in ['true', '1', 'yes']
-    SUPABASE_DATABASE_URL = os.getenv('SUPABASE_DATABASE_URL')
+    if not SUPABASE_SERVICE_KEY:
+        raise RuntimeError(
+            "SUPABASE_SERVICE_KEY environment variable must be set."
+        )
+    SUPABASE_JWT_SECRET = os.getenv('SUPABASE_JWT_SECRET')
+    if not SUPABASE_JWT_SECRET:
+        raise RuntimeError(
+            "SUPABASE_JWT_SECRET environment variable must be set."
+        )
+    USE_SUPABASE = os.getenv('USE_SUPABASE', 'true').lower() in ['true', '1', 'yes']
     
     # ===== Email Configuration =====
     MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
     MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true', '1', 'yes']
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    if not MAIL_USERNAME:
+        raise RuntimeError(
+            "MAIL_USERNAME environment variable must be set."
+        )
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    if not MAIL_PASSWORD:
+        raise RuntimeError(
+            "MAIL_PASSWORD environment variable must be set."
+        )
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@finucity.com')
     
     # ===== Application Features =====
@@ -62,7 +91,11 @@ class Config:
     MAX_MESSAGES_PER_CONVERSATION = int(os.getenv('MAX_MESSAGES_PER_CONVERSATION', '500'))
     
     # ===== Security Configuration =====
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'finucity-jwt-secret-sumeet-2025')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)  # Falls back to SECRET_KEY if not set
+    if not JWT_SECRET_KEY:
+        raise RuntimeError(
+            "JWT_SECRET_KEY environment variable must be set."
+        )
     WTF_CSRF_ENABLED = os.getenv('WTF_CSRF_ENABLED', 'false').lower() in ['true', '1', 'yes']
     SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'false').lower() in ['true', '1', 'yes']
     SESSION_COOKIE_HTTPONLY = os.getenv('SESSION_COOKIE_HTTPONLY', 'true').lower() in ['true', '1', 'yes']
@@ -133,10 +166,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     
-    # Database - Use SQLite for development
-    SQLALCHEMY_DATABASE_URI = os.getenv('DEV_DATABASE_URL', 'sqlite:///finucity_dev.db')
-    
-    # Relaxed security for development
+    # Relaxed security for development (NOT for production)
     WTF_CSRF_ENABLED = False
     SESSION_COOKIE_SECURE = False
     
@@ -152,7 +182,7 @@ class DevelopmentConfig(Config):
         
         # Development-specific initialization
         print("🚀 Finucity AI - Development Mode")
-        print(f"📊 Database: {app.config['SQLALCHEMY_DATABASE_URI']}")
+        print(f"💾 Database: Supabase (PostgreSQL)")
         print(f"🤖 AI Model: {app.config['AI_MODEL_NAME']}")
         print(f"🔑 Groq API: {'✅ Configured' if app.config['GROQ_API_KEY'] else '❌ Missing'}")
 
@@ -161,8 +191,8 @@ class TestingConfig(Config):
     TESTING = True
     DEBUG = True
     
-    # Use in-memory SQLite for testing
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    # Use Supabase test project for testing
+    # Configure SUPABASE_URL and SUPABASE_SERVICE_KEY for test environment
     
     # Disable CSRF for testing
     WTF_CSRF_ENABLED = False
@@ -170,29 +200,22 @@ class TestingConfig(Config):
     # Disable rate limiting for tests
     RATELIMIT_ENABLED = False
     
-    # Fast password hashing for tests
-    BCRYPT_LOG_ROUNDS = 4
-    
     @staticmethod
     def init_app(app):
         Config.init_app(app)
         print("🧪 Finucity AI - Testing Mode")
+        print("💾 Database: Supabase Test Project")
 
 class ProductionConfig(Config):
     """Production configuration"""
     DEBUG = False
     TESTING = False
     
-    # Database - Use PostgreSQL/Supabase for production
-    SQLALCHEMY_DATABASE_URI = (
-        os.getenv('SUPABASE_DATABASE_URL') if Config.USE_SUPABASE 
-        else os.getenv('DATABASE_URL', 'postgresql://localhost/finucity_prod')
-    )
-    
     # Enhanced security for production
     WTF_CSRF_ENABLED = True
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
     
     # Production logging
     LOG_LEVEL = 'INFO'
@@ -209,9 +232,16 @@ class ProductionConfig(Config):
         
         # Production-specific initialization
         print("🏭 Finucity AI - Production Mode")
+        print("💾 Database: Supabase (PostgreSQL)")
         
         # Ensure critical config is set
-        critical_settings = ['SECRET_KEY', 'GROQ_API_KEY']
+        critical_settings = [
+            'SECRET_KEY', 
+            'GROQ_API_KEY',
+            'SUPABASE_URL',
+            'SUPABASE_SERVICE_KEY',
+            'SUPABASE_JWT_SECRET'
+        ]
         missing_settings = [setting for setting in critical_settings if not os.getenv(setting)]
         
         if missing_settings:
@@ -239,15 +269,14 @@ class ProductionConfig(Config):
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
-        app.logger.info('Finucity AI Production Startup')
+        app.logger.info('Finucity AI Production Startup - Supabase Database')
 
 class StagingConfig(ProductionConfig):
     """Staging configuration - similar to production but with debug info"""
     DEBUG = True
     
-    # Use staging database
-    SQLALCHEMY_DATABASE_URI = os.getenv('STAGING_DATABASE_URL', 
-                                       'postgresql://localhost/finucity_staging')
+    # Use Supabase staging project
+    # Configure separate SUPABASE_URL and keys for staging environment
     
     # Less strict rate limiting for staging
     RATELIMIT_DEFAULT = '1000 per hour'
@@ -283,10 +312,11 @@ def validate_config():
         if not os.getenv(var):
             issues.append(f"Missing environment variable: {var}")
     
-    # Check database URL format
-    db_url = os.getenv('SQLALCHEMY_DATABASE_URI') or os.getenv('DATABASE_URL')
-    if db_url and not any(db_url.startswith(prefix) for prefix in ['sqlite://', 'postgresql://', 'mysql://']):
-        issues.append("Invalid database URL format")
+    # Verify Supabase configuration
+    if not os.getenv('SUPABASE_URL'):
+        issues.append("SUPABASE_URL is required")
+    if not os.getenv('SUPABASE_SERVICE_KEY'):
+        issues.append("SUPABASE_SERVICE_KEY is required")
     
     # Check AI configuration
     try:
@@ -324,16 +354,13 @@ def print_config_summary():
     print(f"   Temperature: {config_class.AI_TEMPERATURE}")
     print(f"   API Key: {'✅ Set' if config_class.GROQ_API_KEY else '❌ Missing'}")
     
-    print(f"\n🗄️ Database:")
-    db_url = getattr(config_class, 'SQLALCHEMY_DATABASE_URI', 'Not set')
-    if 'sqlite' in db_url:
-        print(f"   Type: SQLite")
-        print(f"   Path: {db_url.replace('sqlite:///', '')}")
-    elif 'postgresql' in db_url:
-        print(f"   Type: PostgreSQL")
-        print(f"   URL: {db_url.split('@')[1] if '@' in db_url else 'Not configured'}")
+    print(f"\n💾 Database:")
+    print(f"   Type: Supabase (PostgreSQL)")
+    supabase_url = os.getenv('SUPABASE_URL', 'Not configured')
+    if supabase_url != 'Not configured':
+        print(f"   URL: {supabase_url}")
     else:
-        print(f"   URL: {db_url}")
+        print(f"   ❌ Supabase not configured")
     
     print(f"\n🔧 Features:")
     print(f"   Registration: {'✅' if config_class.ENABLE_REGISTRATION else '❌'}")
@@ -375,16 +402,11 @@ FLASK_ENV=development
 FLASK_DEBUG=True
 SECRET_KEY=your-super-secret-key-here
 
-# Database Configuration
-DATABASE_URL=sqlite:///finucity.db
-DEV_DATABASE_URL=sqlite:///finucity_dev.db
-
-# Supabase Configuration (Optional)
-SUPABASE_URL=your-supabase-url
+# Supabase Configuration (REQUIRED - Single Source of Truth)
+SUPABASE_URL=your-supabase-project-url
 SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_KEY=your-supabase-service-key
-USE_SUPABASE=false
-SUPABASE_DATABASE_URL=postgresql://postgres.your-supabase-project:[PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
+SUPABASE_SERVICE_KEY=your-supabase-service-role-key
+SUPABASE_JWT_SECRET=your-supabase-jwt-secret
 
 # ==========================================
 # AI Configuration - GROQ LLaMA
@@ -505,8 +527,8 @@ ENABLE_BULK_OPERATIONS=true
 # ==========================================
 # Production Overrides (when FLASK_ENV=production)
 # ==========================================
-# DATABASE_URL=postgresql://finucity_user:secure_password@localhost/finucity_prod
-# USE_SUPABASE=true
+# SUPABASE_URL=your-production-supabase-url
+# SUPABASE_SERVICE_KEY=your-production-service-key
 # SESSION_COOKIE_SECURE=true
 # LOG_LEVEL=INFO
 # DEBUG=false

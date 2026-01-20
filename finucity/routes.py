@@ -11,8 +11,9 @@ from datetime import datetime
 import os
 import jwt
 
-from .  import db, limiter
-from .models import User, ChatQuery, UserFeedback
+from . import limiter
+from .models import User
+from .database import UserService, ChatService, FeedbackService, get_supabase
 
 try:
     from . ai import get_ai_response
@@ -70,54 +71,56 @@ def decode_supabase_jwt(token:  str):
 def ensure_local_user_from_claims(claims, role='user'):
     """Find or create a local User based on Supabase claims."""
     email = claims.get("email") or claims.get("user_metadata", {}).get("email")
-    first_name = claims. get("user_metadata", {}).get("full_name", "") or claims.get("name", "") or ""
+    first_name = claims.get("user_metadata", {}).get("full_name", "") or claims.get("name", "") or ""
     last_name = ""
     if first_name and " " in first_name:
-        parts = first_name. split(" ", 1)
+        parts = first_name.split(" ", 1)
         first_name, last_name = parts[0], parts[1]
     if not email:
         raise ValueError("No email found in token")
 
-    user = User.query.filter_by(email=email. lower()).first()
-    if not user:
+    # Check if user exists in Supabase
+    user_data = UserService.get_by_email(email.lower())
+    
+    if not user_data:
+        # Create new user profile in Supabase
         base_username = email.split("@")[0]
         candidate = base_username
         i = 1
-        while User.query. filter_by(username=candidate. lower()).first():
+        # Check for username uniqueness
+        sb = get_supabase()
+        while True:
+            existing = sb.table('profiles').select('id').eq('username', candidate.lower()).limit(1).execute()
+            if not existing.data:
+                break
             i += 1
             candidate = f"{base_username}{i}"
-        user = User(
-            username=candidate. lower(),
-            email=email. lower(),
-            first_name=first_name. title() if first_name else "",
-            last_name=last_name.title() if last_name else "",
-        )
-        if hasattr(user, 'role'):
-            user.role = role
-        try:
-            random_pwd = uuid.uuid4().hex
-            user.set_password(random_pwd)
-        except Exception: 
-            user.password_hash = uuid.uuid4().hex
-        db.session.add(user)
-        db.session.commit()
+        
+        # Create profile data
+        profile_data = {
+            'id': claims.get('sub'),  # Use Supabase auth user ID
+            'email': email.lower(),
+            'username': candidate.lower(),
+            'first_name': first_name.title() if first_name else "",
+            'last_name': last_name.title() if last_name else "",
+            'role': role
+        }
+        
+        user_data = UserService.create(profile_data)
+        if not user_data:
+            raise Exception("Failed to create user profile")
     else:
-        updated = False
-        if first_name and not user.first_name:
-            user. first_name = first_name. title()
-            updated = True
-        if last_name and not user.last_name:
-            user. last_name = last_name.title()
-            updated = True
-        if not getattr(user, "password_hash", None):
-            try:
-                user. set_password(uuid.uuid4().hex)
-            except Exception:
-                user.password_hash = uuid.uuid4().hex
-            updated = True
-        if updated:
-            db. session.commit()
-    return user
+        # Update existing user if needed
+        updates = {}
+        if first_name and not user_data.get('first_name'):
+            updates['first_name'] = first_name.title()
+        if last_name and not user_data.get('last_name'):
+            updates['last_name'] = last_name.title()
+        
+        if updates:
+            user_data = UserService.update(user_data['id'], updates)
+    
+    return User(user_data)
 
 
 def check_ca_access():
@@ -154,13 +157,46 @@ def index():
 @main_bp.route('/profile', endpoint='profile')
 @login_required
 def profile():
-    """Displays the current user's profile page."""
-    return render_template('profile.html', user=current_user)
+    """Displays the current user's profile page with real-time stats."""
+    try:
+        sb = get_supabase()
+        user_id = current_user.id
+        
+        # Get user's recent queries
+        recent_response = sb.table('chat_queries').select('*').eq('user_id', user_id).order('created_at', desc=True).limit(5).execute()
+        recent_queries = recent_response.data if recent_response.data else []
+        
+        # Get user statistics
+        total_queries_response = sb.table('chat_queries').select('id', count='exact').eq('user_id', user_id).execute()
+        total_queries = total_queries_response.count if hasattr(total_queries_response, 'count') else 0
+        
+        helpful_response = sb.table('chat_queries').select('id', count='exact').eq('user_id', user_id).eq('is_helpful', True).execute()
+        total_feedback = helpful_response.count if hasattr(helpful_response, 'count') else 0
+        
+        # Calculate satisfaction rate
+        satisfaction_rate = round((total_feedback / total_queries * 100), 1) if total_queries > 0 else 0
+        
+        user_stats = {
+            'total_queries': total_queries,
+            'total_feedback': total_feedback,
+            'days_active': 1,  # Can be enhanced with actual login tracking
+            'satisfaction_rate': satisfaction_rate
+        }
+        
+        return render_template('profile.html', user=current_user, user_stats=user_stats, recent_queries=recent_queries)
+    except Exception as e:
+        print(f"Profile page error: {e}")
+        # Fallback to empty stats
+        return render_template('profile.html', user=current_user, user_stats=None, recent_queries=[])
 
 
 @main_bp.route('/about', endpoint='about')
 def about():
     """Renders the about page."""
+    try:
+        return render_template('about.html')
+    except:
+        return render_template('Errors/404.html'), 404
     return render_template('about.html')
 
 
@@ -529,17 +565,18 @@ def chat():
 def chat_history():
     """Get user's chat history."""
     try:
-        queries = ChatQuery.query.filter_by(user_id=current_user.id).order_by(ChatQuery. created_at.desc()).limit(50).all()
+        # Get chat history from Supabase
+        queries = ChatService.get_user_history(current_user.id, limit=50)
         history = [{
-            'id': q.id,
-            'query': q. query,
-            'response': q.response,
-            'created_at': q. created_at.isoformat() if q.created_at else None
-        } for q in queries]
+            'id': q.get('id'),
+            'query': q.get('question'),
+            'response': q.get('response'),
+            'created_at': q.get('created_at')
+        } for q in queries] if queries else []
         return jsonify({'success': True, 'data': history})
     except Exception as e: 
         print(f"Chat history error: {e}")
-        return jsonify({'success': False, 'error':  'Failed to fetch chat history'}), 500
+        return jsonify({'success': False, 'error': 'Failed to fetch chat history'}), 500
 
 
 # ==================== CA DASHBOARD ROUTES ====================
@@ -805,19 +842,6 @@ def user_payments():
     return render_template('user/payments.html', user=current_user)
 
 
-@main_bp.route('/user/ca/<int:ca_id>', endpoint='view_ca_profile')
-@login_required
-def view_ca_profile(ca_id):
-    """View a specific CA's public profile."""
-    # Fetch CA profile from database
-    ca_user = User.query.filter_by(id=ca_id).first()
-    if not ca_user or getattr(ca_user, 'role', 'user') != 'ca': 
-        flash('CA profile not found.', 'error')
-        return redirect(url_for('main.find_ca'))
-    
-    return render_template('user/ca_profile_view.html', ca=ca_user, user=current_user)
-
-
 @main_bp.route('/user/consultation/<int:consultation_id>', endpoint='view_consultation')
 @login_required
 def view_consultation(consultation_id):
@@ -826,16 +850,161 @@ def view_consultation(consultation_id):
     return render_template('user/consultation_detail.html', consultation_id=consultation_id, user=current_user)
 
 
-@main_bp.route('/user/request-consultation/<int:ca_id>', endpoint='request_consultation')
+# ==================== ADMIN LOGIN & AUTH ====================
+
+@main_bp.route('/admin/login', methods=['GET'])
+def admin_login_page():
+    """Separate admin login page - only for administrators."""
+    if current_user.is_authenticated:
+        if check_admin_access():
+            return redirect(url_for('main.admin_dashboard'))
+        else:
+            flash('Admin access required.', 'error')
+            return redirect(url_for('main.home'))
+    return render_template('admin/admin_login.html')
+
+
+@main_bp.route('/admin/auth/login', methods=['POST'])
+def admin_auth_login():
+    """Admin authentication endpoint - validates admin credentials."""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+
+        if not email or not password:
+            return jsonify({'success': False, 'error': 'Email and password required'}), 400
+
+        sb = get_supabase()
+        
+        # Try Supabase Auth login first
+        try:
+            auth_response = sb.auth.sign_in_with_password({
+                'email': email,
+                'password': password
+            })
+            
+            if auth_response and auth_response.user:
+                user_id = auth_response.user.id
+                
+                # Get user profile and verify admin role
+                profile_response = sb.table('profiles').select('*').eq('id', user_id).single().execute()
+                
+                if profile_response.data:
+                    user_data = profile_response.data
+                    
+                    # CRITICAL: Check if user is admin
+                    if user_data.get('role') != 'admin':
+                        return jsonify({
+                            'success': False, 
+                            'error': 'Access denied. Admin privileges required.'
+                        }), 403
+                    
+                    # Create Flask-Login user and login
+                    user = User(user_data)
+                    login_user(user, remember=True)
+                    
+                    return jsonify({
+                        'success': True,
+                        'message': 'Admin login successful',
+                        'redirect': url_for('main.admin_dashboard')
+                    })
+                else:
+                    return jsonify({'success': False, 'error': 'Admin profile not found'}), 404
+                    
+        except Exception as auth_error:
+            print(f"Admin Supabase auth failed: {auth_error}")
+            
+            # Fallback: Check local password hash
+            try:
+                user_response = sb.table('profiles').select('*').eq('email', email).single().execute()
+                
+                if user_response.data:
+                    user_data = user_response.data
+                    
+                    # Verify admin role
+                    if user_data.get('role') != 'admin':
+                        return jsonify({
+                            'success': False,
+                            'error': 'Access denied. Admin privileges required.'
+                        }), 403
+                    
+                    # Check password hash
+                    password_hash = user_data.get('password_hash')
+                    if password_hash and check_password_hash(password_hash, password):
+                        user = User(user_data)
+                        login_user(user, remember=True)
+                        
+                        return jsonify({
+                            'success': True,
+                            'message': 'Admin login successful',
+                            'redirect': url_for('main.admin_dashboard')
+                        })
+                    else:
+                        return jsonify({'success': False, 'error': 'Invalid admin credentials'}), 401
+                else:
+                    return jsonify({'success': False, 'error': 'Admin account not found'}), 404
+                    
+            except Exception as db_error:
+                print(f"Admin database check failed: {db_error}")
+                return jsonify({'success': False, 'error': 'Authentication failed'}), 500
+
+    except Exception as e:
+        print(f"Admin login error: {e}")
+        return jsonify({'success': False, 'error': 'Login system error'}), 500
+
+
+# ==================== ADMIN DASHBOARD ROUTES ====================
+
+@main_bp.route('/admin/dashboard', endpoint='admin_dashboard')
 @login_required
-def request_consultation(ca_id):
-    """Request a consultation with a specific CA."""
-    ca_user = User. query.filter_by(id=ca_id).first()
-    if not ca_user or getattr(ca_user, 'role', 'user') != 'ca':
-        flash('CA not found. ', 'error')
-        return redirect(url_for('main.find_ca'))
+def admin_dashboard():
+    """Admin Dashboard - Manage platform and CA verifications."""
+    if not check_admin_access():
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('main.home'))
     
-    return render_template('user/request_consultation.html', ca=ca_user, user=current_user)
+    return render_template(
+        'admin/dashboard.html',
+        user=current_user,
+        SUPABASE_URL=os.getenv('SUPABASE_URL'),
+        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
+    )
+
+
+@main_bp.route('/admin/ca-applications', endpoint='admin_ca_applications')
+@login_required
+def admin_ca_applications():
+    """Admin CA Applications management page."""
+    if not check_admin_access():
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('main.home'))
+    
+    return render_template(
+        'admin/ca_applications.html',
+        user=current_user,
+        SUPABASE_URL=os.getenv('SUPABASE_URL'),
+        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
+    )
+
+
+@main_bp.route('/admin/users', endpoint='admin_users')
+@login_required
+def admin_users():
+    """Admin Users management page."""
+    if not check_admin_access():
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('main.home'))
+    
+    sb = get_supabase()
+    try:
+        users_response = sb.table('profiles').select('*').order('created_at', desc=True).limit(100).execute()
+        users = users_response.data if users_response.data else []
+    except Exception as e:
+        print(f"Error fetching users: {e}")
+        users = []
+    
+    return render_template('admin/users.html', user=current_user, users=users)
 
 
 # ==================== AUTH ROUTES ====================
@@ -948,46 +1117,193 @@ def supabase_login():
         'id': user.id,
         'email':  user.email,
         'role': user_role,
-        'redirect_url':  redirect_url
+        'redirect_url': redirect_url
     })
 
 # ==================== FLASK EMAIL/PASSWORD AUTH ====================
 
-@auth_bp. route('/flask-login', methods=['POST'])
+@auth_bp.route('/flask-login', methods=['POST'])
 def flask_login():
     """Handle email/password login via Flask."""
     try:
+        from werkzeug.security import check_password_hash
+        
         data = request.get_json()
         email = data.get('email', '').strip().lower()
         password = data.get('password', '')
-        requested_role = data. get('role', 'user')
+        requested_role = data.get('role', 'user')
 
         if not email or not password:
             return jsonify({'success': False, 'error': 'Email and password are required'}), 400
 
-        # Find user by email
-        user = User.query.filter_by(email=email).first()
+        # Try Supabase Auth first
+        sb = get_supabase()
+        try:
+            auth_response = sb.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+            
+            if auth_response.user:
+                # Get or create profile
+                user_data = UserService.get_by_email(email)
+                if not user_data:
+                    # Create profile for auth user
+                    user_data = UserService.create({
+                        'id': auth_response.user.id,
+                        'email': email,
+                        'username': email.split('@')[0],
+                        'role': 'user'
+                    })
+                
+                user = User(user_data)
+                login_user(user, remember=True)
+                
+                user_role = getattr(user, 'role', 'user')
+                if user_role == 'admin':
+                    redirect_url = url_for('main.admin_dashboard')
+                elif user_role in ['ca']:
+                    redirect_url = url_for('main.ca_dashboard')
+                elif user_role == 'ca_pending':
+                    redirect_url = url_for('auth.ca_pending')
+                else:
+                    redirect_url = url_for('main.user_dashboard')
+                
+                return jsonify({
+                    'success': True,
+                    'ok': True,
+                    'message': 'Login successful',
+                    'id': user.id,
+                    'email': user.email,
+                    'role': user_role,
+                    'redirect_url': redirect_url
+                })
+        except Exception as supabase_error:
+            print(f"Supabase auth failed, trying password hash: {supabase_error}")
+            # Fallback to password hash check for manually created users
+            user_data = UserService.get_by_email(email)
+            
+            if not user_data:
+                return jsonify({'success': False, 'error': 'Invalid email or password'}), 401
+            
+            # Check password hash
+            password_hash = user_data.get('password_hash')
+            if not password_hash or not check_password_hash(password_hash, password):
+                return jsonify({'success': False, 'error': 'Invalid email or password'}), 401
+            
+            user = User(user_data)
+            login_user(user, remember=True)
+            
+            user_role = getattr(user, 'role', 'user')
+            if user_role == 'admin':
+                redirect_url = url_for('main.admin_dashboard')
+            elif user_role in ['ca']:
+                redirect_url = url_for('main.ca_dashboard')
+            elif user_role == 'ca_pending':
+                redirect_url = url_for('auth.ca_pending')
+            else:
+                redirect_url = url_for('main.user_dashboard')
+            
+            return jsonify({
+                'success': True,
+                'ok': True,
+                'message': 'Login successful',
+                'id': user.id,
+                'email': user.email,
+                'role': user_role,
+                'redirect_url': redirect_url
+            })
 
-        if not user: 
-            return jsonify({'success': False, 'error': 'Invalid email or password'}), 401
+    except Exception as e:
+        print(f"Flask login error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'An error occurred during login'}), 500
 
-        # Check password
-        if not user.check_password(password):
-            return jsonify({'success':  False, 'error': 'Invalid email or password'}), 401
 
-        # Login user
-        login_user(user, remember=True)
+@auth_bp.route('/flask-signup', methods=['POST'])
+def flask_signup():
+    """Handle email/password signup via Flask."""
+    try:
+        from werkzeug.security import generate_password_hash
+        
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        first_name = data.get('first_name', '').strip().title()
+        last_name = data.get('last_name', '').strip().title()
+        requested_role = data.get('role', 'user')
 
-        # Get user role
-        user_role = getattr(user, 'role', 'user')
+        if not email or not password:
+            return jsonify({'success': False, 'error': 'Email and password are required'}), 400
 
-        # Determine redirect URL
-        if user_role in ['ca', 'admin']:
-            redirect_url = url_for('main.ca_dashboard')
-        elif user_role == 'ca_pending':
-            redirect_url = url_for('auth.ca_pending')
-        elif requested_role == 'ca' and user_role == 'user':
-            # User selected CA but isn't verified - redirect to apply
+        if len(password) < 8:
+            return jsonify({'success': False, 'error': 'Password must be at least 8 characters'}), 400
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            return jsonify({'success': False, 'error': 'Please enter a valid email address'}), 400
+
+        # Check if user already exists
+        existing_user = UserService.get_by_email(email)
+        if existing_user:
+            return jsonify({'success': False, 'error': 'An account with this email already exists'}), 400
+
+        # Try to create user in Supabase Auth first
+        sb = get_supabase()
+        try:
+            auth_response = sb.auth.sign_up({
+                "email": email,
+                "password": password,
+                "options": {
+                    "data": {
+                        "first_name": first_name,
+                        "last_name": last_name
+                    }
+                }
+            })
+            
+            if auth_response.user:
+                user_id = auth_response.user.id
+            else:
+                raise Exception("Supabase signup failed")
+        except Exception as auth_error:
+            print(f"Supabase Auth signup error: {auth_error}")
+            # Generate UUID for manual user creation
+            user_id = str(uuid.uuid4())
+
+        # Generate unique username
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        while True:
+            existing = sb.table('profiles').select('id').eq('username', username.lower()).limit(1).execute()
+            if not existing.data:
+                break
+            username = f"{base_username}{counter}"
+            counter += 1
+
+        # Create profile in Supabase profiles table
+        user_data = {
+            'id': user_id,
+            'email': email,
+            'username': username.lower(),
+            'first_name': first_name if first_name else username.title(),
+            'last_name': last_name,
+            'role': 'user',
+            'password_hash': generate_password_hash(password),
+            'email_verified': False
+        }
+
+        created_user = UserService.create(user_data)
+        if not created_user:
+            return jsonify({'success': False, 'error': 'Failed to create account'}), 500
+
+        # Login the new user
+        new_user = User(created_user)
+        login_user(new_user, remember=True)
+
+        # Determine redirect
+        if requested_role == 'ca':
             redirect_url = url_for('auth.ca_apply')
         else:
             redirect_url = url_for('main.user_dashboard')
@@ -995,98 +1311,18 @@ def flask_login():
         return jsonify({
             'success': True,
             'ok': True,
-            'message': 'Login successful',
-            'id': user.id,
-            'email': user.email,
-            'role':  user_role,
+            'message': 'Account created successfully',
+            'id': new_user.id,
+            'email': new_user.email,
+            'role': 'user',
             'redirect_url': redirect_url
         })
 
     except Exception as e:
-        print(f"Flask login error: {e}")
-        return jsonify({'success': False, 'error':  'An error occurred during login'}), 500
-
-
-@auth_bp. route('/flask-signup', methods=['POST'])
-def flask_signup():
-    """Handle email/password signup via Flask."""
-    try:
-        data = request.get_json()
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        first_name = data.get('first_name', '').strip().title()
-        last_name = data. get('last_name', '').strip().title()
-        requested_role = data. get('role', 'user')
-
-        if not email or not password:
-            return jsonify({'success':  False, 'error': 'Email and password are required'}), 400
-
-        if len(password) < 8:
-            return jsonify({'success':  False, 'error': 'Password must be at least 8 characters'}), 400
-
-        # Validate email format
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            return jsonify({'success': False, 'error':  'Please enter a valid email address'}), 400
-
-        # Check if user already exists
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return jsonify({'success': False, 'error':  'An account with this email already exists'}), 400
-
-        # Generate username from email
-        base_username = email.split('@')[0]
-        username = base_username
-        counter = 1
-        while User.query.filter_by(username=username. lower()).first():
-            username = f"{base_username}{counter}"
-            counter += 1
-
-        # Create new user
-        new_user = User(
-            username=username. lower(),
-            email=email,
-            first_name=first_name if first_name else username. title(),
-            last_name=last_name
-        )
-
-        # Set role if the model supports it (CAs need to apply separately)
-        if hasattr(new_user, 'role'):
-            new_user.role = 'user'  # Always user for direct signup
-
-        new_user.set_password(password)
-
-        db.session.add(new_user)
-        db.session. commit()
-
-        # Auto-login the new user
-        login_user(new_user, remember=True)
-
-        # Determine redirect URL
-        if requested_role == 'ca': 
-            redirect_url = url_for('auth.ca_apply')
-        else:
-            redirect_url = url_for('main.user_dashboard')
-
-        return jsonify({
-            'success': True,
-            'ok':  True,
-            'message': 'Account created successfully',
-            'id': new_user.id,
-            'email': new_user.email,
-            'role':  'user',
-            'redirect_url':  redirect_url
-        })
-
-    except Exception as e:
-        db.session.rollback()
         print(f"Flask signup error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': 'An error occurred during registration'}), 500
-
-@auth_bp.route('/redirect-after-login')
-@login_required
-def redirect_after_login():
-    """Redirect users to appropriate dashboard based on role."""
-    return redirect_after_auth()
 
 
 def redirect_after_auth():
@@ -1128,27 +1364,34 @@ def register():
             flash('Passwords do not match. ', 'error')
         elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
             flash('Please enter a valid email address.', 'error')
-        elif User.query.filter_by(username=username).first():
-            flash('Username is already taken.  Please choose another.', 'error')
-        elif User.query.filter_by(email=email).first():
-            flash('An account with that email already exists.', 'error')
         else:
-            try:
-                new_user = User(
-                    username=username,
-                    email=email,
-                    first_name=first_name,
-                    last_name=last_name
-                )
-                new_user.set_password(password)
-                db.session. add(new_user)
-                db. session.commit()
-                flash(f'Welcome aboard, {first_name}!  Your account has been created successfully.  Please log in.', 'success')
-                return redirect(url_for('auth.login'))
-            except Exception as e:
-                db.session.rollback()
-                print(f"Registration error: {e}")
-                flash('An error occurred during registration. Please try again.', 'error')
+            # Check username and email in Supabase
+            sb = get_supabase()
+            username_check = sb.table('profiles').select('id').eq('username', username).limit(1).execute()
+            if username_check.data:
+                flash('Username is already taken.  Please choose another.', 'error')
+            elif UserService.get_by_email(email):
+                flash('An account with that email already exists.', 'error')
+            else:
+                try:
+                    from werkzeug.security import generate_password_hash
+                    user_data = {
+                        'username': username,
+                        'email': email,
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'role': 'user',
+                        'password_hash': generate_password_hash(password)
+                    }
+                    created = UserService.create(user_data)
+                    if created:
+                        flash(f'Welcome aboard, {first_name}!  Your account has been created successfully.  Please log in.', 'success')
+                        return redirect(url_for('auth.login'))
+                    else:
+                        flash('An error occurred during registration. Please try again.', 'error')
+                except Exception as e:
+                    print(f"Registration error: {e}")
+                    flash('An error occurred during registration. Please try again.', 'error')
 
     return render_template('auth/register.html')
 
@@ -1210,21 +1453,18 @@ def api_me():
     if err or not claims:
         return jsonify({'error':  'invalid token', 'detail': err}), 401
 
-    user_id = claims. get('sub')
+    user_id = claims.get('sub')
     email = claims.get('email') or claims.get('user_metadata', {}).get('email')
 
-    local_user = User. query.filter_by(email=email. lower()).first() if email else None
-    role = getattr(local_user, 'role', 'user') if local_user and hasattr(local_user, 'role') else 'user'
+    # Get user from Supabase
+    user_data = UserService.get_by_email(email.lower()) if email else None
+    role = user_data.get('role', 'user') if user_data else 'user'
 
     return jsonify({
         'id': user_id,
         'role': role,
         'email': email
     })
-
-
-@api_bp.route('/ca-application', methods=['POST'])
-def submit_ca_application():
     """Handle CA application submission."""
     try:
         full_name = request. form.get('full_name')
@@ -1267,32 +1507,130 @@ def submit_ca_application():
         return jsonify({'error': 'Failed to submit application'}), 500
 
 
+@api_bp.route('/admin/users/<user_id>/role', methods=['POST'])
+@login_required
+def update_user_role(user_id):
+    """Admin endpoint to update user role (approve/reject CA applications)."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        data = request.get_json()
+        new_role = data.get('role')
+        
+        if new_role not in ['user', 'ca', 'ca_pending', 'admin']:
+            return jsonify({'error': 'Invalid role'}), 400
+        
+        # Update user role in Supabase
+        updated = UserService.update(user_id, {'role': new_role})
+        
+        if updated:
+            return jsonify({
+                'success': True,
+                'message': f'User role updated to {new_role}',
+                'user_id': user_id,
+                'new_role': new_role
+            })
+        else:
+            return jsonify({'error': 'Failed to update user'}), 500
+    
+    except Exception as e:
+        print(f"Update role error: {e}")
+        return jsonify({'error': 'Failed to update role'}), 500
+
+
+@api_bp.route('/admin/stats', methods=['GET'])
+@login_required
+def api_admin_stats():
+    """Get admin dashboard statistics - REAL-TIME from Supabase."""
+    if not check_admin_access():
+        return jsonify({'success': False, 'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        
+        # Total users
+        users_response = sb.table('profiles').select('id', count='exact').execute()
+        total_users = users_response.count if hasattr(users_response, 'count') else 0
+        
+        # Total queries
+        queries_response = sb.table('chat_queries').select('id', count='exact').execute()
+        total_queries = queries_response.count if hasattr(queries_response, 'count') else 0
+        
+        # Active CAs
+        cas_response = sb.table('profiles').select('id', count='exact').eq('role', 'ca').execute()
+        active_cas = cas_response.count if hasattr(cas_response, 'count') else 0
+        
+        # Pending CA applications
+        pending_response = sb.table('profiles').select('id', count='exact').eq('role', 'ca_pending').execute()
+        pending_applications = pending_response.count if hasattr(pending_response, 'count') else 0
+        
+        stats = {
+            'total_users': total_users,
+            'total_queries': total_queries,
+            'active_cas': active_cas,
+            'pending_applications': pending_applications,
+            'last_updated': datetime.utcnow().isoformat()
+        }
+        
+        return jsonify({'success': True, 'data': stats})
+    except Exception as e:
+        print(f"Admin stats error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'Failed to fetch stats'}), 500
+
+
+@api_bp.route('/admin/ca-applications', methods=['GET'])
+@login_required
+def api_admin_ca_applications():
+    """Get pending CA applications for admin review."""
+    if not check_admin_access():
+        return jsonify({'success': False, 'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        
+        # Get all users with ca_pending role
+        response = sb.table('profiles').select('*').eq('role', 'ca_pending').order('created_at', desc=True).execute()
+        
+        applications = response.data if response.data else []
+        
+        return jsonify({'success': True, 'data': applications})
+    except Exception as e:
+        print(f"CA applications fetch error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'Failed to fetch applications'}), 500
+
+
 @api_bp.route('/ca/update-profile', methods=['POST'])
 @login_required
 def update_ca_profile():
     """Update CA profile information."""
     if not check_ca_access():
-        return jsonify({'error':  'Access denied'}), 403
+        return jsonify({'error': 'Access denied'}), 403
 
     try: 
-        data = request. get_json()
+        data = request.get_json()
 
-        # Update user fields
+        # Update user fields in Supabase
+        updates = {}
         if 'first_name' in data:
-            current_user.first_name = data['first_name']. strip().title()
+            updates['first_name'] = data['first_name'].strip().title()
         if 'last_name' in data:
-            current_user.last_name = data['last_name'].strip().title()
+            updates['last_name'] = data['last_name'].strip().title()
 
-        db.session.commit()
+        if updates:
+            UserService.update(current_user.id, updates)
 
         return jsonify({
-            'success':  True,
+            'success': True,
             'message': 'Profile updated successfully'
         })
     except Exception as e:
-        db. session.rollback()
         print(f"CA profile update error: {e}")
-        return jsonify({'error':  'Failed to update profile'}), 500
+        return jsonify({'error': 'Failed to update profile'}), 500
 
 
 @api_bp.route('/ca/client-requests', methods=['GET'])
@@ -1437,22 +1775,77 @@ def ca_earnings_summary():
         ]
     }
 
-    return jsonify({'success': True, 'data':  summary})
+    return jsonify({'success': True, 'data': summary})
 
 
 @api_bp.route('/user/dashboard-stats', methods=['GET'])
 @login_required
 def user_dashboard_stats():
-    """Get user dashboard statistics."""
-    stats = {
-        'active_consultations': 3,
-        'documents_count': 12,
-        'unread_messages': 5,
-        'completed_tasks': 8,
-        'upcoming_deadlines': 2
-    }
+    """Get user dashboard statistics - REAL-TIME from Supabase."""
+    try:
+        sb = get_supabase()
+        user_id = current_user.id
+        
+        # Get total queries count for this user
+        queries_response = sb.table('chat_queries').select('id', count='exact').eq('user_id', user_id).execute()
+        total_queries = queries_response.count if hasattr(queries_response, 'count') else 0
+        
+        # Get helpful responses count
+        helpful_response = sb.table('chat_queries').select('id', count='exact').eq('user_id', user_id).eq('is_helpful', True).execute()
+        helpful_count = helpful_response.count if hasattr(helpful_response, 'count') else 0
+        
+        # Calculate accuracy rate
+        accuracy_rate = round((helpful_count / total_queries * 100), 1) if total_queries > 0 else 0
+        
+        stats = {
+            'total_queries': total_queries,
+            'helpful_responses': helpful_count,
+            'accuracy_rate': accuracy_rate,
+            'active_consultations': 0,  # Will be implemented when consultations table exists
+            'documents_count': 0,  # Will be implemented when documents table exists
+            'last_updated': datetime.utcnow().isoformat()
+        }
 
-    return jsonify({'success':  True, 'data': stats})
+        return jsonify({'success': True, 'data': stats})
+        
+    except Exception as e:
+        print(f"User dashboard stats error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': 'Failed to fetch dashboard stats',
+            'data': {
+                'total_queries': 0,
+                'helpful_responses': 0,
+                'accuracy_rate': 0,
+                'active_consultations': 0,
+                'documents_count': 0
+            }
+        }), 500
+
+
+@api_bp.route('/user/recent-queries', methods=['GET'])
+@login_required
+def get_user_recent_queries():
+    """Get user's recent AI queries - REAL-TIME from Supabase."""
+    try:
+        limit = request.args.get('limit', 10, type=int)
+        sb = get_supabase()
+        user_id = current_user.id
+        
+        # Get recent queries from chat_queries table
+        response = sb.table('chat_queries').select('*').eq('user_id', user_id).order('created_at', desc=True).limit(limit).execute()
+        
+        queries = response.data if response.data else []
+        
+        return jsonify({'success': True, 'data': queries})
+        
+    except Exception as e:
+        print(f"Recent queries error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': 'Failed to fetch recent queries', 'data': []}), 500
 
 
 @api_bp.route('/user/consultations', methods=['GET'])
@@ -1484,7 +1877,7 @@ def get_user_consultations():
     return jsonify({'success':  True, 'data': consultations})
 
 
-@api_bp. route('/user/request-consultation', methods=['POST'])
+@api_bp.route('/user/request-consultation', methods=['POST'])
 @login_required
 def create_consultation_request():
     """Create a new consultation request."""
@@ -1515,47 +1908,72 @@ def create_consultation_request():
 @api_bp.route('/search/cas', methods=['GET'])
 @login_required
 def search_cas():
-    """Search for CAs with filters."""
-    location = request.args. get('location', '')
+    """Search for CAs with filters - REAL-TIME from Supabase."""
+    location = request.args.get('location', '')
     service = request.args.get('service', '')
-    experience = request.args. get('experience', '')
-    sort_by = request. args.get('sort', 'recommended')
+    experience = request.args.get('experience', '')
+    sort_by = request.args.get('sort', 'recommended')
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
 
-    # Mock CA data
-    cas = [
-        {
-            'id': 1,
-            'name': 'CA Rajesh Sharma',
-            'location': 'Mumbai, Maharashtra',
-            'experience': 8,
-            'rating': 4.9,
-            'reviews_count': 89,
-            'clients_count': 127,
-            'services': ['Tax Planning', 'GST Compliance', 'Audit', 'ITR Filing'],
-            'verified': True
-        },
-        {
-            'id':  2,
-            'name': 'CA Priya Mehta',
-            'location': 'Delhi NCR',
-            'experience': 12,
-            'rating': 5.0,
-            'reviews_count':  156,
-            'clients_count': 215,
-            'services': ['Tax Planning', 'Investment Advisory', 'NRI Taxation'],
-            'verified':  True
-        }
-    ]
-
-    return jsonify({
-        'success': True,
-        'data':  cas,
-        'total':  len(cas),
-        'page':  page,
-        'per_page': per_page
-    })
+    try:
+        sb = get_supabase()
+        
+        # Query real CAs from profiles table
+        query = sb.table('profiles').select('*').eq('role', 'ca')
+        
+        # Apply filters if provided
+        if location:
+            query = query.ilike('city', f'%{location}%')
+        
+        # Execute query
+        response = query.order('created_at', desc=True).execute()
+        
+        ca_profiles = response.data if response.data else []
+        
+        # Format CA data for response
+        cas = []
+        for profile in ca_profiles:
+            ca_data = {
+                'id': profile.get('id'),
+                'name': f"CA {profile.get('first_name', '')} {profile.get('last_name', '')}".strip(),
+                'location': f"{profile.get('city', 'India')}, {profile.get('state', '')}",
+                'experience': profile.get('experience_years', 0),
+                'rating': 4.5,  # Default rating until reviews system is implemented
+                'reviews_count': 0,
+                'clients_count': 0,
+                'services': profile.get('services', []) if profile.get('services') else ['Tax Planning', 'GST Compliance'],
+                'verified': True,
+                'email': profile.get('email'),
+                'phone': profile.get('phone'),
+                'icai_number': profile.get('icai_number')
+            }
+            cas.append(ca_data)
+        
+        # Pagination
+        total = len(cas)
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_cas = cas[start:end]
+        
+        return jsonify({
+            'success': True,
+            'data': paginated_cas,
+            'total': total,
+            'page': page,
+            'per_page': per_page
+        })
+        
+    except Exception as e:
+        print(f"CA search error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': 'Failed to fetch CAs',
+            'data': [],
+            'total': 0
+        }), 500
 
 
 @api_bp.route('/documents/upload', methods=['POST'])
@@ -1744,41 +2162,27 @@ def api_feedback():
         query_id = data.get('query_id')
         is_helpful = data.get('is_helpful')
         feedback_text = data.get('feedback_text', '')
-        rating = data. get('rating')
+        rating = data.get('rating')
 
         if not query_id: 
-            return jsonify({'success': False, 'error': 'Query ID is required. '}), 400
+            return jsonify({'success': False, 'error': 'Query ID is required.'}), 400
 
-        chat_query = ChatQuery. query.get(query_id)
-        if not chat_query or chat_query.user_id != current_user.id:
-            return jsonify({'success': False, 'error': 'Query not found.'}), 404
+        # Submit feedback to Supabase
+        feedback_data = {
+            'user_id': current_user.id,
+            'query_id': query_id,
+            'rating': rating,
+            'is_helpful': is_helpful,
+            'feedback_text': feedback_text
+        }
+        
+        saved = FeedbackService.create_feedback(**feedback_data)
+        if not saved:
+            return jsonify({'success': False, 'error': 'Failed to save feedback'}), 500
 
-        try:
-            if hasattr(chat_query, 'rating') and rating: 
-                chat_query.rating = rating
-            if hasattr(chat_query, 'is_helpful') and is_helpful is not None:
-                chat_query.is_helpful = is_helpful
-            if hasattr(chat_query, 'feedback_text') and feedback_text:
-                chat_query.feedback_text = feedback_text
-        except Exception as e: 
-            print(f"Warning: Could not update all feedback fields: {e}")
-
-        try:
-            user_feedback = UserFeedback(
-                user_id=current_user. id,
-                query_id=query_id,
-                is_helpful=is_helpful if is_helpful is not None else (rating >= 4 if rating else None),
-                feedback_text=feedback_text
-            )
-            db.session.add(user_feedback)
-        except Exception as e: 
-            print(f"Warning:  Could not create UserFeedback entry: {e}")
-
-        db.session. commit()
-        return jsonify({'success':  True, 'message': 'Thank you for your feedback!'})
+        return jsonify({'success': True, 'message': 'Thank you for your feedback!'})
 
     except Exception as e:
-        db.session.rollback()
         print(f"Feedback API error: {e}")
         return jsonify({'success': False, 'error': 'Failed to submit feedback'}), 500
 
@@ -1851,7 +2255,6 @@ def contact_form():
         print(f"Contact form received: {name}, {email}, {subject}")
 
         return jsonify({'success': True, 'message': 'Thank you for contacting us!  We will get back to you soon.'})
-
     except Exception as e:
         print(f"Contact form error: {e}")
         return jsonify({'success': False, 'error': 'Failed to submit contact form'}), 500
@@ -1859,39 +2262,110 @@ def contact_form():
 
 @api_bp.route('/stats', methods=['GET'])
 def get_stats():
-    """Get platform statistics."""
+    """Get platform statistics - REAL-TIME from Supabase."""
     try:
+        sb = get_supabase()
+        
+        # Get real counts from Supabase
+        # Total users count
+        users_response = sb.table('profiles').select('id', count='exact').execute()
+        total_users = users_response.count if hasattr(users_response, 'count') else 0
+        
+        # Total queries/questions answered
+        queries_response = sb.table('chat_queries').select('id', count='exact').execute()
+        total_queries = queries_response.count if hasattr(queries_response, 'count') else 0
+        
+        # Total CAs count
+        cas_response = sb.table('profiles').select('id', count='exact').eq('role', 'ca').execute()
+        total_cas = cas_response.count if hasattr(cas_response, 'count') else 0
+        
+        # Calculate accuracy rate from feedback
+        # Get queries with helpful feedback
+        helpful_response = sb.table('chat_queries').select('id', count='exact').eq('is_helpful', True).execute()
+        helpful_count = helpful_response.count if hasattr(helpful_response, 'count') else 0
+        
+        # Get queries with ratings
+        rated_response = sb.table('chat_queries').select('id', count='exact').not_.is_('rating', 'null').execute()
+        rated_count = rated_response.count if hasattr(rated_response, 'count') else 0
+        
+        # Calculate accuracy (percentage of helpful responses)
+        accuracy = round((helpful_count / rated_count * 100), 1) if rated_count > 0 else 95.0
+        
+        # Calculate satisfaction from average rating
+        ratings_response = sb.table('chat_queries').select('rating').not_.is_('rating', 'null').execute()
+        if ratings_response.data and len(ratings_response.data) > 0:
+            ratings = [r['rating'] for r in ratings_response.data if r.get('rating')]
+            avg_rating = sum(ratings) / len(ratings) if ratings else 4.5
+            satisfaction = round((avg_rating / 5.0 * 100), 1)
+        else:
+            satisfaction = 90.0
+        
+        # Get popular topics from actual queries (group by category)
+        topics_response = sb.table('chat_queries').select('category').execute()
+        popular_topics = []
+        
+        if topics_response.data:
+            from collections import Counter
+            category_counts = Counter([q.get('category', 'general') for q in topics_response.data])
+            
+            # Map categories to display info
+            category_map = {
+                'tax': {'topic': 'Tax Planning', 'icon': 'fa-calculator'},
+                'investment': {'topic': 'Investment', 'icon': 'fa-chart-line'},
+                'gst': {'topic': 'GST', 'icon': 'fa-file-invoice'},
+                'retirement': {'topic': 'Retirement', 'icon': 'fa-umbrella-beach'},
+                'general': {'topic': 'General Finance', 'icon': 'fa-coins'}
+            }
+            
+            for category, count in category_counts.most_common(4):
+                cat_info = category_map.get(category, {'topic': category.title(), 'icon': 'fa-question'})
+                popular_topics.append({
+                    'topic': cat_info['topic'],
+                    'count': count,
+                    'icon': cat_info['icon']
+                })
+        
+        # If no topics yet, show placeholder
+        if not popular_topics:
+            popular_topics = [
+                {'topic': 'Tax Planning', 'count': 0, 'icon': 'fa-calculator'},
+                {'topic': 'Investment', 'count': 0, 'icon': 'fa-chart-line'},
+                {'topic': 'GST', 'count': 0, 'icon': 'fa-file-invoice'},
+                {'topic': 'General Finance', 'count': 0, 'icon': 'fa-coins'}
+            ]
+        
         stats = {
-            'users': 18500,
-            'queries': 325000,
-            'accuracy': 98.5,
-            'satisfaction': 96.8,
-            'cas': 450,
-            'consultations': 12500,
-            'popular_topics': [
-                {'topic': 'Tax Planning', 'count':  46000, 'icon': 'fa-calculator'},
-                {'topic': 'Investment', 'count': 39000, 'icon': 'fa-chart-line'},
-                {'topic': 'GST', 'count': 30000, 'icon': 'fa-file-invoice'},
-                {'topic': 'Retirement', 'count':  16000, 'icon': 'fa-umbrella-beach'}
-            ],
+            'users': total_users,
+            'queries': total_queries,
+            'accuracy': accuracy,
+            'satisfaction': satisfaction,
+            'cas': total_cas,
+            'consultations': total_queries,  # Using queries count as consultations
+            'popular_topics': popular_topics,
             'last_updated': datetime.utcnow().isoformat()
         }
+        
         return jsonify({'success': True, 'data': stats})
     except Exception as e: 
         print(f"Stats API error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'error': 'Failed to fetch statistics'}), 500
 
 
-@api_bp. route('/health', methods=['GET'])
+@api_bp.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint."""
     try:
-        db.session.execute(db.text('SELECT 1'))
+        # Test Supabase connection
+        sb = get_supabase()
+        sb.table('profiles').select('id').limit(1).execute()
         return jsonify({
-            'success':  True,
+            'success': True,
             'status': 'healthy',
             'timestamp': datetime.utcnow().isoformat(),
-            'version':  'v2.0.0'
+            'version': 'v2.0.0',
+            'database': 'Supabase'
         })
     except Exception as e: 
         print(f"Health check failed: {e}")
@@ -1916,18 +2390,18 @@ def ai_chat():
         else:
             response = "I'm sorry, the AI service is currently unavailable. Please try again later."
 
-        # Store in database
+        # Store in Supabase
         try:
-            chat_query = ChatQuery(
-                user_id=current_user.id,
-                query=user_query,
-                response=response
-            )
-            db.session.add(chat_query)
-            db.session. commit()
-            query_id = chat_query.id
+            chat_data = {
+                'user_id': current_user.id,
+                'question': user_query,
+                'response': response,
+                'category': 'general'
+            }
+            saved = ChatService.create_query(**chat_data)
+            query_id = saved.get('id') if saved else None
         except Exception as e: 
-            print(f"Failed to store chat query:  {e}")
+            print(f"Failed to store chat query: {e}")
             query_id = None
 
         return jsonify({
@@ -1952,18 +2426,18 @@ def ai_suggestions():
                 'type': 'tax_saving',
                 'title': 'Maximize Your 80C Deductions',
                 'description': 'You may be eligible for additional deductions under Section 80C.',
-                'priority':  'high'
+                'priority': 'high'
             },
             {
-                'id':  '2',
+                'id': '2',
                 'type': 'deadline',
-                'title':  'Advance Tax Due Date',
+                'title': 'Advance Tax Due Date',
                 'description': 'Third installment of advance tax is due by December 15th.',
                 'priority': 'urgent'
             },
             {
                 'id': '3',
-                'type':  'tip',
+                'type': 'tip',
                 'title': 'Early ITR Filing Benefits',
                 'description': 'Consider filing your ITR early for faster refund processing.',
                 'priority': 'normal'
@@ -1974,206 +2448,6 @@ def ai_suggestions():
     except Exception as e:
         print(f"AI suggestions error: {e}")
         return jsonify({'success': False, 'error': 'Failed to fetch suggestions'}), 500
-
-
-# ==================== ADMIN ROUTES ====================
-
-@main_bp.route('/admin/dashboard', endpoint='admin_dashboard')
-@login_required
-def admin_dashboard():
-    """Admin Dashboard."""
-    if not check_admin_access():
-        flash('Access denied. Admin only.', 'error')
-        return redirect(url_for('main.home'))
-
-    return render_template('admin/dashboard.html', user=current_user)
-
-
-@main_bp.route('/admin/users', endpoint='admin_users')
-@login_required
-def admin_users():
-    """Admin Users management."""
-    if not check_admin_access():
-        flash('Access denied. Admin only.', 'error')
-        return redirect(url_for('main.home'))
-
-    users = User.query. order_by(User. created_at.desc()).all()
-    return render_template('admin/users.html', user=current_user, users=users)
-
-
-@main_bp.route('/admin/ca-applications', endpoint='admin_ca_applications')
-@login_required
-def admin_ca_applications():
-    """Admin CA Applications management."""
-    if not check_admin_access():
-        flash('Access denied. Admin only. ', 'error')
-        return redirect(url_for('main.home'))
-
-    return render_template('admin/ca_applications.html', user=current_user)
-
-
-@main_bp.route('/admin/settings', endpoint='admin_settings')
-@login_required
-def admin_settings():
-    """Admin Settings page."""
-    if not check_admin_access():
-        flash('Access denied. Admin only.', 'error')
-        return redirect(url_for('main.home'))
-
-    return render_template('admin/settings.html', user=current_user)
-
-
-@api_bp.route('/admin/users', methods=['GET'])
-@login_required
-def admin_get_users():
-    """Get all users (admin only)."""
-    if not check_admin_access():
-        return jsonify({'error': 'Access denied'}), 403
-
-    try:
-        users = User.query.order_by(User. created_at.desc()).all()
-        users_data = [{
-            'id':  u.id,
-            'username': u. username,
-            'email': u.email,
-            'first_name': u. first_name,
-            'last_name': u.last_name,
-            'role': getattr(u, 'role', 'user'),
-            'created_at': u. created_at.isoformat() if u.created_at else None
-        } for u in users]
-
-        return jsonify({'success': True, 'data': users_data})
-    except Exception as e: 
-        print(f"Admin get users error:  {e}")
-        return jsonify({'error': 'Failed to fetch users'}), 500
-
-
-@api_bp.route('/admin/user/<int:user_id>/role', methods=['PUT'])
-@login_required
-def admin_update_user_role(user_id):
-    """Update user role (admin only)."""
-    if not check_admin_access():
-        return jsonify({'error': 'Access denied'}), 403
-
-    try: 
-        data = request.get_json()
-        new_role = data. get('role')
-
-        if new_role not in ['user', 'ca', 'ca_pending', 'admin']: 
-            return jsonify({'error': 'Invalid role'}), 400
-
-        user = User.query.get(user_id)
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-
-        if hasattr(user, 'role'):
-            user.role = new_role
-            db.session.commit()
-
-        return jsonify({'success': True, 'message': 'User role updated successfully'})
-    except Exception as e:
-        db.session.rollback()
-        print(f"Admin update user role error: {e}")
-        return jsonify({'error': 'Failed to update user role'}), 500
-
-
-@api_bp.route('/admin/ca-applications', methods=['GET'])
-@login_required
-def admin_get_ca_applications():
-    """Get all CA applications (admin only)."""
-    if not check_admin_access():
-        return jsonify({'error': 'Access denied'}), 403
-
-    # Mock data - in real app, fetch from database
-    applications = [
-        {
-            'id':  '1',
-            'full_name': 'Rajesh Kumar',
-            'email':  'rajesh@example.com',
-            'icai_number': '123456',
-            'city': 'Mumbai',
-            'state':  'Maharashtra',
-            'status': 'pending',
-            'submitted_at': datetime.utcnow().isoformat()
-        },
-        {
-            'id': '2',
-            'full_name': 'Priya Singh',
-            'email': 'priya@example.com',
-            'icai_number': '234567',
-            'city': 'Delhi',
-            'state': 'Delhi',
-            'status': 'pending',
-            'submitted_at': datetime.utcnow().isoformat()
-        }
-    ]
-
-    return jsonify({'success': True, 'data': applications})
-
-
-@api_bp.route('/admin/ca-application/<application_id>/approve', methods=['POST'])
-@login_required
-def admin_approve_ca_application(application_id):
-    """Approve a CA application (admin only)."""
-    if not check_admin_access():
-        return jsonify({'error':  'Access denied'}), 403
-
-    try:
-        # Handle approval logic
-        # Update user role to 'ca', send email, etc. 
-
-        return jsonify({'success': True, 'message': 'CA application approved successfully'})
-    except Exception as e:
-        print(f"Admin approve CA error: {e}")
-        return jsonify({'error': 'Failed to approve application'}), 500
-
-
-@api_bp. route('/admin/ca-application/<application_id>/reject', methods=['POST'])
-@login_required
-def admin_reject_ca_application(application_id):
-    """Reject a CA application (admin only)."""
-    if not check_admin_access():
-        return jsonify({'error': 'Access denied'}), 403
-
-    try: 
-        data = request.get_json()
-        reason = data.get('reason', '')
-
-        # Handle rejection logic
-        # Send email with rejection reason, etc.
-
-        return jsonify({'success': True, 'message':  'CA application rejected'})
-    except Exception as e:
-        print(f"Admin reject CA error: {e}")
-        return jsonify({'error':  'Failed to reject application'}), 500
-
-
-@api_bp.route('/admin/stats', methods=['GET'])
-@login_required
-def admin_stats():
-    """Get admin dashboard statistics."""
-    if not check_admin_access():
-        return jsonify({'error': 'Access denied'}), 403
-
-    try: 
-        total_users = User. query.count()
-        ca_count = User.query. filter_by(role='ca').count() if hasattr(User, 'role') else 0
-        pending_cas = User.query. filter_by(role='ca_pending').count() if hasattr(User, 'role') else 0
-
-        stats = {
-            'total_users': total_users,
-            'total_cas': ca_count,
-            'pending_ca_applications': pending_cas,
-            'total_consultations': 12500,
-            'total_revenue': 4850000,
-            'active_users_today': 1250,
-            'new_users_this_week': 320
-        }
-
-        return jsonify({'success': True, 'data': stats})
-    except Exception as e:
-        print(f"Admin stats error: {e}")
-        return jsonify({'error': 'Failed to fetch admin stats'}), 500
 
 
 # ==================== ERROR HANDLERS ====================

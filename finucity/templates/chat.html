@@ -125,6 +125,41 @@
             
             <!-- Sidebar Footer -->
             <div class="sidebar-footer">
+                <!-- Theme Selector -->
+                <div class="theme-selector" id="themeSelector">
+                    <div class="theme-selector-header">Theme</div>
+                    <div class="current-theme" id="currentThemeBtn">
+                        <span class="theme-name" id="currentThemeName">Finucity Original</span>
+                        <i class="fas fa-chevron-up theme-arrow"></i>
+                    </div>
+                    <div class="theme-dropdown" id="themeDropdown">
+                        <div class="theme-option active" data-theme="finucity">
+                            <div class="theme-swatch">
+                                <div class="theme-swatch-color" style="background: #313B2F;"></div>
+                                <div class="theme-swatch-color" style="background: #FBA002;"></div>
+                            </div>
+                            <span class="theme-name">Finucity Original</span>
+                            <i class="fas fa-check theme-check"></i>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-swatch">
+                                <div class="theme-swatch-color" style="background: #0f0f0f;"></div>
+                                <div class="theme-swatch-color" style="background: #1a1a1a;"></div>
+                            </div>
+                            <span class="theme-name">Dark</span>
+                            <i class="fas fa-check theme-check"></i>
+                        </div>
+                        <div class="theme-option" data-theme="light">
+                            <div class="theme-swatch">
+                                <div class="theme-swatch-color" style="background: #ffffff;"></div>
+                                <div class="theme-swatch-color" style="background: #f9f9f9;"></div>
+                            </div>
+                            <span class="theme-name">Light</span>
+                            <i class="fas fa-check theme-check"></i>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- User Profile -->
                 <div class="user-profile" id="userProfile">
                     {% if current_user.is_authenticated %}
@@ -573,8 +608,23 @@
         console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #FBA002;');
     </script>
     
+    <!-- Debug Script -->
+    <script src="{{ url_for('static', filename='js/chat_debug.js') }}"></script>
+    
+    <!-- INSTANT FIX - Makes all buttons work immediately -->
+    <script src="{{ url_for('static', filename='js/chat_instant_fix.js') }}"></script>
+    
     <!-- Main Chat JavaScript -->
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    
+    <!-- Loading Screen Failsafe -->
+    <script>
+        // Ensure loading screen is removed even if there are errors
+        setTimeout(function() {
+            document.body.classList.remove('loading');
+            console.log('✅ Loading screen removed (failsafe)');
+        }, 2000);
+    </script>
     
     <!-- Dropdown Initialization Safety Script -->
     <script>

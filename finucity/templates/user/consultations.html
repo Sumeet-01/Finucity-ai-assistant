@@ -609,7 +609,7 @@
         <!-- Header (if not using partial) -->
         <div style="background: var(--bg-card); border-bottom: 1px solid var(--border-primary); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h2 style="font-size: 18px; font-weight: 600;">Welcome back, <span style="color: var(--accent-gold);">John Doe</span></h2>
+                <h2 style="font-size: 18px; font-weight: 600;">Welcome back, <span style="color: var(--accent-gold);">{{ user.first_name or 'User' }}</span></h2>
                 <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Track and manage your consultations</p>
             </div>
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -618,10 +618,10 @@
                     <span style="position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--accent-gold); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; color: black; font-weight: bold;">3</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 600;">JD</div>
+                    <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--accent-gold), #e69200); display: flex; align-items: center; justify-content: center; font-weight: 600;">{{ user.first_name[0] | upper if user.first_name else 'U' }}{{ user.last_name[0] | upper if user.last_name else '' }}</div>
                     <div>
-                        <div style="font-size: 14px; font-weight: 600;">John Doe</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Premium User</div>
+                        <div style="font-size: 14px; font-weight: 600;">{{ user.first_name or 'User' }} {{ user.last_name or '' }}</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">{{ user.role | title if user.role else 'User' }}</div>
                     </div>
                 </div>
             </div>
@@ -639,10 +639,10 @@
             </div>
 
             <div class="filter-tabs">
-                <button class="filter-tab active">All <span class="count">5</span></button>
-                <button class="filter-tab">Active <span class="count">2</span></button>
-                <button class="filter-tab">Waiting <span class="count">1</span></button>
-                <button class="filter-tab">Completed <span class="count">2</span></button>
+                <button class="filter-tab active" data-filter="all">All <span class="count" id="countAll">0</span></button>
+                <button class="filter-tab" data-filter="active">Active <span class="count" id="countActive">0</span></button>
+                <button class="filter-tab" data-filter="waiting">Waiting <span class="count" id="countWaiting">0</span></button>
+                <button class="filter-tab" data-filter="completed">Completed <span class="count" id="countCompleted">0</span></button>
             </div>
 
             <div class="consultations-list">
@@ -850,46 +850,82 @@
             document.getElementById('sidebar').classList.toggle('open');
         }
 
+        // Load consultations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConsultations();
+        });
+
+        async function loadConsultations() {
+            try {
+                const response = await fetch('/api/user/consultations');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    displayConsultations(result.data);
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading consultations:', error);
+                showEmptyState();
+            }
+        }
+
+        function displayConsultations(consultations) {
+            const listContainer = document.querySelector('.consultations-list');
+            
+            if (consultations.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            // Update counts
+            document.getElementById('countAll').textContent = consultations.length;
+            document.getElementById('countActive').textContent = consultations.filter(c => c.status === 'in_progress').length;
+            document.getElementById('countWaiting').textContent = consultations.filter(c => c.status === 'waiting').length;
+            document.getElementById('countCompleted').textContent = consultations.filter(c => c.status === 'completed').length;
+
+            // Note: For now, keep the mock cards visible as placeholder
+            // In production, you would generate cards from the consultations data
+            console.log('Consultations loaded:', consultations);
+        }
+
+        function showEmptyState() {
+            const listContainer = document.querySelector('.consultations-list');
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 80px 20px; background: var(--bg-card); border-radius: var(--border-radius-lg); border: 2px dashed var(--border-primary);">
+                    <i class="fas fa-calendar-alt" style="font-size: 64px; color: var(--text-muted); margin-bottom: 24px;"></i>
+                    <h3 style="font-size: 24px; margin-bottom: 12px; color: var(--text-primary);">No Consultations Yet</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        You haven't requested any consultations yet. Find a verified Chartered Accountant to get started with your financial needs.
+                    </p>
+                    <a href="{{ url_for('main.find_ca') }}" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, var(--accent-gold), #e69200); color: black; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                        <i class="fas fa-search"></i> Find Chartered Accountant
+                    </a>
+                </div>
+            `;
+        }
+
         // Filter tabs functionality
         document.querySelectorAll('.filter-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 
-                // Here you would filter the consultation cards based on the selected filter
-                // For now, just show all cards
+                const filter = this.getAttribute('data-filter');
                 document.querySelectorAll('.consultation-card-lg').forEach(card => {
-                    card.style.display = 'block';
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        // Filter based on status class
+                        const hasStatus = card.querySelector(`.status-badge.${filter === 'active' ? 'in-progress' : filter}`);
+                        card.style.display = hasStatus ? 'block' : 'none';
+                    }
                 });
             });
         });
 
-        // Add hover effects to cards
-        document.querySelectorAll('.consultation-card-lg').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-4px)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-
-        // Button actions
-        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(button => {
-            button.addEventListener('click', function(e) {
-                if (this.textContent.includes('Chat with CA')) {
-                    alert('Opening chat with CA...');
-                    e.preventDefault();
-                } else if (this.textContent.includes('Documents')) {
-                    alert('Opening documents...');
-                    e.preventDefault();
-                } else if (this.textContent.includes('Leave Review')) {
-                    alert('Opening review form...');
-                    e.preventDefault();
-                }
-            });
-        });
+        console.log('%c✅ Consultations page loaded', 'color: #22c55e; font-weight: bold;');
     </script>
 </body>
 </html>

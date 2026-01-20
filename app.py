@@ -1,18 +1,17 @@
-import os, jwt
+import os
+import jwt
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from dotenv import load_dotenv
-from flask_migrate import Migrate
 from supabase import create_client
 
-# Load .env
-env_path = r"D:\Moto Edge 50\Projects\Software engineering projects\Finucity\.env"
-if os.path.exists(env_path):
-    load_dotenv(env_path)
-    print(f"✅ Loaded .env file from: {env_path}")
+# Load .env from current directory or parent
+load_dotenv()
+if os.getenv('SUPABASE_URL'):
+    print("✅ Environment variables loaded successfully")
 else:
-    print(f"❌ ERROR: .env file not found at: {env_path}")
+    print("⚠️  WARNING: SUPABASE_URL not found in environment")
 
 # Supabase config
 SUPABASE_URL = os.environ["SUPABASE_URL"]
@@ -25,14 +24,14 @@ def get_supabase_admin():
 
 # Flask app
 app = Flask(__name__, template_folder='finucity/templates', static_folder='finucity/static')
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'finucity-secret-key-2025-sumeet-sangwan')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///finucity_app.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+if not app.config['SECRET_KEY']:
+    raise RuntimeError("SECRET_KEY environment variable must be set")
 
-# DB / Migrate
-from finucity.models import db, User, ChatQuery
-db.init_app(app)
-migrate = Migrate(app, db)
+# Initialize Supabase database layer
+from finucity.database import supabase_db
+from finucity.models import User
+supabase_db.init_app(app)
 
 # Blueprints
 from finucity.routes import main_bp, auth_bp, api_bp
@@ -42,15 +41,21 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(chat_bp)
 
-# Login manager (legacy; Supabase is primary auth for new flow)
+# Login manager for session management
 from flask_login import LoginManager
+from finucity.database import UserService
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    """Load user from Supabase for Flask-Login session"""
+    user_data = UserService.get_by_id(user_id)
+    if user_data:
+        return User(user_data)
+    return None
 
 # Utility for Jinja
 @app.context_processor
@@ -66,7 +71,6 @@ def not_found_error(error):
 
 @app.errorhandler(500)
 def internal_error(error):
-    db.session.rollback()
     return render_template('errors/500.html'), 500
 
 @app.errorhandler(403)
@@ -123,42 +127,21 @@ def ca_dashboard():
         return "Forbidden", 403
     return render_template("ca_dashboard.html")
 
-# Demo data (legacy)
-def create_demo_data():
-    try:
-        if not User.query.filter_by(username='admin').first():
-            admin = User(username='admin', first_name='Admin', last_name='User', email='admin@finucity.com',
-                         profession='System Administrator', is_admin=True)
-            admin.set_password('admin123')
-            db.session.add(admin)
-        if not User.query.filter_by(username='demo').first():
-            demo = User(username='demo', first_name='Demo', last_name='User', email='demo@example.com',
-                        profession='Software Engineer', city='Bangalore')
-            demo.set_password('demo123')
-            db.session.add(demo)
-        if not User.query.filter_by(username='sumeet').first():
-            sumeet = User(username='sumeet', first_name='Sumeet', last_name='Sangwan',
-                          email='sumeet@example.com', profession='AI/ML Engineer & Full Stack Developer',
-                          city='Pune', state='Maharashtra', is_admin=True)
-            sumeet.set_password('sumeet123')
-            db.session.add(sumeet)
-        db.session.commit()
-        print("✅ Demo users created successfully!")
-    except Exception as e:
-        print(f"Demo data creation error: {e}")
-        db.session.rollback()
-
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        create_demo_data()
-
-        print("🚀 Finucity AI Assistant Starting...")
-        print("🌐 URL: http://localhost:3000")
-        print("✨ Enhanced with advanced chat features")
-        print("👨‍💻 Created by Sumeet Sangwan")
-        print("🔗 GitHub: https://github.com/Sumeet-01")
-
+    print("🚀 Finucity AI Assistant Starting...")
+    print("💾 Database: Supabase (PostgreSQL)")
+    print("🌐 URL: http://localhost:3000")
+    print("✨ Enhanced with advanced chat features")
+    print("👨‍💻 Created by Sumeet Sangwan")
+    print("🔗 GitHub: https://github.com/Sumeet-01")
+    print("")
+    
+    # Verify Supabase configuration
+    if not os.getenv('SUPABASE_URL') or not os.getenv('SUPABASE_SERVICE_KEY'):
+        print("❌ ERROR: Supabase configuration missing")
+        print("   Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env")
+        exit(1)
+    
     port = int(os.environ.get('PORT', 3000))
     debug = os.environ.get('FLASK_ENV', 'development') == 'development'
     app.run(host='0.0.0.0', port=port, debug=debug)
