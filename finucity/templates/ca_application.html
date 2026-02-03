@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+
+{% block title %}CA Application - Finucity{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ca-onboarding.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="ca-onboarding">
+    <div class="ca-onboarding-container">
+        <!-- ==================== ONBOARDING HEADER ==================== -->
+        <header class="onboarding-header">
+            <h1 class="onboarding-title">Become a Verified CA</h1>
+            <p class="onboarding-subtitle">
+                Join India's premier fintech platform and connect with thousands of clients seeking expert financial guidance.
+                Complete your verification in just 4 simple steps.
+            </p>
+        </header>
+
+        <!-- ==================== PROGRESS TRACKER ==================== -->
+        <div class="progress-tracker">
+            <div class="progress-steps">
+                <div class="progress-line">
+                    <div class="progress-line-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <div class="progress-step active" data-step="1">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="progress-step-label">Basic Info</div>
+                </div>
+                
+                <div class="progress-step" data-step="2">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="progress-step-label">Professional</div>
+                </div>
+                
+                <div class="progress-step" data-step="3">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="progress-step-label">Documents</div>
+                </div>
+                
+                <div class="progress-step" data-step="4">
+                    <div class="progress-step-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="progress-step-label">Review</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STEP 1: BASIC INFORMATION ==================== -->
+        <div class="onboarding-step" id="step1">
+            <div class="onboarding-form-container">
+                <div class="onboarding-form-header">
+                    <h2 class="onboarding-form-title">Basic Information</h2>
+                    <p class="onboarding-form-description">
+                        Let's start with your personal and contact details. This information will be used to create your professional profile.
+                    </p>
+                </div>
+                
+                <form class="onboarding-form" id="basicInfoForm">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-user"></i>
+                            Personal Details
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Full Name</label>
+                                <input type="text" class="form-input" name="full_name" required 
+                                       placeholder="Enter your full name as per ICAI registration">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Email Address</label>
+                                <input type="email" class="form-input" name="email" required 
+                                       placeholder="your.email@example.com" value="{{ current_user.email if current_user else '' }}" readonly>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Phone Number</label>
+                                <input type="tel" class="form-input" name="phone" required 
+                                       placeholder="+91 98765 43210">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">ICAI Membership Number</label>
+                                <input type="text" class="form-input" name="icai_number" required 
+                                       placeholder="ABC123456" maxlength="9">
+                                <div class="form-label-hint">
+                                    Format: 3 letters followed by 6 digits (e.g., ABC123456)
+                                </div>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Location Details
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">City</label>
+                                <input type="text" class="form-input" name="city" required 
+                                       placeholder="Mumbai">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">State</label>
+                                <select class="form-select" name="state" required>
+                                    <option value="">Select State</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                </select>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <div class="form-actions-left">
+                            <button type="button" class="btn btn-secondary" onclick="saveDraft()">
+                                <i class="fas fa-save"></i> Save Draft
+                            </button>
+                        </div>
+                        <div class="form-actions-right">
+                            <button type="submit" class="btn btn-primary">
+                                Continue to Professional Details
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== STEP 2: PROFESSIONAL DETAILS ==================== -->
+        <div class="onboarding-step" id="step2" style="display: none;">
+            <div class="onboarding-form-container">
+                <div class="onboarding-form-header">
+                    <h2 class="onboarding-form-title">Professional Details</h2>
+                    <p class="onboarding-form-description">
+                        Tell us about your professional experience and areas of expertise. This helps clients find the right CA for their needs.
+                    </p>
+                </div>
+                
+                <form class="onboarding-form" id="professionalForm">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-briefcase"></i>
+                            Practice Information
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">ICAI Registration Year</label>
+                                <input type="number" class="form-input" name="registration_year" required 
+                                       placeholder="2010" min="1950" max="{{ current_year }}">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Years of Experience</label>
+                                <input type="number" class="form-input" name="experience_years" required 
+                                       placeholder="5" min="0" max="50">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">CA Type</label>
+                                <select class="form-select" name="ca_type" required>
+                                    <option value="">Select CA Type</option>
+                                    <option value="practicing">Practicing CA</option>
+                                    <option value="industry">Industry CA</option>
+                                    <option value="government">Government CA</option>
+                                    <option value="academia">Academia CA</option>
+                                </select>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Firm Name (if applicable)</label>
+                                <input type="text" class="form-input" name="firm_name" 
+                                       placeholder="XYZ & Associates">
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Practice Address
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">Complete Practice Address</label>
+                            <textarea class="form-textarea" name="practice_address" required 
+                                      placeholder="Enter your complete practice address including landmark"></textarea>
+                            <div class="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Office Address (if different from practice)</label>
+                            <textarea class="form-textarea" name="office_address" 
+                                      placeholder="Enter office address if different from practice address"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-star"></i>
+                            Specializations
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label required">Areas of Expertise</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Taxation">
+                                    <span class="checkbox-label">Taxation (Income Tax, GST, etc.)</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Audit">
+                                    <span class="checkbox-label">Audit & Assurance</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Corporate Law">
+                                    <span class="checkbox-label">Corporate Law & Compliance</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Financial Planning">
+                                    <span class="checkbox-label">Financial Planning & Investment</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Forensic Accounting">
+                                    <span class="checkbox-label">Forensic Accounting</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="International Tax">
+                                    <span class="checkbox-label">International Taxation</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Business Valuation">
+                                    <span class="checkbox-label">Business Valuation</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="specializations" value="Risk Management">
+                                    <span class="checkbox-label">Risk Management</span>
+                                </label>
+                            </div>
+                            <div class="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Please select at least one specialization</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-users"></i>
+                            Client Types
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Types of Clients You Serve</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="Individuals">
+                                    <span class="checkbox-label">Individuals</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="Startups">
+                                    <span class="checkbox-label">Startups</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="SMEs">
+                                    <span class="checkbox-label">Small & Medium Enterprises</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="Large Corporates">
+                                    <span class="checkbox-label">Large Corporates</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="NRIs">
+                                    <span class="checkbox-label">Non-Resident Indians</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="client_types" value="Foreign Companies">
+                                    <span class="checkbox-label">Foreign Companies</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <div class="form-actions-left">
+                            <button type="button" class="btn btn-secondary" onclick="goToStep(1)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                        </div>
+                        <div class="form-actions-right">
+                            <button type="submit" class="btn btn-primary">
+                                Continue to Documents
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== STEP 3: DOCUMENTS ==================== -->
+        <div class="onboarding-step" id="step3" style="display: none;">
+            <div class="onboarding-form-container">
+                <div class="onboarding-form-header">
+                    <h2 class="onboarding-form-title">Document Verification</h2>
+                    <p class="onboarding-form-description">
+                        Upload the required documents for verification. All documents are securely stored and only used for verification purposes.
+                    </p>
+                </div>
+                
+                <form class="onboarding-form" id="documentsForm">
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-id-card"></i>
+                            Required Documents
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">ICAI Membership Certificate</label>
+                                <div class="file-upload-area" data-document-type="icai_certificate">
+                                    <input type="file" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">PDF, JPG, PNG (Max 10MB)</div>
+                                </div>
+                                <div class="file-list" id="icai_certificate_files"></div>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Government ID Proof</label>
+                                <div class="file-upload-area" data-document-type="government_id">
+                                    <input type="file" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">Aadhaar Card, PAN Card, Passport (Max 10MB)</div>
+                                </div>
+                                <div class="file-list" id="government_id_files"></div>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Practice Certificate</label>
+                                <div class="file-upload-area" data-document-type="practice_certificate">
+                                    <input type="file" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-certificate"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">Certificate of Practice (Max 10MB)</div>
+                                </div>
+                                <div class="file-list" id="practice_certificate_files"></div>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label required">Profile Photo</label>
+                                <div class="file-upload-area" data-document-type="profile_photo">
+                                    <input type="file" class="file-upload-input" accept=".jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">Professional headshot (Max 5MB)</div>
+                                </div>
+                                <div class="file-list" id="profile_photo_files"></div>
+                                <div class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <i class="fas fa-building"></i>
+                            Office Documents (Optional)
+                        </h3>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Office Address Proof</label>
+                                <div class="file-upload-area" data-document-type="office_proof">
+                                    <input type="file" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">Rent agreement, utility bill (Max 10MB)</div>
+                                </div>
+                                <div class="file-list" id="office_proof_files"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Degree Certificate</label>
+                                <div class="file-upload-area" data-document-type="degree_certificate">
+                                    <input type="file" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                    <div class="file-upload-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="file-upload-text">Click to upload or drag and drop</div>
+                                    <div class="file-upload-hint">CA Final/Inter certificate (Max 10MB)</div>
+                                </div>
+                                <div class="file-list" id="degree_certificate_files"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <div class="form-actions-left">
+                            <button type="button" class="btn btn-secondary" onclick="goToStep(2)">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </button>
+                        </div>
+                        <div class="form-actions-right">
+                            <button type="submit" class="btn btn-primary">
+                                Review Application
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== STEP 4: REVIEW & SUBMIT ==================== -->
+        <div class="onboarding-step" id="step4" style="display: none;">
+            <div class="onboarding-form-container">
+                <div class="onboarding-form-header">
+                    <h2 class="onboarding-form-title">Review & Submit</h2>
+                    <p class="onboarding-form-description">
+                        Please review your application details before submitting. Once submitted, our team will review your application within 7 business days.
+                    </p>
+                </div>
+                
+                <div class="application-review" id="applicationReview">
+                    <!-- Content will be populated dynamically -->
+                </div>
+                
+                <div class="form-actions">
+                    <div class="form-actions-left">
+                        <button type="button" class="btn btn-secondary" onclick="goToStep(3)">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                    </div>
+                    <div class="form-actions-right">
+                        <button type="button" class="btn btn-primary" onclick="submitApplication()">
+                            <i class="fas fa-paper-plane"></i> Submit Application
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== APPLICATION STATUS ==================== -->
+        <div class="onboarding-step" id="statusStep" style="display: none;">
+            <div class="application-status">
+                <div class="status-icon" id="statusIcon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h2 class="status-title" id="statusTitle">Application Submitted</h2>
+                <p class="status-description" id="statusDescription">
+                    Your CA application has been successfully submitted. Our verification team will review your application within 7 business days.
+                </p>
+                <div class="status-actions">
+                    <a href="{{ url_for('main.home') }}" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                    <a href="{{ url_for('main.user_dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt"></i> View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== LOADING OVERLAY ==================== -->
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-content">
+        <div class="loading-spinner-large"></div>
+        <p>Processing your application...</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/ca-onboarding.js') }}"></script>
+{% endblock %}

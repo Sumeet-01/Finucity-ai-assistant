@@ -359,7 +359,9 @@
 
             try {
                 const response = await fetch(`/api/admin/ca-application/${appId}/approve`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
                 });
 
                 const data = await response.json();

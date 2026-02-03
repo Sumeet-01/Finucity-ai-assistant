@@ -1,0 +1,680 @@
+{% extends "base.html" %}
+
+{% block title %}My Documents - CA Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard-pro.css') }}">
+<style>
+    /* Documents Page Specific Styles */
+    .upload-zone {
+        background: rgba(255, 255, 255, 0.03);
+        border: 2px dashed rgba(16, 185, 129, 0.3);
+        border-radius: 16px;
+        padding: 3rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .upload-zone:hover {
+        background: rgba(16, 185, 129, 0.05);
+        border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .upload-zone.drag-over {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: #10B981;
+    }
+
+    .upload-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 1rem;
+        color: rgba(16, 185, 129, 0.6);
+    }
+
+    .upload-text h3 {
+        font-size: 1.25rem;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-text p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+    }
+
+    .file-types {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .file-type-badge {
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .document-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .document-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+    }
+
+    .document-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .document-icon.pdf {
+        background: rgba(239, 68, 68, 0.1);
+        color: #EF4444;
+    }
+
+    .document-icon.doc {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3B82F6;
+    }
+
+    .document-icon.excel {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10B981;
+    }
+
+    .document-icon.image {
+        background: rgba(139, 92, 246, 0.1);
+        color: #8B5CF6;
+    }
+
+    .document-info h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .document-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 1rem;
+    }
+
+    .document-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .doc-action-btn {
+        flex: 1;
+        padding: 0.625rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .doc-action-btn:hover {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: #10B981;
+    }
+
+    .doc-action-btn.delete:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #EF4444;
+    }
+
+    .upload-progress {
+        display: none;
+        margin-top: 1rem;
+    }
+
+    .upload-progress.active {
+        display: block;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+        transition: width 0.3s ease;
+        width: 0%;
+    }
+
+    .progress-text {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .filter-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        border-color: #10B981;
+        color: white;
+    }
+
+    .document-preview {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .document-preview.active {
+        display: flex;
+    }
+
+    .preview-content {
+        max-width: 90%;
+        max-height: 90%;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .preview-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .preview-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ca-dashboard">
+    <!-- Sidebar -->
+    <aside class="ca-sidebar">
+        <div class="ca-sidebar-header">
+            <h2>CA Dashboard</h2>
+        </div>
+        <nav class="ca-sidebar-nav">
+            <a href="{{ url_for('main.ca_dashboard') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="{{ url_for('main.ca_clients') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Clients
+            </a>
+            <a href="{{ url_for('main.ca_earnings') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Earnings
+            </a>
+            <a href="{{ url_for('main.ca_documents') }}" class="ca-nav-item active">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Documents
+            </a>
+            <a href="{{ url_for('main.ca_messages') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                Messages
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ca-main-content">
+        <div class="ca-page-header">
+            <h1>My Documents</h1>
+            <p>Manage client documents and certificates securely</p>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="display: none;">
+            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <div class="upload-text">
+                <h3>Drop files here or click to upload</h3>
+                <p>Upload documents, certificates, or tax files</p>
+            </div>
+            <div class="file-types">
+                <span class="file-type-badge">PDF</span>
+                <span class="file-type-badge">DOC/DOCX</span>
+                <span class="file-type-badge">XLS/XLSX</span>
+                <span class="file-type-badge">Images</span>
+            </div>
+            <div class="upload-progress" id="uploadProgress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Uploading...</p>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterDocuments('all')">All Documents</button>
+            <button class="filter-btn" onclick="filterDocuments('pdf')">PDF</button>
+            <button class="filter-btn" onclick="filterDocuments('doc')">Documents</button>
+            <button class="filter-btn" onclick="filterDocuments('excel')">Spreadsheets</button>
+            <button class="filter-btn" onclick="filterDocuments('image')">Images</button>
+        </div>
+
+        <!-- Documents Grid -->
+        <div id="documentsGrid" class="documents-grid">
+            <!-- Skeleton Loaders -->
+            <div class="document-card skeleton-loader">
+                <div class="skeleton-text" style="width: 100%; height: 20px; margin-bottom: 1rem;"></div>
+                <div class="skeleton-text" style="width: 60%; height: 16px;"></div>
+            </div>
+            <div class="document-card skeleton-loader">
+                <div class="skeleton-text" style="width: 100%; height: 20px; margin-bottom: 1rem;"></div>
+                <div class="skeleton-text" style="width: 60%; height: 16px;"></div>
+            </div>
+            <div class="document-card skeleton-loader">
+                <div class="skeleton-text" style="width: 100%; height: 20px; margin-bottom: 1rem;"></div>
+                <div class="skeleton-text" style="width: 60%; height: 16px;"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Document Preview Modal -->
+<div id="documentPreview" class="document-preview">
+    <button class="preview-close" onclick="closePreview()">✕</button>
+    <div class="preview-content" id="previewContent"></div>
+</div>
+
+<script>
+    // Supabase Configuration
+    const supabaseUrl = '{{ supabase_url }}';
+    const supabaseKey = '{{ supabase_key }}';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
+    let allDocuments = [];
+    let currentFilter = 'all';
+
+    // Load documents on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadDocuments();
+        setupUploadHandlers();
+        setupRealtimeSubscriptions();
+    });
+
+    // Upload Zone Handlers
+    function setupUploadHandlers() {
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files);
+            uploadFiles(files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            uploadFiles(files);
+        });
+    }
+
+    async function uploadFiles(files) {
+        const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                           'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                           'image/png', 'image/jpeg', 'image/jpg'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        for (const file of files) {
+            if (!validTypes.includes(file.type)) {
+                alert(`${file.name}: Invalid file type. Only PDF, DOC, DOCX, XLS, XLSX, PNG, JPG allowed.`);
+                continue;
+            }
+
+            if (file.size > maxSize) {
+                alert(`${file.name}: File too large. Maximum size is 5MB.`);
+                continue;
+            }
+
+            await uploadSingleFile(file);
+        }
+    }
+
+    async function uploadSingleFile(file) {
+        const progressEl = document.getElementById('uploadProgress');
+        const fillEl = document.getElementById('progressFill');
+        const textEl = document.getElementById('progressText');
+
+        progressEl.classList.add('active');
+        textEl.textContent = `Uploading ${file.name}...`;
+
+        try {
+            // Simulate upload progress
+            for (let i = 0; i <= 50; i += 10) {
+                fillEl.style.width = i + '%';
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // Upload to API (which will use Supabase Storage)
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/ca/upload-document', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                fillEl.style.width = '100%';
+                textEl.textContent = 'Upload complete!';
+                setTimeout(() => {
+                    progressEl.classList.remove('active');
+                    fillEl.style.width = '0%';
+                    loadDocuments();
+                }, 1000);
+            } else {
+                throw new Error(data.error || 'Upload failed');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            textEl.textContent = 'Upload failed';
+            setTimeout(() => {
+                progressEl.classList.remove('active');
+                fillEl.style.width = '0%';
+            }, 2000);
+        }
+    }
+
+    async function loadDocuments() {
+        try {
+            const response = await fetch('/api/ca/documents');
+            const data = await response.json();
+
+            if (data.error) {
+                console.error('Error loading documents:', data.error);
+                showEmptyState('Failed to load documents');
+                return;
+            }
+
+            allDocuments = data;
+            renderDocuments(allDocuments);
+        } catch (error) {
+            console.error('Error loading documents:', error);
+            showEmptyState('Failed to load documents');
+        }
+    }
+
+    function renderDocuments(documents) {
+        const container = document.getElementById('documentsGrid');
+
+        if (documents.length === 0) {
+            showEmptyState('No documents uploaded yet');
+            return;
+        }
+
+        container.innerHTML = documents.map(doc => {
+            const fileType = getFileType(doc.file_type);
+            const icon = getFileIcon(fileType);
+            
+            return `
+                <div class="document-card" data-type="${fileType}">
+                    <div class="document-icon ${fileType}">
+                        ${icon}
+                    </div>
+                    <div class="document-info">
+                        <h4 title="${doc.file_name}">${doc.file_name}</h4>
+                        <div class="document-meta">
+                            <span>${formatFileSize(doc.file_size)}</span>
+                            <span>•</span>
+                            <span>${formatTimeAgo(doc.created_at)}</span>
+                        </div>
+                    </div>
+                    <div class="document-actions">
+                        <button class="doc-action-btn" onclick="downloadDocument('${doc.id}', '${doc.file_name}')">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            Download
+                        </button>
+                        <button class="doc-action-btn delete" onclick="deleteDocument('${doc.id}', '${doc.file_name}')">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterDocuments(type) {
+        currentFilter = type;
+
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Filter documents
+        const filtered = type === 'all' 
+            ? allDocuments 
+            : allDocuments.filter(doc => getFileType(doc.file_type) === type);
+
+        renderDocuments(filtered);
+    }
+
+    async function downloadDocument(id, fileName) {
+        try {
+            const response = await fetch(`/api/ca/download-document/${id}`);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download error:', error);
+            alert('Failed to download document');
+        }
+    }
+
+    async function deleteDocument(id, fileName) {
+        if (!confirm(`Are you sure you want to delete "${fileName}"?`)) return;
+
+        try {
+            const response = await fetch(`/api/ca/delete-document/${id}`, { method: 'DELETE' });
+            const data = await response.json();
+
+            if (data.success) {
+                loadDocuments();
+            } else {
+                alert(data.error || 'Failed to delete document');
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('Failed to delete document');
+        }
+    }
+
+    function setupRealtimeSubscriptions() {
+        supabase
+            .channel('ca-documents-changes')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'ca_documents'
+            }, () => {
+                loadDocuments();
+            })
+            .subscribe();
+    }
+
+    function showEmptyState(message) {
+        const container = document.getElementById('documentsGrid');
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: rgba(255, 255, 255, 0.4);">
+                <svg width="80" height="80" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin: 0 auto 1.5rem; opacity: 0.3;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    // Utility Functions
+    function getFileType(mimeType) {
+        if (mimeType.includes('pdf')) return 'pdf';
+        if (mimeType.includes('word') || mimeType.includes('document')) return 'doc';
+        if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'excel';
+        if (mimeType.includes('image')) return 'image';
+        return 'doc';
+    }
+
+    function getFileIcon(type) {
+        const icons = {
+            pdf: '📄',
+            doc: '📝',
+            excel: '📊',
+            image: '🖼️'
+        };
+        return icons[type] || '📄';
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function formatTimeAgo(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = Math.floor((now - time) / 1000);
+
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return Math.floor(diff / 60) + ' mins ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+        return Math.floor(diff / 86400) + ' days ago';
+    }
+
+    function closePreview() {
+        document.getElementById('documentPreview').classList.remove('active');
+    }
+</script>
+{% endblock %}

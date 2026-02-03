@@ -316,9 +316,13 @@
     <!-- Admin Navigation -->
     <nav class="admin-nav">
         <ul class="nav-links">
-            <li><a href="{{ url_for('main.admin_dashboard') }}" class="active">Dashboard</a></li>
-            <li><a href="{{ url_for('main.admin_users') }}">Users</a></li>
-            <li><a href="{{ url_for('main.admin_ca_applications') }}">CA Applications</a></li>
+            <li><a href="{{ url_for('main.admin_dashboard') }}" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+            <li><a href="{{ url_for('main.admin_users') }}"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="{{ url_for('main.admin_ca_applications') }}"><i class="fas fa-user-tie"></i> CA Applications</a></li>
+            {# Coming Soon Features #}
+            {# <li><a href="{{ url_for('main.admin_complaints') }}"><i class="fas fa-exclamation-circle"></i> Complaints</a></li> #}
+            {# <li><a href="{{ url_for('main.admin_analytics') }}"><i class="fas fa-chart-line"></i> Analytics</a></li> #}
+            {# <li><a href="{{ url_for('main.admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li> #}
         </ul>
     </nav>
 

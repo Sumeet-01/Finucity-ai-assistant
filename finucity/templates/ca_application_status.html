@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}Application Status - Finucity{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ca-onboarding.css') }}">
+<style>
+.application-status-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.status-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.status-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #10b981, #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+.status-header p {
+    color: #94a3b8;
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+.status-timeline {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--glass-shadow);
+}
+
+.timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 48px;
+    bottom: -2rem;
+    width: 2px;
+    background: var(--step-inactive);
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-item.completed::before {
+    background: var(--step-completed);
+}
+
+.timeline-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--step-inactive);
+    border: 3px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #94a3b8;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.timeline-item.completed .timeline-icon {
+    background: var(--step-completed);
+    border-color: var(--step-completed);
+    color: white;
+}
+
+.timeline-item.active .timeline-icon {
+    background: var(--step-active);
+    border-color: var(--step-active);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.timeline-content {
+    flex: 1;
+    padding-top: 0.5rem;
+}
+
+.timeline-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-description {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-date {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.status-details {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--glass-shadow);
+}
+
+.status-details h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.status-details h3 i {
+    color: #10b981;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #f1f5f9;
+    font-weight: 500;
+}
+
+.status-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .application-status-container {
+        padding: 1rem;
+    }
+    
+    .status-header h1 {
+        font-size: 2rem;
+    }
+    
+    .timeline-item {
+        gap: 1rem;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .status-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ca-onboarding">
+    <div class="application-status-container">
+        <!-- ==================== STATUS HEADER ==================== -->
+        <header class="status-header">
+            <h1>Application Status</h1>
+            <p>Track your CA verification application progress in real-time</p>
+        </header>
+
+        <!-- ==================== STATUS TIMELINE ==================== -->
+        <div class="status-timeline">
+            <div class="timeline-item completed">
+                <div class="timeline-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Application Submitted</div>
+                    <div class="timeline-description">Your CA application has been successfully submitted and is under review.</div>
+                    <div class="timeline-date">{{ application.created_at|default('Recently') }}</div>
+                </div>
+            </div>
+            
+            <div class="timeline-item {% if application.status in ['under_review', 'approved', 'rejected'] %}completed{% elif application.status == 'pending' %}active{% endif %}">
+                <div class="timeline-icon">
+                    {% if application.status in ['under_review', 'approved', 'rejected'] %}
+                        <i class="fas fa-check"></i>
+                    {% else %}
+                        <i class="fas fa-clock"></i>
+                    {% endif %}
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Initial Review</div>
+                    <div class="timeline-description">
+                        {% if application.status == 'pending' %}
+                            Your application is being reviewed by our verification team.
+                        {% else %}
+                            Your application has passed the initial review phase.
+                        {% endif %}
+                    </div>
+                    <div class="timeline-date">
+                        {% if application.status != 'pending' %}
+                            {{ application.updated_at|default('Recently') }}
+                        {% else %}
+                            In progress
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item {% if application.status in ['approved'] %}completed{% elif application.status in ['under_review', 'rejected'] %}active{% endif %}">
+                <div class="timeline-icon">
+                    {% if application.status == 'approved' %}
+                        <i class="fas fa-check"></i>
+                    {% elif application.status in ['under_review', 'rejected'] %}
+                        <i class="fas fa-search"></i>
+                    {% else %}
+                        <i class="fas fa-clock"></i>
+                    {% endif %}
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Document Verification</div>
+                    <div class="timeline-description">
+                        {% if application.status == 'pending' %}
+                            Waiting for document verification process.
+                        {% elif application.status == 'under_review' %}
+                            Your documents are currently being verified.
+                        {% elif application.status == 'approved' %}
+                            All documents have been successfully verified.
+                        {% elif application.status == 'rejected' %}
+                            Document verification could not be completed.
+                        {% endif %}
+                    </div>
+                    <div class="timeline-date">
+                        {% if application.status == 'approved' %}
+                            {{ application.updated_at|default('Recently') }}
+                        {% elif application.status == 'rejected' %}
+                            {{ application.updated_at|default('Recently') }}
+                        {% elif application.status == 'under_review' %}
+                            In progress
+                        {% else %}
+                            Pending
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timeline-item {% if application.status == 'approved' %}completed{% elif application.status == 'rejected' %}active{% endif %}">
+                <div class="timeline-icon">
+                    {% if application.status == 'approved' %}
+                        <i class="fas fa-check"></i>
+                    {% elif application.status == 'rejected' %}
+                        <i class="fas fa-times"></i>
+                    {% else %}
+                        <i class="fas fa-clock"></i>
+                    {% endif %}
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Final Decision</div>
+                    <div class="timeline-description">
+                        {% if application.status == 'approved' %}
+                            Congratulations! Your application has been approved and you are now a verified CA on Finucity.
+                        {% elif application.status == 'rejected' %}
+                            Your application could not be approved at this time.
+                        {% else %}
+                            Waiting for final decision from verification team.
+                        {% endif %}
+                    </div>
+                    <div class="timeline-date">
+                        {% if application.status in ['approved', 'rejected'] %}
+                            {{ application.updated_at|default('Recently') }}
+                        {% else %}
+                            Pending
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STATUS DETAILS ==================== -->
+        <div class="status-details">
+            <h3>
+                <i class="fas fa-info-circle"></i>
+                Application Details
+            </h3>
+            
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Application ID</div>
+                    <div class="detail-value">#{{ application.id|default('APP-' + application.id|string) }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Current Status</div>
+                    <div class="detail-value">
+                        {% if application.status == 'pending' %}
+                            <span style="color: #f59e0b;">⏳ Pending Review</span>
+                        {% elif application.status == 'under_review' %}
+                            <span style="color: #3b82f6;">🔍 Under Review</span>
+                        {% elif application.status == 'approved' %}
+                            <span style="color: #10b981;">✅ Approved</span>
+                        {% elif application.status == 'rejected' %}
+                            <span style="color: #ef4444;">❌ Rejected</span>
+                        {% else %}
+                            <span style="color: #94a3b8;">📋 {{ application.status|title }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Submitted On</div>
+                    <div class="detail-value">{{ application.created_at|default('Recently') }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Last Updated</div>
+                    <div class="detail-value">{{ application.updated_at|default('Not updated yet') }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">ICAI Number</div>
+                    <div class="detail-value">{{ application.icai_number|default('Not provided') }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">{{ application.email|default(current_user.email) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STATUS ACTIONS ==================== -->
+        <div class="status-actions">
+            {% if application.status == 'approved' %}
+                <a href="{{ url_for('main.ca_dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-tachometer-alt"></i> Go to CA Dashboard
+                </a>
+            {% elif application.status == 'rejected' %}
+                <a href="{{ url_for('main.ca_application') }}" class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Reapply
+                </a>
+            {% endif %}
+            
+            <a href="{{ url_for('main.home') }}" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+            
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="fas fa-print"></i> Print Status
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh status every 30 seconds for pending/under_review applications
+    {% if application.status in ['pending', 'under_review'] %}
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    {% endif %}
+    
+    // Add smooth scroll animations
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '0';
+                entry.target.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    entry.target.style.transition = 'all 0.6s ease';
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    });
+    
+    timelineItems.forEach(item => observer.observe(item));
+});
+</script>
+{% endblock %}

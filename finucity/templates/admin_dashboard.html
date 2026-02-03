@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Finucity{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <div class="admin-container">
+        <!-- ==================== ADMIN HEADER ==================== -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div>
+                    <h1 class="admin-title">Admin Dashboard</h1>
+                    <p class="admin-subtitle">Finucity CA Ecosystem Management</p>
+                </div>
+                <div class="admin-stats-summary">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCas">0</div>
+                        <div class="stat-label">Total CAs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="pendingApps">0</div>
+                        <div class="stat-label">Pending Apps</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeComplaints">0</div>
+                        <div class="stat-label">Active Issues</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== ADMIN NAVIGATION ==================== -->
+        <nav class="admin-nav">
+            <div class="admin-nav-tabs">
+                <button class="admin-nav-tab active" data-tab="overview">
+                    <i class="fas fa-chart-line"></i> Overview
+                </button>
+                <button class="admin-nav-tab" data-tab="applications">
+                    <i class="fas fa-user-tie"></i> CA Applications
+                    <span class="badge" id="pendingBadge" style="display: none;">0</span>
+                </button>
+                <button class="admin-nav-tab" data-tab="verified-cas">
+                    <i class="fas fa-shield-check"></i> Verified CAs
+                </button>
+                <button class="admin-nav-tab" data-tab="complaints">
+                    <i class="fas fa-exclamation-triangle"></i> Complaints
+                    <span class="badge" id="complaintBadge" style="display: none;">0</span>
+                </button>
+                <button class="admin-nav-tab" data-tab="audit-logs">
+                    <i class="fas fa-history"></i> Audit Logs
+                </button>
+                <button class="admin-nav-tab" data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+        </nav>
+
+        <!-- ==================== OVERVIEW TAB ==================== -->
+        <div class="admin-tab-content" id="overview">
+            <div class="admin-stats-grid">
+                <div class="admin-stat-card">
+                    <div class="admin-stat-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="admin-stat-value" id="verifiedCasCount">0</div>
+                    <div class="admin-stat-label">Verified CAs</div>
+                    <div class="admin-stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="admin-stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="admin-stat-value" id="pendingAppsCount">0</div>
+                    <div class="admin-stat-label">Pending Applications</div>
+                    <div class="admin-stat-change negative">
+                        <i class="fas fa-arrow-down"></i> 5% from last week
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="admin-stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="admin-stat-value" id="complaintsCount">0</div>
+                    <div class="admin-stat-label">Active Complaints</div>
+                    <div class="admin-stat-change positive">
+                        <i class="fas fa-arrow-up"></i> 2 new today
+                    </div>
+                </div>
+                
+                <div class="admin-stat-card">
+                    <div class="admin-stat-icon">
+                        <i class="fas fa-pause"></i>
+                    </div>
+                    <div class="admin-stat-value" id="suspendedCasCount">0</div>
+                    <div class="admin-stat-label">Suspended CAs</div>
+                    <div class="admin-stat-change">
+                        <i class="fas fa-minus"></i> No change
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">Recent Activity</h2>
+                    <button class="admin-btn admin-btn-sm" onclick="refreshActivity()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                <div id="recentActivity">
+                    <div class="admin-loading">
+                        <div class="admin-spinner"></div>
+                        Loading recent activity...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== APPLICATIONS TAB ==================== -->
+        <div class="admin-tab-content" id="applications" style="display: none;">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">CA Applications</h2>
+                    <div class="admin-card-actions">
+                        <select class="admin-filter-select" id="applicationFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button class="admin-btn admin-btn-sm" onclick="refreshApplications()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="applicationsList">
+                    <div class="admin-loading">
+                        <div class="admin-spinner"></div>
+                        Loading applications...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VERIFIED CAS TAB ==================== -->
+        <div class="admin-tab-content" id="verified-cas" style="display: none;">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">Verified Chartered Accountants</h2>
+                    <div class="admin-card-actions">
+                        <input type="text" class="admin-filter-input" id="caSearch" placeholder="Search CAs...">
+                        <button class="admin-btn admin-btn-sm" onclick="refreshVerifiedCAs()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="verifiedCasList">
+                    <div class="admin-loading">
+                        <div class="admin-spinner"></div>
+                        Loading verified CAs...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== COMPLAINTS TAB ==================== -->
+        <div class="admin-tab-content" id="complaints" style="display: none;">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">User Complaints</h2>
+                    <div class="admin-card-actions">
+                        <select class="admin-filter-select" id="complaintFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="investigating">Investigating</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        <button class="admin-btn admin-btn-sm" onclick="refreshComplaints()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="complaintsList">
+                    <div class="admin-loading">
+                        <div class="admin-spinner"></div>
+                        Loading complaints...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== AUDIT LOGS TAB ==================== -->
+        <div class="admin-tab-content" id="audit-logs" style="display: none;">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">Admin Audit Logs</h2>
+                    <div class="admin-card-actions">
+                        <select class="admin-filter-select" id="logActionFilter">
+                            <option value="">All Actions</option>
+                            <option value="ca_approve">CA Approvals</option>
+                            <option value="ca_reject">CA Rejections</option>
+                            <option value="ca_suspend">CA Suspensions</option>
+                            <option value="ca_reinstate">CA Reinstatements</option>
+                            <option value="complaint_review">Complaint Reviews</option>
+                        </select>
+                        <button class="admin-btn admin-btn-sm" onclick="refreshAuditLogs()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="auditLogsList">
+                    <div class="admin-loading">
+                        <div class="admin-spinner"></div>
+                        Loading audit logs...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SETTINGS TAB ==================== -->
+        <div class="admin-tab-content" id="settings" style="display: none;">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2 class="admin-card-title">Platform Settings</h2>
+                </div>
+                
+                <form class="admin-form" id="settingsForm">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">CA Verification Required</label>
+                        <select class="admin-form-select" name="ca_verification_required">
+                            <option value="true">Enabled</option>
+                            <option value="false">Disabled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Minimum Withdrawal Amount (₹)</label>
+                        <input type="number" class="admin-form-input" name="min_withdrawal_amount" min="100" step="100">
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Platform Fee Percentage (%)</label>
+                        <input type="number" class="admin-form-input" name="platform_fee_percentage" min="0" max="50" step="0.5">
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Auto-suspend Threshold (Complaints)</label>
+                        <input type="number" class="admin-form-input" name="suspension_threshold_complaints" min="1" max="10">
+                    </div>
+                    
+                    <div class="admin-form-actions">
+                        <button type="button" class="admin-btn" onclick="resetSettings()">Reset</button>
+                        <button type="submit" class="admin-btn admin-btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Application Review Modal -->
+<div class="admin-modal" id="applicationModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">Review CA Application</h3>
+            <button class="admin-modal-close" onclick="closeModal('applicationModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="applicationModalBody">
+            <!-- Content loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- CA Action Modal -->
+<div class="admin-modal" id="caActionModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title" id="caActionTitle">CA Action</h3>
+            <button class="admin-modal-close" onclick="closeModal('caActionModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="caActionModalBody">
+            <!-- Content loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- Complaint Review Modal -->
+<div class="admin-modal" id="complaintModal">
+    <div class="admin-modal-content">
+        <div class="admin-modal-header">
+            <h3 class="admin-modal-title">Review Complaint</h3>
+            <button class="admin-modal-close" onclick="closeModal('complaintModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="complaintModalBody">
+            <!-- Content loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin-dashboard.js') }}"></script>
+{% endblock %}

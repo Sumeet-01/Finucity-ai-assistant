@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Requests | CA Workspace | Finucity</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard-pro.css') }}">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* Additional styles for clients page */
+        .filter-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-tab:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .filter-tab.active {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+        }
+        
+        .filter-tab .count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+        }
+        
+        .filter-tab.active .count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        
+        .consultation-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            transition: all var(--transition-base);
+        }
+        
+        .consultation-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+        
+        .consultation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .consultation-client {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .client-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-full);
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+        
+        .client-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .client-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-badge.accepted {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .status-badge.in_progress {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .consultation-details {
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        
+        .detail-value {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .consultation-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-md);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            opacity: 0.2;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state p {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="ca-dashboard">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="ca-sidebar">
+            <div class="ca-sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Finucity CA</span>
+            </div>
+            
+            <nav class="ca-sidebar-nav">
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Main</div>
+                    <a href="{{ url_for('main.ca_dashboard') }}" class="ca-nav-item">
+                        <i class="fas fa-grid-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_clients') }}" class="ca-nav-item active">
+                        <i class="fas fa-users"></i>
+                        <span>Clients</span>
+                        <span class="ca-nav-badge" id="sidebar-pending-count">0</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_messages') }}" class="ca-nav-item">
+                        <i class="fas fa-message"></i>
+                        <span>Messages</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_calendar') }}" class="ca-nav-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
+                </div>
+                
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Business</div>
+                    <a href="{{ url_for('main.ca_earnings') }}" class="ca-nav-item">
+                        <i class="fas fa-indian-rupee-sign"></i>
+                        <span>Earnings</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_documents') }}" class="ca-nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_services') }}" class="ca-nav-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Services</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_insights') }}" class="ca-nav-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Insights</span>
+                    </a>
+                </div>
+                
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Account</div>
+                    <a href="{{ url_for('main.ca_profile') }}" class="ca-nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_reviews') }}" class="ca-nav-item">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_settings') }}" class="ca-nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="ca-sidebar-profile">
+                <div class="ca-profile-card">
+                    <div class="ca-profile-avatar">
+                        {{ current_user.full_name[0].upper() if current_user.full_name else 'CA' }}
+                    </div>
+                    <div class="ca-profile-info">
+                        <div class="ca-profile-name">{{ current_user.full_name or 'CA User' }}</div>
+                        <div class="ca-profile-role">Chartered Accountant</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="ca-main">
+            <!-- Header -->
+            <header class="ca-header">
+                <div class="ca-header-welcome">
+                    <div class="ca-header-greeting">Client Requests</div>
+                    <div class="ca-header-name">Manage your consultations</div>
+                </div>
+                
+                <div class="ca-header-actions">
+                    <button class="ca-header-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="ca-header-btn" title="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="ca-header-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="ca-content animate-fade-in">
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-status="all" onclick="filterConsultations('all')">
+                        All
+                        <span class="count" id="count-all">0</span>
+                    </button>
+                    <button class="filter-tab" data-status="pending" onclick="filterConsultations('pending')">
+                        Pending
+                        <span class="count" id="count-pending">0</span>
+                    </button>
+                    <button class="filter-tab" data-status="accepted" onclick="filterConsultations('accepted')">
+                        Accepted
+                        <span class="count" id="count-accepted">0</span>
+                    </button>
+                    <button class="filter-tab" data-status="in_progress" onclick="filterConsultations('in_progress')">
+                        In Progress
+                        <span class="count" id="count-in_progress">0</span>
+                    </button>
+                    <button class="filter-tab" data-status="completed" onclick="filterConsultations('completed')">
+                        Completed
+                        <span class="count" id="count-completed">0</span>
+                    </button>
+                </div>
+                
+                <!-- Search & Filters -->
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Search by client name, service, or description..." onkeyup="searchConsultations()">
+                    </div>
+                    <select class="filter-select" id="service-filter" onchange="filterByService()">
+                        <option value="">All Services</option>
+                        <option value="tax_planning">Tax Planning</option>
+                        <option value="gst_compliance">GST Compliance</option>
+                        <option value="audit">Audit</option>
+                        <option value="financial_advisory">Financial Advisory</option>
+                    </select>
+                </div>
+                
+                <!-- Consultations List -->
+                <div id="consultations-container">
+                    <!-- Loading State -->
+                    <div class="glass-card">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        const SUPABASE_URL = '{{ supabase_url }}';
+        const SUPABASE_ANON_KEY = '{{ supabase_anon_key }}';
+        const CA_ID = '{{ current_user.id }}';
+        
+        const { createClient } = supabase;
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let allConsultations = [];
+        let filteredConsultations = [];
+        let currentFilter = 'all';
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-IN', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+        
+        // Time ago
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            if (seconds < 604800) return Math.floor(seconds / 86400) + ' days ago';
+            return formatDate(dateString);
+        }
+        
+        // Load all consultations
+        async function loadConsultations() {
+            try {
+                const response = await fetch('/api/ca/consultations');
+                const result = await response.json();
+                
+                if (result.success) {
+                    allConsultations = result.data;
+                    updateStatusCounts();
+                    filterConsultations(currentFilter);
+                } else {
+                    // If API doesn't exist yet, show empty state
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading consultations:', error);
+                showEmptyState();
+            }
+        }
+        
+        // Update status counts
+        function updateStatusCounts() {
+            const counts = {
+                all: allConsultations.length,
+                pending: allConsultations.filter(c => c.status === 'pending').length,
+                accepted: allConsultations.filter(c => c.status === 'accepted').length,
+                in_progress: allConsultations.filter(c => c.status === 'in_progress').length,
+                completed: allConsultations.filter(c => c.status === 'completed').length
+            };
+            
+            Object.keys(counts).forEach(status => {
+                const el = document.getElementById(`count-${status}`);
+                if (el) el.textContent = counts[status];
+            });
+            
+            // Update sidebar badge
+            const sidebarBadge = document.getElementById('sidebar-pending-count');
+            if (sidebarBadge) sidebarBadge.textContent = counts.pending;
+        }
+        
+        // Filter consultations by status
+        function filterConsultations(status) {
+            currentFilter = status;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.status === status) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Filter data
+            if (status === 'all') {
+                filteredConsultations = allConsultations;
+            } else {
+                filteredConsultations = allConsultations.filter(c => c.status === status);
+            }
+            
+            renderConsultations();
+        }
+        
+        // Search consultations
+        function searchConsultations() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            
+            if (!query) {
+                filterConsultations(currentFilter);
+                return;
+            }
+            
+            filteredConsultations = allConsultations.filter(c => {
+                if (currentFilter !== 'all' && c.status !== currentFilter) return false;
+                
+                return (
+                    c.client_name?.toLowerCase().includes(query) ||
+                    c.service_type?.toLowerCase().includes(query) ||
+                    c.title?.toLowerCase().includes(query) ||
+                    c.description?.toLowerCase().includes(query)
+                );
+            });
+            
+            renderConsultations();
+        }
+        
+        // Filter by service
+        function filterByService() {
+            const service = document.getElementById('service-filter').value;
+            
+            if (!service) {
+                filterConsultations(currentFilter);
+                return;
+            }
+            
+            filteredConsultations = allConsultations.filter(c => {
+                if (currentFilter !== 'all' && c.status !== currentFilter) return false;
+                return c.service_type === service;
+            });
+            
+            renderConsultations();
+        }
+        
+        // Render consultations
+        function renderConsultations() {
+            const container = document.getElementById('consultations-container');
+            
+            if (filteredConsultations.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            container.innerHTML = filteredConsultations.map(c => `
+                <div class="consultation-card" data-id="${c.id}">
+                    <div class="consultation-header">
+                        <div class="consultation-client">
+                            <div class="client-avatar">${c.client_name?.[0]?.toUpperCase() || 'C'}</div>
+                            <div class="client-info">
+                                <h3>${c.client_name || 'Unknown Client'}</h3>
+                                <div class="client-meta">
+                                    <i class="fas fa-location-dot"></i>
+                                    <span>${c.client_city || 'Not specified'}</span>
+                                    <span>•</span>
+                                    <i class="fas fa-clock"></i>
+                                    <span>${timeAgo(c.created_at)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="status-badge ${c.status}">${c.status.replace('_', ' ')}</span>
+                    </div>
+                    
+                    <div class="consultation-details">
+                        <div class="detail-grid">
+                            <div>
+                                <div class="detail-label">Service</div>
+                                <div class="detail-value">${c.service_type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+                            </div>
+                            <div>
+                                <div class="detail-label">Budget</div>
+                                <div class="detail-value">${c.budget_min && c.budget_max ? formatCurrency(c.budget_min) + ' - ' + formatCurrency(c.budget_max) : 'Negotiable'}</div>
+                            </div>
+                            <div>
+                                <div class="detail-label">Started</div>
+                                <div class="detail-value">${c.started_at ? formatDate(c.started_at) : 'Not started'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-label">Description</div>
+                        <div class="detail-value">${c.description || 'No description provided'}</div>
+                    </div>
+                    
+                    <div class="consultation-actions">
+                        ${renderActions(c)}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Render actions based on status
+        function renderActions(consultation) {
+            switch (consultation.status) {
+                case 'pending':
+                    return `
+                        <button class="btn btn-success" style="flex: 1;" onclick="acceptConsultation('${consultation.id}')">
+                            <i class="fas fa-check"></i>
+                            Accept
+                        </button>
+                        <button class="btn btn-outline" style="flex: 1;" onclick="declineConsultation('${consultation.id}')">
+                            <i class="fas fa-times"></i>
+                            Decline
+                        </button>
+                    `;
+                case 'accepted':
+                    return `
+                        <button class="btn btn-primary" style="flex: 1;" onclick="startConsultation('${consultation.id}')">
+                            <i class="fas fa-play"></i>
+                            Start Work
+                        </button>
+                        <button class="btn btn-outline" onclick="viewDetails('${consultation.id}')">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </button>
+                    `;
+                case 'in_progress':
+                    return `
+                        <button class="btn btn-success" style="flex: 1;" onclick="completeConsultation('${consultation.id}')">
+                            <i class="fas fa-check-circle"></i>
+                            Mark Complete
+                        </button>
+                        <button class="btn btn-outline" onclick="viewDetails('${consultation.id}')">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </button>
+                    `;
+                case 'completed':
+                    return `
+                        <button class="btn btn-outline" onclick="viewDetails('${consultation.id}')">
+                            <i class="fas fa-eye"></i>
+                            View Details
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadInvoice('${consultation.id}')">
+                            <i class="fas fa-download"></i>
+                            Download Invoice
+                        </button>
+                    `;
+                default:
+                    return '';
+            }
+        }
+        
+        // Show empty state
+        function showEmptyState() {
+            const container = document.getElementById('consultations-container');
+            container.innerHTML = `
+                <div class="glass-card">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No consultations found</h3>
+                        <p>New client requests will appear here</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Action functions
+        async function acceptConsultation(id) {
+            try {
+                const response = await fetch('/api/ca/accept-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: id })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadConsultations();
+                }
+            } catch (error) {
+                console.error('Error accepting consultation:', error);
+            }
+        }
+        
+        async function declineConsultation(id) {
+            const reason = prompt('Reason for declining (optional):');
+            try {
+                const response = await fetch('/api/ca/decline-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: id, reason })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadConsultations();
+                }
+            } catch (error) {
+                console.error('Error declining consultation:', error);
+            }
+        }
+        
+        async function startConsultation(id) {
+            try {
+                const response = await fetch('/api/ca/start-consultation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ consultation_id: id })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadConsultations();
+                }
+            } catch (error) {
+                console.error('Error starting consultation:', error);
+            }
+        }
+        
+        async function completeConsultation(id) {
+            if (confirm('Mark this consultation as completed?')) {
+                try {
+                    const response = await fetch('/api/ca/complete-consultation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ consultation_id: id })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        await loadConsultations();
+                    }
+                } catch (error) {
+                    console.error('Error completing consultation:', error);
+                }
+            }
+        }
+        
+        function viewDetails(id) {
+            // Navigate to consultation details page
+            window.location.href = `/ca/consultation/${id}`;
+        }
+        
+        function downloadInvoice(id) {
+            // Download invoice
+            window.location.href = `/api/ca/download-invoice/${id}`;
+        }
+        
+        // Setup real-time subscriptions
+        function setupRealtimeSubscriptions() {
+            sb.channel('consultations-updates')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'consultations',
+                    filter: `ca_id=eq.${CA_ID}`
+                }, (payload) => {
+                    console.log('Consultation update:', payload);
+                    loadConsultations();
+                })
+                .subscribe();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConsultations();
+            setupRealtimeSubscriptions();
+            
+            // Refresh every 30 seconds
+            setInterval(loadConsultations, 30000);
+        });
+    </script>
+</body>
+</html>

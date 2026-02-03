@@ -1,0 +1,640 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - CA Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard-pro.css') }}">
+<style>
+    /* Messages Page Specific Styles */
+    .messages-container {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 1.5rem;
+        height: calc(100vh - 200px);
+    }
+
+    .conversations-list {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+
+    .conversation-item {
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .conversation-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .conversation-item.active {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .conversation-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .conversation-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .conversation-info {
+        flex: 1;
+    }
+
+    .conversation-name {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .conversation-preview {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .conversation-time {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .unread-badge {
+        background: #10B981;
+        color: white;
+        border-radius: 12px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .chat-window {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .chat-header-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .chat-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+    }
+
+    .chat-header-text h3 {
+        font-size: 1.1rem;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .chat-header-text p {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .message {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 70%;
+    }
+
+    .message.sent {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+
+    .message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .message.sent .message-avatar {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    }
+
+    .message-content {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+    }
+
+    .message.sent .message-content {
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        border-color: transparent;
+    }
+
+    .message-text {
+        color: white;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .message.sent .message-time {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .chat-input-container {
+        padding: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .chat-input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+        color: white;
+        font-size: 0.95rem;
+        resize: none;
+        min-height: 44px;
+        max-height: 120px;
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: #10B981;
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+    .send-btn {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        border: none;
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .empty-chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .empty-chat svg {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .search-box {
+        margin-bottom: 1rem;
+    }
+
+    .search-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #10B981;
+    }
+
+    @media (max-width: 768px) {
+        .messages-container {
+            grid-template-columns: 1fr;
+        }
+
+        .conversations-list {
+            display: none;
+        }
+
+        .conversations-list.mobile-visible {
+            display: block;
+        }
+
+        .chat-window.mobile-hidden {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ca-dashboard">
+    <!-- Sidebar -->
+    <aside class="ca-sidebar">
+        <div class="ca-sidebar-header">
+            <h2>CA Dashboard</h2>
+        </div>
+        <nav class="ca-sidebar-nav">
+            <a href="{{ url_for('main.ca_dashboard') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="{{ url_for('main.ca_clients') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Clients
+            </a>
+            <a href="{{ url_for('main.ca_earnings') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Earnings
+            </a>
+            <a href="{{ url_for('main.ca_documents') }}" class="ca-nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Documents
+            </a>
+            <a href="{{ url_for('main.ca_messages') }}" class="ca-nav-item active">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                </svg>
+                Messages
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ca-main-content">
+        <div class="ca-page-header">
+            <h1>Messages</h1>
+            <p>Chat with your clients securely</p>
+        </div>
+
+        <div class="messages-container">
+            <!-- Conversations List -->
+            <div class="conversations-list" id="conversationsList">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Search conversations..." id="searchConversations">
+                </div>
+                <div id="conversationsContainer">
+                    <!-- Loading skeleton -->
+                    <div class="conversation-item skeleton-loader">
+                        <div class="skeleton-text" style="width: 100%; height: 20px;"></div>
+                    </div>
+                    <div class="conversation-item skeleton-loader">
+                        <div class="skeleton-text" style="width: 100%; height: 20px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Window -->
+            <div class="chat-window" id="chatWindow">
+                <div class="empty-chat" id="emptyChat">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                    </svg>
+                    <h3>Select a conversation</h3>
+                    <p>Choose a client from the list to start messaging</p>
+                </div>
+
+                <div id="activeChatContainer" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                    <div class="chat-header" id="chatHeader">
+                        <!-- Dynamic header content -->
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="messageInput" placeholder="Type your message..." rows="1"></textarea>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Supabase Configuration
+    const supabaseUrl = '{{ supabase_url }}';
+    const supabaseKey = '{{ supabase_key }}';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
+    let conversations = [];
+    let activeConsultationId = null;
+    let messages = [];
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadConversations();
+        setupRealtimeSubscriptions();
+        setupInputHandlers();
+    });
+
+    async function loadConversations() {
+        try {
+            const response = await fetch('/api/ca/conversations');
+            const data = await response.json();
+
+            if (data.error) {
+                console.error('Error loading conversations:', data.error);
+                return;
+            }
+
+            conversations = data;
+            renderConversations(conversations);
+        } catch (error) {
+            console.error('Error loading conversations:', error);
+        }
+    }
+
+    function renderConversations(convs) {
+        const container = document.getElementById('conversationsContainer');
+
+        if (convs.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: rgba(255, 255, 255, 0.4);">
+                    <p>No conversations yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = convs.map(conv => `
+            <div class="conversation-item ${conv.consultation_id === activeConsultationId ? 'active' : ''}" 
+                 onclick="openConversation('${conv.consultation_id}', '${conv.client_name}', '${conv.client_avatar || ''}')">
+                <div class="conversation-header">
+                    <div class="conversation-avatar">
+                        ${conv.client_avatar ? `<img src="${conv.client_avatar}" style="width:100%; height:100%; border-radius:50%;">` : conv.client_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="conversation-info">
+                        <div class="conversation-name">${conv.client_name}</div>
+                        <div class="conversation-preview">${conv.last_message || 'No messages yet'}</div>
+                    </div>
+                    <div>
+                        <div class="conversation-time">${formatTimeAgo(conv.last_message_at || conv.created_at)}</div>
+                        ${conv.unread_count > 0 ? `<span class="unread-badge">${conv.unread_count}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function openConversation(consultationId, clientName, clientAvatar) {
+        activeConsultationId = consultationId;
+        
+        // Update UI
+        renderConversations(conversations);
+        document.getElementById('emptyChat').style.display = 'none';
+        document.getElementById('activeChatContainer').style.display = 'flex';
+
+        // Update header
+        const header = document.getElementById('chatHeader');
+        header.innerHTML = `
+            <div class="chat-header-info">
+                <div class="chat-avatar">
+                    ${clientAvatar ? `<img src="${clientAvatar}" style="width:100%; height:100%; border-radius:50%;">` : clientName.charAt(0).toUpperCase()}
+                </div>
+                <div class="chat-header-text">
+                    <h3>${clientName}</h3>
+                    <p>Online</p>
+                </div>
+            </div>
+        `;
+
+        // Load messages
+        await loadMessages(consultationId);
+    }
+
+    async function loadMessages(consultationId) {
+        try {
+            const response = await fetch(`/api/ca/messages/${consultationId}`);
+            const data = await response.json();
+
+            if (data.error) {
+                console.error('Error loading messages:', data.error);
+                return;
+            }
+
+            messages = data;
+            renderMessages(messages);
+            scrollToBottom();
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    }
+
+    function renderMessages(msgs) {
+        const container = document.getElementById('chatMessages');
+
+        if (msgs.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: rgba(255, 255, 255, 0.4); padding: 2rem;">
+                    <p>No messages yet. Start the conversation!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = msgs.map(msg => `
+            <div class="message ${msg.sender_type === 'ca' ? 'sent' : 'received'}">
+                <div class="message-avatar">
+                    ${msg.sender_name ? msg.sender_name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div class="message-content">
+                    <div class="message-text">${msg.message_text}</div>
+                    <div class="message-time">${formatTimeAgo(msg.created_at)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+
+        if (!text || !activeConsultationId) return;
+
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/ca/send-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    consultation_id: activeConsultationId,
+                    message_text: text
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                input.value = '';
+                loadMessages(activeConsultationId);
+            } else {
+                alert(data.error || 'Failed to send message');
+            }
+        } catch (error) {
+            console.error('Send message error:', error);
+            alert('Failed to send message');
+        } finally {
+            sendBtn.disabled = false;
+        }
+    }
+
+    function setupInputHandlers() {
+        const input = document.getElementById('messageInput');
+        
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        input.addEventListener('input', () => {
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+        });
+
+        document.getElementById('searchConversations').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = conversations.filter(c => 
+                c.client_name.toLowerCase().includes(query)
+            );
+            renderConversations(filtered);
+        });
+    }
+
+    function setupRealtimeSubscriptions() {
+        supabase
+            .channel('ca-messages-changes')
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'consultation_messages'
+            }, () => {
+                if (activeConsultationId) {
+                    loadMessages(activeConsultationId);
+                }
+                loadConversations();
+            })
+            .subscribe();
+    }
+
+    function scrollToBottom() {
+        const container = document.getElementById('chatMessages');
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function formatTimeAgo(timestamp) {
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diff = Math.floor((now - time) / 1000);
+
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+        return Math.floor(diff / 86400) + 'd ago';
+    }
+</script>
+{% endblock %}

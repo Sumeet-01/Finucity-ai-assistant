@@ -10,13 +10,25 @@ import re
 from datetime import datetime
 import os
 import jwt
+import html
 
-from . import limiter
 from .models import User
 from .database import UserService, ChatService, FeedbackService, get_supabase
 
+# Import limiter from app
 try:
-    from . ai import get_ai_response
+    from app import limiter
+except ImportError:
+    # Fallback if limiter not available
+    class DummyLimiter:
+        def limit(self, *args, **kwargs):
+            def decorator(f):
+                return f
+            return decorator
+    limiter = DummyLimiter()
+
+try:
+    from .ai import get_ai_response
 except ImportError: 
     print("Warning: AI module not found. Some features may be limited.")
     get_ai_response = None
@@ -26,9 +38,53 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 
 
+# ==================== SECURITY HELPERS ====================
+
+def sanitize_input(text):
+    """Sanitize user input to prevent XSS attacks."""
+    if isinstance(text, str):
+        return html.escape(text)
+    return text
+
+def validate_file_upload(file):
+    """Validate file upload for security."""
+    allowed_extensions = {'pdf', 'doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg'}
+    allowed_mimetypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/png',
+        'image/jpeg'
+    ]
+    
+    # Check file extension
+    if '.' not in file.filename:
+        return False, "No file extension"
+    
+    ext = file.filename.rsplit('.', 1)[1].lower()
+    if ext not in allowed_extensions:
+        return False, f"Invalid file extension: {ext}"
+    
+    # Check MIME type
+    if file.content_type not in allowed_mimetypes:
+        return False, f"Invalid file type: {file.content_type}"
+    
+    # Check file size (5MB max)
+    file.seek(0, 2)  # Seek to end
+    size = file.tell()
+    file.seek(0)  # Reset to start
+    
+    if size > 5 * 1024 * 1024:
+        return False, "File too large (max 5MB)"
+    
+    return True, "Valid"
+
+
 # ==================== HELPERS ====================
 
-def decode_supabase_jwt(token:  str):
+def decode_supabase_jwt(token: str):
     """Decode and validate Supabase JWT token."""
     supabase_url = os.getenv('SUPABASE_URL', '').rstrip('/')
     legacy_secret = os.getenv('SUPABASE_JWT_SECRET')
@@ -551,6 +607,25 @@ def robots():
         abort(404)
 
 
+# ==================== SHORTCUT/TEST ROUTES ====================
+
+@main_bp.route('/test-ca-dashboard')
+@login_required
+def test_ca_dashboard():
+    """Test route for CA dashboard - redirects to CA dashboard."""
+    return redirect(url_for('ca_ecosystem.dashboard'))
+
+
+@main_bp.route('/admin')
+@login_required
+def admin_shortcut():
+    """Shortcut route for admin panel - redirects to admin dashboard."""
+    if not check_admin_access():
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('main.home'))
+    return redirect(url_for('main.admin_dashboard'))
+
+
 # ==================== AI CHAT ROUTES ====================
 
 @main_bp. route('/chat', endpoint='chat')
@@ -579,21 +654,65 @@ def chat_history():
         return jsonify({'success': False, 'error': 'Failed to fetch chat history'}), 500
 
 
+# ==================== CA APPLICATION ROUTES ====================
+
+@main_bp.route('/ca-application', endpoint='ca_application')
+@login_required
+def ca_application():
+    """CA application form for users to become verified CAs"""
+    from finucity.services.ca_ecosystem import CAEcosystemService
+    
+    try:
+        applications = CAEcosystemService.get_ca_applications(limit=10) or []
+        user_applications = [app for app in applications if app.get('user_id') == current_user.id]
+        
+        if user_applications:
+            latest_app = user_applications[0]
+            if latest_app['status'] in ['pending', 'under_review']:
+                return redirect(url_for('main.ca_application_status'))
+            elif latest_app['status'] == 'approved':
+                return redirect(url_for('main.user_dashboard'))
+    except Exception as e:
+        print(f"Error checking existing application: {e}")
+        # Continue to application form if there's an error
+    
+    return render_template('ca_application.html', current_year=2026)
+
+
+@main_bp.route('/ca-application-status', endpoint='ca_application_status')
+@login_required
+def ca_application_status():
+    """Check CA application status"""
+    from finucity.services.ca_ecosystem import CAEcosystemService
+    
+    try:
+        applications = CAEcosystemService.get_ca_applications(limit=1)
+        user_applications = [app for app in applications if app.get('user_id') == current_user.id]
+        
+        if not user_applications:
+            return redirect(url_for('main.ca_application'))
+        
+        return render_template('ca_application_status.html', application=user_applications[0])
+    except Exception as e:
+        print(f"Error loading application status: {e}")
+        return render_template('ca_application.html'), 500
+
+
 # ==================== CA DASHBOARD ROUTES ====================
 
 @main_bp. route('/ca/dashboard', endpoint='ca_dashboard')
 @login_required
 def ca_dashboard():
-    """CA Dashboard - Main workspace for Chartered Accountants."""
+    """CA Dashboard - Production-grade workspace for Chartered Accountants."""
     if not check_ca_access():
         flash('Access denied.  This area is for verified CAs only.', 'error')
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/dashboard.html',
+        'ca/dashboard-pro.html',
         user=current_user,
-        SUPABASE_URL=os.getenv('SUPABASE_URL'),
-        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
+        supabase_url=os.getenv('SUPABASE_URL'),
+        supabase_anon_key=os.getenv('SUPABASE_ANON_KEY')
     )
 
 
@@ -616,32 +735,16 @@ def ca_profile():
 @main_bp.route('/ca/clients', endpoint='ca_clients')
 @login_required
 def ca_clients():
-    """CA Client requests page."""
+    """CA Client requests page - Production version."""
     if not check_ca_access():
         flash('Access denied.', 'error')
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/clients.html',
+        'ca/clients-pro.html',
         user=current_user,
-        SUPABASE_URL=os.getenv('SUPABASE_URL'),
-        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
-    )
-
-
-@main_bp. route('/ca/messages', endpoint='ca_messages')
-@login_required
-def ca_messages():
-    """CA Messages/Chat page."""
-    if not check_ca_access():
-        flash('Access denied.', 'error')
-        return redirect(url_for('main.home'))
-
-    return render_template(
-        'ca/messages.html',
-        user=current_user,
-        SUPABASE_URL=os.getenv('SUPABASE_URL'),
-        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
+        supabase_url=os.getenv('SUPABASE_URL'),
+        supabase_anon_key=os.getenv('SUPABASE_ANON_KEY')
     )
 
 
@@ -654,10 +757,26 @@ def ca_documents():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/documents.html',
+        'ca/documents-pro.html',
         user=current_user,
-        SUPABASE_URL=os. getenv('SUPABASE_URL'),
-        SUPABASE_ANON_KEY=os. getenv('SUPABASE_ANON_KEY')
+        supabase_url=os.getenv('SUPABASE_URL'),
+        supabase_key=os.getenv('SUPABASE_ANON_KEY')
+    )
+
+
+@main_bp.route('/ca/messages', endpoint='ca_messages')
+@login_required
+def ca_messages():
+    """CA Messages and chat page."""
+    if not check_ca_access():
+        flash('Access denied.', 'error')
+        return redirect(url_for('main.home'))
+
+    return render_template(
+        'ca/messages-pro.html',
+        user=current_user,
+        supabase_url=os.getenv('SUPABASE_URL'),
+        supabase_key=os.getenv('SUPABASE_ANON_KEY')
     )
 
 
@@ -718,10 +837,10 @@ def ca_earnings():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/earnings.html',
+        'ca/earnings-pro.html',
         user=current_user,
-        SUPABASE_URL=os.getenv('SUPABASE_URL'),
-        SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
+        supabase_url=os.getenv('SUPABASE_URL'),
+        supabase_key=os.getenv('SUPABASE_ANON_KEY')
     )
 
 
@@ -741,7 +860,7 @@ def ca_calendar():
     )
 
 
-@main_bp. route('/ca/reviews', endpoint='ca_reviews')
+@main_bp.route('/ca/reviews', endpoint='ca_reviews')
 @login_required
 def ca_reviews():
     """CA Reviews and ratings page."""
@@ -757,7 +876,7 @@ def ca_reviews():
     )
 
 
-@main_bp. route('/ca/notifications', endpoint='ca_notifications')
+@main_bp.route('/ca/notifications', endpoint='ca_notifications')
 @login_required
 def ca_notifications():
     """CA Notifications page."""
@@ -986,6 +1105,121 @@ def admin_ca_applications():
         SUPABASE_URL=os.getenv('SUPABASE_URL'),
         SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
     )
+
+
+@main_bp.route('/api/admin/ca-applications', endpoint='api_admin_ca_applications')
+@login_required
+def api_admin_ca_applications():
+    """API endpoint to get CA applications for admin."""
+    if not check_admin_access():
+        return jsonify({'error': 'Admin access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        status = request.args.get('status', 'pending')
+        
+        # Fetch applications from database
+        query = sb.table('ca_applications').select('*')
+        
+        if status and status != 'all':
+            query = query.eq('status', status)
+        
+        response = query.order('created_at', desc=True).execute()
+        applications = response.data if response.data else []
+        
+        return jsonify({
+            'success': True,
+            'data': applications,
+            'count': len(applications)
+        })
+    except Exception as e:
+        print(f"Error fetching CA applications: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'data': []
+        }), 500
+
+
+@main_bp.route('/api/admin/ca-application/<application_id>/approve', endpoint='api_admin_approve_ca', methods=['POST'])
+@login_required
+def api_admin_approve_ca(application_id):
+    """Approve CA application."""
+    if not check_admin_access():
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        
+        # Get application first
+        app_response = sb.table('ca_applications').select('*').eq('id', application_id).single().execute()
+        if not app_response.data:
+            return jsonify({'success': False, 'error': 'Application not found'}), 404
+        
+        application = app_response.data
+        user_id = application['user_id']
+        
+        # Update application status
+        sb.table('ca_applications').update({
+            'status': 'approved',
+            'reviewed_by': current_user.id,
+            'reviewed_at': 'now()',
+            'admin_notes': request.get_json().get('notes', '') if request.get_json() else ''
+        }).eq('id', application_id).execute()
+        
+        # Update user role to 'ca'
+        sb.table('profiles').update({
+            'role': 'ca'
+        }).eq('id', user_id).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'CA application approved! User is now a verified CA.'
+        })
+        
+    except Exception as e:
+        print(f"Error approving CA application: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Failed to approve: {str(e)}'
+        }), 500
+
+
+@main_bp.route('/api/admin/ca-application/<application_id>/reject', endpoint='api_admin_reject_ca', methods=['POST'])
+@login_required
+def api_admin_reject_ca(application_id):
+    """Reject CA application."""
+    if not check_admin_access():
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+    
+    try:
+        data = request.get_json() or {}
+        reason = data.get('reason', 'No reason provided')
+        
+        if not reason or reason == 'No reason provided':
+            return jsonify({'success': False, 'error': 'Rejection reason is required'}), 400
+        
+        sb = get_supabase()
+        
+        # Update application status
+        sb.table('ca_applications').update({
+            'status': 'rejected',
+            'rejection_reason': reason,
+            'reviewed_by': current_user.id,
+            'reviewed_at': 'now()'
+        }).eq('id', application_id).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Application rejected. Applicant will be notified.'
+        })
+        
+    except Exception as e:
+        print(f"Error rejecting CA application: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'Failed to reject: {str(e)}'
+        }), 500
 
 
 @main_bp.route('/admin/users', endpoint='admin_users')
@@ -1465,6 +1699,54 @@ def api_me():
         'role': role,
         'email': email
     })
+
+@api_bp.route('/homepage-stats', methods=['GET'])
+def homepage_stats():
+    """Get real-time homepage statistics."""
+    try:
+        supabase = get_supabase_admin()
+        
+        # Count active users (all registered users)
+        users_response = supabase.table('profiles').select('id', count='exact').execute()
+        active_users = users_response.count if users_response.count else 0
+        
+        # Count total chat queries
+        queries_response = supabase.table('chat_queries').select('id', count='exact').execute()
+        total_queries = queries_response.count if queries_response.count else 0
+        
+        # Count verified CAs (users with role='ca')
+        ca_response = supabase.table('profiles').select('id', count='exact').eq('role', 'ca').execute()
+        verified_cas = ca_response.count if ca_response.count else 0
+        
+        # Calculate accuracy rate (placeholder - can be enhanced with actual feedback data)
+        # For now, if we have queries, use feedback data; otherwise default to 0
+        accuracy_rate = 0
+        if total_queries > 0:
+            feedback_response = supabase.table('user_feedback').select('rating', count='exact').execute()
+            if feedback_response.count and feedback_response.count > 0:
+                # Calculate average rating and convert to percentage
+                ratings = [item.get('rating', 0) for item in feedback_response.data]
+                avg_rating = sum(ratings) / len(ratings) if ratings else 0
+                accuracy_rate = round((avg_rating / 5) * 100, 1)
+            else:
+                # No feedback yet, default to 0
+                accuracy_rate = 0
+        
+        return jsonify({
+            'active_users': active_users,
+            'total_queries': total_queries,
+            'accuracy_rate': accuracy_rate,
+            'verified_cas': verified_cas
+        })
+    except Exception as e:
+        print(f"Error fetching homepage stats: {str(e)}")
+        return jsonify({
+            'active_users': 0,
+            'total_queries': 0,
+            'accuracy_rate': 0,
+            'verified_cas': 0
+        }), 500
+
     """Handle CA application submission."""
     try:
         full_name = request. form.get('full_name')
@@ -1604,6 +1886,923 @@ def api_admin_ca_applications():
         return jsonify({'success': False, 'error': 'Failed to fetch applications'}), 500
 
 
+# =====================================================
+# ADMIN CONTROL ENDPOINTS - CA Management
+# =====================================================
+
+@api_bp.route('/admin/ca/suspend', methods=['POST'])
+@login_required
+def admin_suspend_ca():
+    """Suspend a CA account with audit trail."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        reason = data.get('reason', 'No reason provided')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Update CA profile status
+        update_response = sb.table('profiles').update({
+            'ca_status': 'suspended',
+            'suspension_reason': reason,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).eq('role', 'ca').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to suspend CA'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'suspend',
+            'reason': reason,
+            'old_status': 'active',
+            'new_status': 'suspended'
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'CA suspended successfully'
+        })
+    
+    except Exception as e:
+        print(f"Suspend CA error: {e}")
+        return jsonify({'error': 'Failed to suspend CA'}), 500
+
+
+@api_bp.route('/admin/ca/unsuspend', methods=['POST'])
+@login_required
+def admin_unsuspend_ca():
+    """Restore suspended CA account."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        notes = data.get('notes', '')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Update CA profile status
+        update_response = sb.table('profiles').update({
+            'ca_status': 'active',
+            'suspension_reason': None,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to unsuspend CA'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'unsuspend',
+            'reason': 'Suspension lifted',
+            'notes': notes,
+            'old_status': 'suspended',
+            'new_status': 'active'
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'CA account restored'
+        })
+    
+    except Exception as e:
+        print(f"Unsuspend CA error: {e}")
+        return jsonify({'error': 'Failed to unsuspend CA'}), 500
+
+
+@api_bp.route('/admin/ca/freeze-earnings', methods=['POST'])
+@login_required
+def admin_freeze_earnings():
+    """Freeze CA earnings to prevent withdrawals."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        reason = data.get('reason', 'Pending investigation')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Freeze earnings
+        update_response = sb.table('profiles').update({
+            'earnings_frozen': True,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).eq('role', 'ca').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to freeze earnings'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'freeze_earnings',
+            'reason': reason
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Earnings frozen successfully'
+        })
+    
+    except Exception as e:
+        print(f"Freeze earnings error: {e}")
+        return jsonify({'error': 'Failed to freeze earnings'}), 500
+
+
+@api_bp.route('/admin/ca/unfreeze-earnings', methods=['POST'])
+@login_required
+def admin_unfreeze_earnings():
+    """Unfreeze CA earnings."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        notes = data.get('notes', '')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Unfreeze earnings
+        update_response = sb.table('profiles').update({
+            'earnings_frozen': False,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to unfreeze earnings'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'unfreeze_earnings',
+            'reason': 'Investigation cleared',
+            'notes': notes
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Earnings unfrozen'
+        })
+    
+    except Exception as e:
+        print(f"Unfreeze earnings error: {e}")
+        return jsonify({'error': 'Failed to unfreeze earnings'}), 500
+
+
+@api_bp.route('/admin/ca/revoke-verification', methods=['POST'])
+@login_required
+def admin_revoke_verification():
+    """Revoke CA verification status."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        reason = data.get('reason', 'Verification revoked by admin')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Revoke verification
+        update_response = sb.table('profiles').update({
+            'verification_revoked': True,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).eq('role', 'ca').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to revoke verification'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'revoke_verification',
+            'reason': reason
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Verification revoked'
+        })
+    
+    except Exception as e:
+        print(f"Revoke verification error: {e}")
+        return jsonify({'error': 'Failed to revoke verification'}), 500
+
+
+@api_bp.route('/admin/ca/restore-verification', methods=['POST'])
+@login_required
+def admin_restore_verification():
+    """Restore CA verification status."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        notes = data.get('notes', '')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Restore verification
+        update_response = sb.table('profiles').update({
+            'verification_revoked': False,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to restore verification'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'restore_verification',
+            'reason': 'Verification restored',
+            'notes': notes
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Verification restored'
+        })
+    
+    except Exception as e:
+        print(f"Restore verification error: {e}")
+        return jsonify({'error': 'Failed to restore verification'}), 500
+
+
+@api_bp.route('/admin/ca/ban', methods=['POST'])
+@login_required
+def admin_ban_ca():
+    """Permanently ban a CA account."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        reason = data.get('reason', 'Terms of service violation')
+        
+        if not ca_id:
+            return jsonify({'error': 'CA ID required'}), 400
+        
+        # Ban CA
+        update_response = sb.table('profiles').update({
+            'ca_status': 'banned',
+            'suspension_reason': reason,
+            'earnings_frozen': True,
+            'verification_revoked': True,
+            'last_admin_action_at': datetime.utcnow().isoformat()
+        }).eq('id', ca_id).eq('role', 'ca').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to ban CA'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'ban',
+            'reason': reason,
+            'old_status': 'active',
+            'new_status': 'banned'
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'CA banned permanently'
+        })
+    
+    except Exception as e:
+        print(f"Ban CA error: {e}")
+        return jsonify({'error': 'Failed to ban CA'}), 500
+
+
+@api_bp.route('/admin/ca/approve-withdrawal', methods=['POST'])
+@login_required
+def admin_approve_withdrawal():
+    """Approve CA withdrawal request."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        transaction_id = data.get('transaction_id')
+        notes = data.get('notes', '')
+        
+        if not transaction_id:
+            return jsonify({'error': 'Transaction ID required'}), 400
+        
+        # Approve withdrawal
+        update_response = sb.table('ca_earnings').update({
+            'status': 'approved',
+            'approved_by': current_user.id,
+            'approved_at': datetime.utcnow().isoformat(),
+            'admin_notes': notes
+        }).eq('id', transaction_id).eq('transaction_type', 'debit').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to approve withdrawal'}), 500
+        
+        transaction = update_response.data[0]
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': transaction['ca_id'],
+            'action_type': 'approve_withdrawal',
+            'reason': 'Withdrawal approved',
+            'notes': notes,
+            'affected_amount': transaction['amount']
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Withdrawal approved'
+        })
+    
+    except Exception as e:
+        print(f"Approve withdrawal error: {e}")
+        return jsonify({'error': 'Failed to approve withdrawal'}), 500
+
+
+@api_bp.route('/admin/ca/reject-withdrawal', methods=['POST'])
+@login_required
+def admin_reject_withdrawal():
+    """Reject CA withdrawal request."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        transaction_id = data.get('transaction_id')
+        reason = data.get('reason', 'Requirements not met')
+        
+        if not transaction_id:
+            return jsonify({'error': 'Transaction ID required'}), 400
+        
+        # Reject withdrawal
+        update_response = sb.table('ca_earnings').update({
+            'status': 'rejected',
+            'approved_by': current_user.id,
+            'approved_at': datetime.utcnow().isoformat(),
+            'rejection_reason': reason
+        }).eq('id', transaction_id).eq('transaction_type', 'debit').execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to reject withdrawal'}), 500
+        
+        transaction = update_response.data[0]
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': transaction['ca_id'],
+            'action_type': 'reject_withdrawal',
+            'reason': reason,
+            'affected_amount': transaction['amount']
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Withdrawal rejected'
+        })
+    
+    except Exception as e:
+        print(f"Reject withdrawal error: {e}")
+        return jsonify({'error': 'Failed to reject withdrawal'}), 500
+
+
+@api_bp.route('/admin/ca/earnings-adjustment', methods=['POST'])
+@login_required
+def admin_earnings_adjustment():
+    """Manual earnings adjustment for CA."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        data = request.get_json()
+        ca_id = data.get('ca_id')
+        amount = data.get('amount')
+        reason = data.get('reason', 'Admin adjustment')
+        
+        if not ca_id or amount is None:
+            return jsonify({'error': 'CA ID and amount required'}), 400
+        
+        # Create adjustment transaction
+        transaction_response = sb.table('ca_earnings').insert({
+            'ca_id': ca_id,
+            'transaction_type': 'adjustment',
+            'amount': amount,
+            'title': 'Admin Adjustment',
+            'description': reason,
+            'status': 'completed',
+            'approved_by': current_user.id,
+            'approved_at': datetime.utcnow().isoformat(),
+            'processed_at': datetime.utcnow().isoformat()
+        }).execute()
+        
+        if not transaction_response.data:
+            return jsonify({'error': 'Failed to create adjustment'}), 500
+        
+        # Log admin action
+        sb.table('ca_admin_actions').insert({
+            'admin_id': current_user.id,
+            'ca_id': ca_id,
+            'action_type': 'adjust_earnings',
+            'reason': reason,
+            'affected_amount': amount
+        }).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Earnings adjusted successfully'
+        })
+    
+    except Exception as e:
+        print(f"Earnings adjustment error: {e}")
+        return jsonify({'error': 'Failed to adjust earnings'}), 500
+
+
+@api_bp.route('/ca/consultations', methods=['GET'])
+@login_required
+def get_ca_consultations():
+    """Get all consultations for CA with enriched client details."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Fetch all consultations for this CA with client profile data
+        result = sb.table('consultations').select(
+            '*, profiles!consultations_user_id_fkey(full_name, city, avatar_url)'
+        ).eq('ca_id', ca_id).order('created_at', desc=True).execute()
+        
+        # Enrich consultation data with client info
+        consultations = []
+        for item in result.data:
+            consultation = {
+                'id': item['id'],
+                'user_id': item['user_id'],
+                'service_type': item['service_type'],
+                'description': item['description'],
+                'min_budget': item['min_budget'],
+                'max_budget': item['max_budget'],
+                'status': item['status'],
+                'created_at': item['created_at'],
+                'accepted_at': item.get('accepted_at'),
+                'started_at': item.get('started_at'),
+                'completed_at': item.get('completed_at'),
+                'client_name': item['profiles']['full_name'] if item.get('profiles') else 'Unknown',
+                'client_city': item['profiles']['city'] if item.get('profiles') else 'Unknown',
+                'client_avatar': item['profiles']['avatar_url'] if item.get('profiles') else None
+            }
+            consultations.append(consultation)
+        
+        return jsonify(consultations)
+    
+    except Exception as e:
+        print(f"Get consultations error: {e}")
+        return jsonify([])
+
+
+@api_bp.route('/ca/start-consultation', methods=['POST'])
+@login_required
+def start_consultation():
+    """Update consultation status from accepted to in_progress."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        data = request.get_json()
+        consultation_id = data.get('consultation_id')
+        
+        if not consultation_id:
+            return jsonify({'error': 'Consultation ID required'}), 400
+        
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Verify ownership and update status
+        result = sb.table('consultations').update({
+            'status': 'in_progress',
+            'started_at': 'now()'
+        }).eq('id', consultation_id).eq('ca_id', ca_id).eq('status', 'accepted').execute()
+        
+        if not result.data:
+            return jsonify({'error': 'Consultation not found or invalid status'}), 404
+        
+        return jsonify({
+            'success': True,
+            'message': 'Consultation started successfully'
+        })
+    
+    except Exception as e:
+        print(f"Start consultation error: {e}")
+        return jsonify({'error': 'Failed to start consultation'}), 500
+
+
+@api_bp.route('/ca/complete-consultation', methods=['POST'])
+@login_required
+def complete_consultation():
+    """Update consultation status from in_progress to completed."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        data = request.get_json()
+        consultation_id = data.get('consultation_id')
+        
+        if not consultation_id:
+            return jsonify({'error': 'Consultation ID required'}), 400
+        
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Verify ownership and update status
+        result = sb.table('consultations').update({
+            'status': 'completed',
+            'completed_at': 'now()'
+        }).eq('id', consultation_id).eq('ca_id', ca_id).eq('status', 'in_progress').execute()
+        
+        if not result.data:
+            return jsonify({'error': 'Consultation not found or invalid status'}), 404
+        
+        return jsonify({
+            'success': True,
+            'message': 'Consultation completed successfully'
+        })
+    
+    except Exception as e:
+        print(f"Complete consultation error: {e}")
+        return jsonify({'error': 'Failed to complete consultation'}), 500
+
+
+@api_bp.route('/ca/transactions', methods=['GET'])
+@login_required
+def get_ca_transactions():
+    """Get all transactions for CA (earnings + withdrawals)."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Fetch all earnings transactions for this CA
+        result = sb.table('ca_earnings').select('*').eq(
+            'ca_id', ca_id
+        ).order('created_at', desc=True).execute()
+        
+        return jsonify(result.data if result.data else [])
+    
+    except Exception as e:
+        print(f"Get transactions error: {e}")
+        return jsonify([])
+
+
+@api_bp.route('/ca/request-withdrawal', methods=['POST'])
+@login_required
+def request_withdrawal():
+    """Submit a withdrawal request for CA earnings."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        data = request.get_json()
+        amount = data.get('amount')
+        bank_account = data.get('bank_account')
+        note = data.get('note', '')
+        
+        if not amount or amount < 500:
+            return jsonify({'error': 'Minimum withdrawal amount is ₹500'}), 400
+        
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Check available balance
+        balance_response = sb.table('ca_earnings').select('amount, transaction_type').eq(
+            'ca_id', ca_id
+        ).eq('status', 'completed').execute()
+        
+        total_earned = sum(t['amount'] for t in balance_response.data if t['transaction_type'] == 'credit')
+        total_withdrawn = sum(t['amount'] for t in balance_response.data if t['transaction_type'] == 'debit')
+        available = total_earned - total_withdrawn
+        
+        if amount > available:
+            return jsonify({'error': f'Insufficient balance. Available: ₹{available}'}), 400
+        
+        # Create withdrawal record
+        withdrawal_data = {
+            'ca_id': ca_id,
+            'amount': amount,
+            'transaction_type': 'debit',
+            'status': 'pending',
+            'description': f'Withdrawal request - {note}' if note else 'Withdrawal request',
+            'bank_account_details': bank_account,
+            'created_at': 'now()'
+        }
+        
+        result = sb.table('ca_earnings').insert(withdrawal_data).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Withdrawal request submitted for admin approval'
+        })
+    
+    except Exception as e:
+        print(f"Withdrawal request error: {e}")
+        return jsonify({'error': 'Failed to submit withdrawal request'}), 500
+
+
+@api_bp.route('/ca/documents', methods=['GET'])
+@login_required
+def get_ca_documents():
+    """Get all documents uploaded by CA."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        result = sb.table('ca_documents').select('*').eq(
+            'ca_id', ca_id
+        ).order('created_at', desc=True).execute()
+        
+        return jsonify(result.data if result.data else [])
+    
+    except Exception as e:
+        print(f"Get documents error: {e}")
+        return jsonify([])
+
+
+@api_bp.route('/ca/upload-document', methods=['POST'])
+@login_required
+@limiter.limit("10 per minute")
+def upload_ca_document():
+    """Upload a document to CA storage."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        # Use security validation function
+        is_valid, message = validate_file_upload(file)
+        if not is_valid:
+            return jsonify({'error': message}), 400
+        
+        # Sanitize filename
+        safe_filename = sanitize_input(file.filename)
+        
+        file_content = file.read()
+        
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Create document record (file storage would be added here in production)
+        doc_data = {
+            'ca_id': ca_id,
+            'file_name': safe_filename,
+            'file_type': file.content_type,
+            'file_size': len(file_content),
+            'storage_path': f'ca-documents/{ca_id}/{safe_filename}',
+            'created_at': 'now()'
+        }
+        
+        result = sb.table('ca_documents').insert(doc_data).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Document uploaded successfully'
+        })
+    
+    except Exception as e:
+        print(f"Upload document error: {e}")
+        return jsonify({'error': 'Failed to upload document'}), 500
+
+
+@api_bp.route('/ca/download-document/<doc_id>', methods=['GET'])
+@login_required
+def download_ca_document(doc_id):
+    """Download a document."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        # In production, retrieve file from Supabase Storage
+        # For now, return placeholder response
+        return jsonify({'error': 'Document download not implemented'}), 501
+    
+    except Exception as e:
+        print(f"Download document error: {e}")
+        return jsonify({'error': 'Failed to download document'}), 500
+
+
+@api_bp.route('/ca/delete-document/<doc_id>', methods=['DELETE'])
+@login_required
+def delete_ca_document(doc_id):
+    """Delete a document."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Delete document record (and file from storage in production)
+        result = sb.table('ca_documents').delete().eq(
+            'id', doc_id
+        ).eq('ca_id', ca_id).execute()
+        
+        if not result.data:
+            return jsonify({'error': 'Document not found'}), 404
+        
+        return jsonify({
+            'success': True,
+            'message': 'Document deleted successfully'
+        })
+    
+    except Exception as e:
+        print(f"Delete document error: {e}")
+        return jsonify({'error': 'Failed to delete document'}), 500
+
+
+@api_bp.route('/ca/conversations', methods=['GET'])
+@login_required
+def get_ca_conversations():
+    """Get all conversations (consultations with messages)."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Get consultations with client profiles
+        result = sb.table('consultations').select(
+            '*, profiles!consultations_user_id_fkey(full_name, avatar_url)'
+        ).eq('ca_id', ca_id).order('created_at', desc=True).execute()
+        
+        conversations = []
+        for item in result.data:
+            conv = {
+                'consultation_id': item['id'],
+                'client_name': item['profiles']['full_name'] if item.get('profiles') else 'Unknown',
+                'client_avatar': item['profiles']['avatar_url'] if item.get('profiles') else None,
+                'last_message': None,
+                'last_message_at': item['created_at'],
+                'unread_count': 0,
+                'created_at': item['created_at']
+            }
+            conversations.append(conv)
+        
+        return jsonify(conversations)
+    
+    except Exception as e:
+        print(f"Get conversations error: {e}")
+        return jsonify([])
+
+
+@api_bp.route('/ca/messages/<consultation_id>', methods=['GET'])
+@login_required
+def get_consultation_messages(consultation_id):
+    """Get all messages for a consultation."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        sb = get_supabase()
+        
+        result = sb.table('consultation_messages').select('*').eq(
+            'consultation_id', consultation_id
+        ).order('created_at', desc=False).execute()
+        
+        return jsonify(result.data if result.data else [])
+    
+    except Exception as e:
+        print(f"Get messages error: {e}")
+        return jsonify([])
+
+
+@api_bp.route('/ca/send-message', methods=['POST'])
+@login_required
+@limiter.limit("30 per minute")
+def send_ca_message():
+    """Send a message in a consultation."""
+    if not check_ca_access():
+        return jsonify({'error': 'CA access required'}), 403
+    
+    try:
+        data = request.get_json()
+        consultation_id = data.get('consultation_id')
+        message_text = data.get('message_text')
+        
+        if not consultation_id or not message_text:
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        # Sanitize message text
+        safe_message = sanitize_input(message_text)
+        
+        # Validate message length
+        if len(safe_message) > 5000:
+            return jsonify({'error': 'Message too long (max 5000 characters)'}), 400
+        
+        sb = get_supabase()
+        ca_id = session.get('user_id')
+        
+        # Insert message
+        msg_data = {
+            'consultation_id': consultation_id,
+            'sender_id': ca_id,
+            'sender_type': 'ca',
+            'message_text': safe_message,
+            'created_at': 'now()'
+        }
+        
+        result = sb.table('consultation_messages').insert(msg_data).execute()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Message sent successfully'
+        })
+    
+    except Exception as e:
+        print(f"Send message error: {e}")
+        return jsonify({'error': 'Failed to send message'}), 500
+
+
+@api_bp.route('/admin/ca/actions/<ca_id>', methods=['GET'])
+@login_required
+def admin_get_ca_actions(ca_id):
+    """Get audit trail for a specific CA."""
+    if not check_admin_access():
+        return jsonify({'error': 'Access denied'}), 403
+    
+    try:
+        sb = get_supabase()
+        
+        # Get all admin actions for this CA
+        actions_response = sb.table('ca_admin_actions').select('''
+            *,
+            admin:admin_id(full_name, email)
+        ''').eq('ca_id', ca_id).order('created_at', desc=True).execute()
+        
+        actions = actions_response.data if actions_response.data else []
+        
+        return jsonify({
+            'success': True,
+            'data': actions
+        })
+    
+    except Exception as e:
+        print(f"Get CA actions error: {e}")
+        return jsonify({'error': 'Failed to fetch actions'}), 500
+
+
+# =====================================================
+# END ADMIN CONTROL ENDPOINTS
+# =====================================================
+
+
 @api_bp.route('/ca/update-profile', methods=['POST'])
 @login_required
 def update_ca_profile():
@@ -1636,55 +2835,96 @@ def update_ca_profile():
 @api_bp.route('/ca/client-requests', methods=['GET'])
 @login_required
 def get_client_requests():
-    """Get client requests for CA."""
+    """Get client requests for CA - REAL-TIME from Supabase."""
     if not check_ca_access():
         return jsonify({'error': 'Access denied'}), 403
 
-    # Mock data for now
-    requests_data = [
-        {
-            'id': '1',
-            'user_name': 'Rahul Sharma',
-            'city': 'Delhi',
-            'service': 'GST Compliance',
-            'budget': '₹15,000 - ₹25,000',
-            'urgency': 'high',
-            'description': 'Need help with GST filing for my e-commerce business.',
-            'created_at': datetime.utcnow().isoformat()
-        },
-        {
-            'id': '2',
-            'user_name': 'Priya Mehta',
-            'city': 'Bangalore',
-            'service': 'Tax Planning',
-            'budget': '₹5,000 - ₹10,000',
-            'urgency': 'medium',
-            'description': 'Looking for tax planning consultation for FY 2024-25.',
-            'created_at': datetime.utcnow().isoformat()
-        }
-    ]
+    try:
+        sb = get_supabase()
+        ca_id = current_user.id
+        
+        # Get all pending consultations for this CA
+        consultations_response = sb.table('consultations').select('''
+            id,
+            client_id,
+            service_type,
+            title,
+            description,
+            budget_min,
+            budget_max,
+            currency,
+            status,
+            created_at
+        ''').eq('ca_id', ca_id).eq('status', 'pending').order('created_at', desc=True).execute()
+        
+        requests_data = []
+        if consultations_response.data:
+            # Get client profiles
+            client_ids = [c['client_id'] for c in consultations_response.data]
+            if client_ids:
+                profiles_response = sb.table('profiles').select('id, full_name, city').in_('id', client_ids).execute()
+                profiles_map = {p['id']: p for p in profiles_response.data} if profiles_response.data else {}
+                
+                for consultation in consultations_response.data:
+                    client = profiles_map.get(consultation['client_id'], {})
+                    
+                    # Format budget
+                    budget = f"₹{consultation['budget_min']:,} - ₹{consultation['budget_max']:,}" if consultation.get('budget_min') and consultation.get('budget_max') else "Negotiable"
+                    
+                    # Determine urgency based on time since creation
+                    from datetime import datetime, timedelta
+                    created = datetime.fromisoformat(consultation['created_at'].replace('Z', '+00:00'))
+                    hours_old = (datetime.now(created.tzinfo) - created).total_seconds() / 3600
+                    urgency = 'high' if hours_old < 24 else 'medium' if hours_old < 72 else 'low'
+                    
+                    requests_data.append({
+                        'id': consultation['id'],
+                        'user_name': client.get('full_name', 'Unknown'),
+                        'city': client.get('city', 'Not specified'),
+                        'service': consultation['service_type'].replace('_', ' ').title(),
+                        'budget': budget,
+                        'urgency': urgency,
+                        'description': consultation['description'],
+                        'created_at': consultation['created_at']
+                    })
 
-    return jsonify({
-        'success':  True,
-        'data': requests_data
-    })
+        return jsonify({
+            'success': True,
+            'data': requests_data
+        })
+    
+    except Exception as e:
+        print(f"Client requests error: {e}")
+        return jsonify({
+            'success': True,
+            'data': []
+        })
 
 
 @api_bp.route('/ca/accept-request', methods=['POST'])
 @login_required
 def accept_client_request():
-    """Accept a client request."""
+    """Accept a client request - REAL-TIME with Supabase."""
     if not check_ca_access():
         return jsonify({'error': 'Access denied'}), 403
 
     try:
+        sb = get_supabase()
+        ca_id = current_user.id
         data = request.get_json()
         request_id = data.get('request_id')
 
         if not request_id:
             return jsonify({'error':  'Request ID is required'}), 400
 
-        # Handle request acceptance logic here
+        # Update consultation status to accepted
+        update_response = sb.table('consultations').update({
+            'status': 'accepted',
+            'started_at': datetime.utcnow().isoformat()
+        }).eq('id', request_id).eq('ca_id', ca_id).execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to accept request'}), 500
 
         return jsonify({
             'success':  True,
@@ -1698,11 +2938,13 @@ def accept_client_request():
 @api_bp.route('/ca/decline-request', methods=['POST'])
 @login_required
 def decline_client_request():
-    """Decline a client request."""
+    """Decline a client request - REAL-TIME with Supabase."""
     if not check_ca_access():
         return jsonify({'error': 'Access denied'}), 403
 
     try:
+        sb = get_supabase()
+        ca_id = current_user.id
         data = request.get_json()
         request_id = data.get('request_id')
         reason = data. get('reason', '')
@@ -1710,7 +2952,16 @@ def decline_client_request():
         if not request_id: 
             return jsonify({'error': 'Request ID is required'}), 400
 
-        # Handle request decline logic here
+        # Update consultation status to cancelled
+        update_response = sb.table('consultations').update({
+            'status': 'cancelled',
+            'cancelled_at': datetime.utcnow().isoformat(),
+            'cancelled_by': ca_id,
+            'cancellation_reason': reason or 'Declined by CA'
+        }).eq('id', request_id).eq('ca_id', ca_id).execute()
+        
+        if not update_response.data:
+            return jsonify({'error': 'Failed to decline request'}), 500
 
         return jsonify({
             'success': True,
@@ -1724,58 +2975,165 @@ def decline_client_request():
 @api_bp.route('/ca/dashboard-stats', methods=['GET'])
 @login_required
 def ca_dashboard_stats():
-    """Get CA dashboard statistics."""
+    """Get CA dashboard statistics - REAL-TIME from Supabase."""
     if not check_ca_access():
         return jsonify({'error': 'Access denied'}), 403
 
-    # Mock stats
-    stats = {
-        'total_clients': 127,
-        'active_consultations': 8,
-        'pending_requests': 3,
-        'total_earnings': 485000,
-        'this_month_earnings':  48500,
-        'average_rating': 4.9,
-        'total_reviews': 89,
-        'response_rate': 98,
-        'completion_rate': 95
-    }
+    try:
+        sb = get_supabase()
+        ca_id = current_user.id
+        
+        # Get total unique clients
+        clients_response = sb.table('consultations').select('client_id', count='exact').eq('ca_id', ca_id).execute()
+        unique_clients = set()
+        if clients_response.data:
+            unique_clients = {c['client_id'] for c in clients_response.data}
+        total_clients = len(unique_clients)
+        
+        # Get active consultations count (in_progress + accepted)
+        active_response = sb.table('consultations').select('id', count='exact').eq('ca_id', ca_id).in_('status', ['accepted', 'in_progress']).execute()
+        active_consultations = active_response.count if hasattr(active_response, 'count') else 0
+        
+        # Get pending requests
+        pending_response = sb.table('consultations').select('id', count='exact').eq('ca_id', ca_id).eq('status', 'pending').execute()
+        pending_requests = pending_response.count if hasattr(pending_response, 'count') else 0
+        
+        # Get total earnings (all completed credits)
+        earnings_response = sb.table('ca_earnings').select('amount').eq('ca_id', ca_id).eq('transaction_type', 'credit').eq('status', 'completed').execute()
+        total_earnings = sum(e['amount'] for e in earnings_response.data) if earnings_response.data else 0
+        
+        # Get this month's earnings
+        from datetime import datetime, timedelta
+        first_day_of_month = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        this_month_response = sb.table('ca_earnings').select('amount').eq('ca_id', ca_id).eq('transaction_type', 'credit').gte('created_at', first_day_of_month.isoformat()).execute()
+        this_month_earnings = sum(e['amount'] for e in this_month_response.data) if this_month_response.data else 0
+        
+        # Get average rating
+        reviews_response = sb.table('ca_reviews').select('rating').eq('ca_id', ca_id).eq('is_published', True).execute()
+        if reviews_response.data:
+            average_rating = round(sum(r['rating'] for r in reviews_response.data) / len(reviews_response.data), 1)
+            total_reviews = len(reviews_response.data)
+        else:
+            average_rating = 0.0
+            total_reviews = 0
+        
+        # Calculate response rate (consultations responded to within 24 hours)
+        all_consultations = sb.table('consultations').select('id, created_at, updated_at, status').eq('ca_id', ca_id).execute()
+        responded = 0
+        total_requests = 0
+        if all_consultations.data:
+            for c in all_consultations.data:
+                if c['status'] != 'pending':
+                    total_requests += 1
+                    created = datetime.fromisoformat(c['created_at'].replace('Z', '+00:00'))
+                    updated = datetime.fromisoformat(c['updated_at'].replace('Z', '+00:00'))
+                    if (updated - created) <= timedelta(hours=24):
+                        responded += 1
+        response_rate = round((responded / total_requests * 100)) if total_requests > 0 else 100
+        
+        # Calculate completion rate
+        completed_response = sb.table('consultations').select('id', count='exact').eq('ca_id', ca_id).eq('status', 'completed').execute()
+        completed = completed_response.count if hasattr(completed_response, 'count') else 0
+        total_accepted = sb.table('consultations').select('id', count='exact').eq('ca_id', ca_id).neq('status', 'pending').execute()
+        total = total_accepted.count if hasattr(total_accepted, 'count') else 0
+        completion_rate = round((completed / total * 100)) if total > 0 else 100
 
-    return jsonify({'success': True, 'data': stats})
+        stats = {
+            'total_clients': total_clients,
+            'active_consultations': active_consultations,
+            'pending_requests': pending_requests,
+            'total_earnings': total_earnings,
+            'this_month_earnings': this_month_earnings,
+            'average_rating': average_rating,
+            'total_reviews': total_reviews,
+            'response_rate': response_rate,
+            'completion_rate': completion_rate
+        }
+
+        return jsonify({'success': True, 'data': stats})
+    
+    except Exception as e:
+        print(f"CA dashboard stats error: {e}")
+        # Return zeros instead of mock data on error
+        return jsonify({
+            'success': True,
+            'data': {
+                'total_clients': 0,
+                'active_consultations': 0,
+                'pending_requests': 0,
+                'total_earnings': 0,
+                'this_month_earnings': 0,
+                'average_rating': 0.0,
+                'total_reviews': 0,
+                'response_rate': 0,
+                'completion_rate': 0
+            }
+        })
 
 
 @api_bp.route('/ca/earnings-summary', methods=['GET'])
 @login_required
 def ca_earnings_summary():
-    """Get CA earnings summary."""
+    """Get CA earnings summary - REAL-TIME from Supabase."""
     if not check_ca_access():
         return jsonify({'error': 'Access denied'}), 403
 
-    # Mock data
-    summary = {
-        'available_balance': 124500,
-        'pending_amount': 28000,
-        'total_earned': 485000,
-        'total_withdrawn': 332500,
-        'transactions': [
-            {
-                'id': '1',
-                'type': 'credit',
-                'amount': 18000,
-                'description': 'Payment from Rahul Sharma - GST Compliance',
-                'date': datetime.utcnow().isoformat()
-            },
-            {
-                'id': '2',
-                'type': 'debit',
-                'amount': 50000,
-                'description': 'Withdrawal to HDFC Bank ****4521',
-                'date': datetime.utcnow().isoformat()
-            }
-        ]
-    }
+    try:
+        sb = get_supabase()
+        ca_id = current_user.id
+        
+        # Get all completed credits
+        credits_response = sb.table('ca_earnings').select('amount').eq('ca_id', ca_id).eq('transaction_type', 'credit').eq('status', 'completed').execute()
+        total_earned = sum(e['amount'] for e in credits_response.data) if credits_response.data else 0
+        
+        # Get all completed withdrawals
+        withdrawals_response = sb.table('ca_earnings').select('amount').eq('ca_id', ca_id).eq('transaction_type', 'debit').eq('status', 'completed').execute()
+        total_withdrawn = sum(e['amount'] for e in withdrawals_response.data) if withdrawals_response.data else 0
+        
+        # Get pending amounts (approved but not completed)
+        pending_response = sb.table('ca_earnings').select('amount').eq('ca_id', ca_id).eq('transaction_type', 'credit').eq('status', 'approved').execute()
+        pending_amount = sum(e['amount'] for e in pending_response.data) if pending_response.data else 0
+        
+        # Calculate available balance
+        available_balance = total_earned - total_withdrawn - pending_amount
+        
+        # Get recent transactions (last 10)
+        transactions_response = sb.table('ca_earnings').select('*').eq('ca_id', ca_id).order('created_at', desc=True).limit(10).execute()
+        
+        transactions = []
+        if transactions_response.data:
+            for t in transactions_response.data:
+                transactions.append({
+                    'id': t['id'],
+                    'type': t['transaction_type'],
+                    'amount': t['amount'],
+                    'description': t['title'],
+                    'status': t['status'],
+                    'date': t['created_at']
+                })
+        
+        summary = {
+            'available_balance': available_balance,
+            'pending_amount': pending_amount,
+            'total_earned': total_earned,
+            'total_withdrawn': total_withdrawn,
+            'transactions': transactions
+        }
 
-    return jsonify({'success': True, 'data': summary})
+        return jsonify({'success': True, 'data': summary})
+    
+    except Exception as e:
+        print(f"CA earnings summary error: {e}")
+        return jsonify({
+            'success': True,
+            'data': {
+                'available_balance': 0,
+                'pending_amount': 0,
+                'total_earned': 0,
+                'total_withdrawn': 0,
+                'transactions': []
+            }
+        })
 
 
 @api_bp.route('/user/dashboard-stats', methods=['GET'])

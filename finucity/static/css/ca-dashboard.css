@@ -1,4 +1,4 @@
-: root {
+:root {
     --bg-primary: #0a0c0a;
     --bg-secondary:  #0f1210;
     --bg-card: #141816;
@@ -37,7 +37,7 @@ body {
 }
 
 /* Sidebar */
-. sidebar {
+.sidebar {
     position: fixed;
     left: 0;
     top: 0;
@@ -138,7 +138,7 @@ body {
     font-size: 15px;
 }
 
-. nav-item . badge {
+.nav-item .badge {
     margin-left: auto;
     background: var(--accent-gold);
     color: #0a0c0a;
@@ -215,7 +215,7 @@ body {
     z-index: 50;
 }
 
-. header-left h2 {
+.header-left h2 {
     font-size: 20px;
     font-weight: 600;
     color:  var(--text-primary);
@@ -253,7 +253,7 @@ body {
     color: var(--text-primary);
 }
 
-.header-btn . notification-dot {
+.header-btn .notification-dot {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -418,15 +418,15 @@ body {
     gap: 8px;
 }
 
-. btn-outline:hover {
+.btn-outline:hover {
     background:  var(--accent-gold-dim);
 }
 
-. btn-outline.full-width {
+.btn-outline.full-width {
     width: 100%;
 }
 
-. btn-outline-sm {
+.btn-outline-sm {
     padding: 8px 16px;
     background: transparent;
     color:  var(--accent-gold);
@@ -454,7 +454,7 @@ body {
     border-color: var(--accent-gold);
 }
 
-. btn-danger-sm {
+.btn-danger-sm {
     padding:  8px 16px;
     background: rgba(248, 113, 113, 0.1);
     color: var(--error);
@@ -515,7 +515,7 @@ body {
     border-top: 1px solid var(--border-primary);
 }
 
-.form-actions. hidden {
+.form-actions.hidden {
     display:  none;
 }
 
@@ -649,7 +649,7 @@ body {
     font-size: 14px;
 }
 
-. profile-stats {
+.profile-stats {
     display:  grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
@@ -723,7 +723,7 @@ body {
     transition: all var(--transition);
 }
 
-.client-type. active {
+.client-type.active {
     border-color: var(--accent-gold);
     color: var(--accent-gold);
     background: var(--accent-gold-dim);
@@ -801,7 +801,7 @@ body {
     border-bottom: none;
 }
 
-.setting-item. danger {
+.setting-item.danger {
     background:  rgba(248, 113, 113, 0.05);
     margin:  0 -24px;
     padding: 20px 24px;
@@ -856,12 +856,12 @@ body {
     color: var(--accent-gold);
 }
 
-.filter-tab . count {
+.filter-tab .count {
     margin-left: 6px;
     opacity: 0.7;
 }
 
-. filter-actions {
+.filter-actions {
     display:  flex;
     gap: 12px;
 }
@@ -922,11 +922,11 @@ body {
     width: 4px;
 }
 
-.request-card. new . request-status-bar {
+.request-card.new .request-status-bar {
     background:  var(--accent-gold);
 }
 
-.request-card. pending .request-status-bar {
+.request-card.pending .request-status-bar {
     background: var(--warning);
 }
 
@@ -987,7 +987,7 @@ body {
     color: var(--accent-gold);
 }
 
-.badge. urgent {
+.badge.urgent {
     background:  rgba(248, 113, 113, 0.15);
     color: var(--error);
 }
@@ -1089,7 +1089,7 @@ body {
     color: var(--error);
 }
 
-. btn-chat {
+.btn-chat {
     padding:  10px 20px;
     background: var(--bg-elevated);
     color: var(--text-primary);
@@ -1145,7 +1145,7 @@ body {
     grid-column: span 2;
 }
 
-. doc-list {
+.doc-list {
     display:  flex;
     flex-direction: column;
     gap: 12px;
@@ -1175,7 +1175,7 @@ body {
     color: var(--success);
 }
 
-. doc-icon.pending {
+.doc-icon.pending {
     background:  rgba(251, 191, 36, 0.15);
     color: var(--warning);
 }
@@ -1205,12 +1205,12 @@ body {
     gap:  6px;
 }
 
-.doc-status. verified {
+.doc-status.verified {
     background: rgba(52, 211, 153, 0.15);
     color: var(--success);
 }
 
-. doc-status.pending {
+.doc-status.pending {
     background: rgba(251, 191, 36, 0.15);
     color: var(--warning);
 }
@@ -1271,11 +1271,11 @@ body {
     border-radius: 10px;
 }
 
-. reminder-item. warning {
+.reminder-item.warning {
     border-left: 3px solid var(--warning);
 }
 
-.reminder-item. success {
+.reminder-item.success {
     border-left: 3px solid var(--success);
 }
 
@@ -1324,20 +1324,20 @@ body {
     cursor:  pointer;
 }
 
-. progress-text {
+.progress-text {
     font-size: 14px;
     font-weight: 600;
     color:  var(--accent-gold);
 }
 
-. status-badge {
+.status-badge {
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
 }
 
-. status-badge.success {
+.status-badge.success {
     background:  rgba(52, 211, 153, 0.15);
     color: var(--success);
 }
@@ -1363,7 +1363,7 @@ body {
     border-bottom: 1px solid var(--border-primary);
 }
 
-. doc-name {
+.doc-name {
     display: flex;
     align-items: center;
     gap:  12px;
@@ -1374,7 +1374,7 @@ body {
     font-size: 18px;
 }
 
-. type-badge {
+.type-badge {
     padding: 4px 10px;
     background: var(--bg-elevated);
     border-radius: 4px;
@@ -1413,7 +1413,7 @@ body {
     padding: 24px;
 }
 
-.modal. open {
+.modal.open {
     display:  flex;
 }
 
@@ -1479,7 +1479,7 @@ body {
     background: var(--accent-gold-dim);
 }
 
-. upload-zone i {
+.upload-zone i {
     font-size: 40px;
     color: var(--text-muted);
     margin-bottom: 16px;
@@ -1497,7 +1497,7 @@ body {
 }
 
 /* Toast Notifications */
-. toast {
+.toast {
     position: fixed;
     top: 24px;
     right: 24px;
@@ -1526,7 +1526,7 @@ body {
     border-color: var(--error);
 }
 
-.toast. error i {
+.toast.error i {
     color: var(--error);
 }
 
@@ -1609,7 +1609,7 @@ body {
         transform: translateX(-100%);
     }
     
-    .sidebar. open {
+    .sidebar.open {
         transform: translateX(0);
     }
     
@@ -1625,17 +1625,17 @@ body {
         padding:  20px;
     }
     
-    . header {
+    .header {
         padding:  0 20px;
     }
     
-    . page-title {
+    .page-title {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
     }
     
-    . filters-bar {
+    .filters-bar {
         flex-direction: column;
         align-items: stretch;
     }
@@ -1665,7 +1665,7 @@ body {
         grid-template-columns: 1fr;
     }
     
-    . services-grid {
+    .services-grid {
         grid-template-columns: 1fr;
     }
     

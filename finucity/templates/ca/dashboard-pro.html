@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Workspace | Finucity</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard-pro.css') }}">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="ca-dashboard">
+        <!-- =====================================================
+             SIDEBAR
+             ===================================================== -->
+        <aside class="ca-sidebar">
+            <!-- Logo -->
+            <div class="ca-sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+                <span>Finucity CA</span>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="ca-sidebar-nav">
+                <!-- Main -->
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Main</div>
+                    <a href="{{ url_for('main.ca_dashboard') }}" class="ca-nav-item active">
+                        <i class="fas fa-grid-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_clients') }}" class="ca-nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Clients</span>
+                        <span class="ca-nav-badge" id="pending-count">0</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_messages') }}" class="ca-nav-item">
+                        <i class="fas fa-message"></i>
+                        <span>Messages</span>
+                        <span class="ca-nav-badge" style="background: var(--error);" id="unread-messages">0</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_calendar') }}" class="ca-nav-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Calendar</span>
+                    </a>
+                </div>
+                
+                <!-- Business -->
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Business</div>
+                    <a href="{{ url_for('main.ca_earnings') }}" class="ca-nav-item">
+                        <i class="fas fa-indian-rupee-sign"></i>
+                        <span>Earnings</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_documents') }}" class="ca-nav-item">
+                        <i class="fas fa-folder"></i>
+                        <span>Documents</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_services') }}" class="ca-nav-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Services</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_insights') }}" class="ca-nav-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Insights</span>
+                    </a>
+                </div>
+                
+                <!-- Account -->
+                <div class="ca-nav-section">
+                    <div class="ca-nav-section-title">Account</div>
+                    <a href="{{ url_for('main.ca_profile') }}" class="ca-nav-item">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_reviews') }}" class="ca-nav-item">
+                        <i class="fas fa-star"></i>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="{{ url_for('main.ca_settings') }}" class="ca-nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <!-- User Profile -->
+            <div class="ca-sidebar-profile">
+                <div class="ca-profile-card">
+                    <div class="ca-profile-avatar">
+                        {{ current_user.full_name[0].upper() if current_user.full_name else 'CA' }}
+                    </div>
+                    <div class="ca-profile-info">
+                        <div class="ca-profile-name">{{ current_user.full_name or 'CA User' }}</div>
+                        <div class="ca-profile-role">Chartered Accountant</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- =====================================================
+             MAIN CONTENT
+             ===================================================== -->
+        <main class="ca-main">
+            <!-- Header -->
+            <header class="ca-header">
+                <div class="ca-header-welcome">
+                    <div class="ca-header-greeting">Welcome back,</div>
+                    <div class="ca-header-name">{{ current_user.full_name or 'CA Professional' }}</div>
+                </div>
+                
+                <div class="ca-header-actions">
+                    <button class="ca-header-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="ca-header-btn" title="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="ca-header-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Content -->
+            <div class="ca-content animate-fade-in">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <!-- Total Clients -->
+                    <div class="stat-card animate-fade-in" style="animation-delay: 0.1s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon blue">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-card-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>12%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" id="total-clients-stat">
+                            <div class="skeleton skeleton-text" style="width: 80px;"></div>
+                        </div>
+                        <div class="stat-card-label">Total Clients</div>
+                    </div>
+                    
+                    <!-- Active Consultations -->
+                    <div class="stat-card animate-fade-in" style="animation-delay: 0.2s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon emerald">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="stat-card-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>8%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" id="active-consultations-stat">
+                            <div class="skeleton skeleton-text" style="width: 60px;"></div>
+                        </div>
+                        <div class="stat-card-label">Active Consultations</div>
+                    </div>
+                    
+                    <!-- This Month Earnings -->
+                    <div class="stat-card animate-fade-in" style="animation-delay: 0.3s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon purple">
+                                <i class="fas fa-indian-rupee-sign"></i>
+                            </div>
+                            <div class="stat-card-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>24%</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" id="month-earnings-stat">
+                            <div class="skeleton skeleton-text" style="width: 120px;"></div>
+                        </div>
+                        <div class="stat-card-label">This Month</div>
+                    </div>
+                    
+                    <!-- Average Rating -->
+                    <div class="stat-card animate-fade-in" style="animation-delay: 0.4s;">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon amber">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-card-trend up">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>0.2</span>
+                            </div>
+                        </div>
+                        <div class="stat-card-value" id="rating-stat">
+                            <div class="skeleton skeleton-text" style="width: 80px;"></div>
+                        </div>
+                        <div class="stat-card-label">Average Rating</div>
+                    </div>
+                </div>
+                
+                <!-- Main Content Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); margin-bottom: var(--spacing-xl);">
+                    <!-- Earnings Overview -->
+                    <div class="glass-card animate-slide-in" style="animation-delay: 0.5s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                            <h2 style="font-size: 1.25rem; font-weight: 700;">Earnings Overview</h2>
+                            <a href="{{ url_for('main.ca_earnings') }}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8125rem;">
+                                View Details
+                            </a>
+                        </div>
+                        
+                        <div style="background: var(--gradient-success); padding: var(--spacing-lg); border-radius: var(--radius-md); margin-bottom: var(--spacing-md);">
+                            <div style="font-size: 0.875rem; color: white; opacity: 0.9; margin-bottom: 0.5rem;">Available Balance</div>
+                            <div style="font-size: 2.5rem; font-weight: 700; color: white;" id="available-balance">
+                                <div class="skeleton skeleton-text" style="width: 150px; height: 2.5rem;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Total Earned</div>
+                                <div style="font-size: 1.25rem; font-weight: 600;" id="total-earned">₹0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Pending</div>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--accent-amber);" id="pending-amount">₹0</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-md);">
+                            <i class="fas fa-wallet"></i>
+                            Request Withdrawal
+                        </button>
+                    </div>
+                    
+                    <!-- Pending Requests -->
+                    <div class="glass-card animate-slide-in" style="animation-delay: 0.6s;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                            <h2 style="font-size: 1.25rem; font-weight: 700;">Pending Requests</h2>
+                            <span class="ca-nav-badge" id="pending-requests-count">0</span>
+                        </div>
+                        
+                        <div id="pending-requests-list">
+                            <!-- Loading State -->
+                            <div class="skeleton skeleton-card" style="margin-bottom: var(--spacing-sm);"></div>
+                            <div class="skeleton skeleton-card" style="margin-bottom: var(--spacing-sm);"></div>
+                        </div>
+                        
+                        <a href="{{ url_for('main.ca_clients') }}" class="btn btn-outline" style="width: 100%; margin-top: var(--spacing-md);">
+                            View All Requests
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="glass-card animate-fade-in" style="animation-delay: 0.7s;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+                        <h2 style="font-size: 1.25rem; font-weight: 700;">Recent Transactions</h2>
+                        <a href="{{ url_for('main.ca_earnings') }}" style="color: var(--accent-blue); text-decoration: none; font-size: 0.875rem; font-weight: 600;">
+                            View All →
+                        </a>
+                    </div>
+                    
+                    <div id="recent-transactions-list">
+                        <!-- Loading State -->
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                    </div>
+                </div>
+                
+                <!-- Performance Metrics -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-xl);">
+                    <div class="glass-card" style="text-align: center;">
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Response Rate</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-emerald);" id="response-rate">--%</div>
+                    </div>
+                    <div class="glass-card" style="text-align: center;">
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Completion Rate</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-blue);" id="completion-rate">--%</div>
+                    </div>
+                    <div class="glass-card" style="text-align: center;">
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Total Reviews</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--accent-amber);" id="total-reviews">0</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = '{{ supabase_url }}';
+        const SUPABASE_ANON_KEY = '{{ supabase_anon_key }}';
+        const CA_ID = '{{ current_user.id }}';
+        
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+        
+        // Load Dashboard Stats
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/api/ca/dashboard-stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.data;
+                    
+                    // Update stats with animation
+                    document.getElementById('total-clients-stat').innerHTML = stats.total_clients;
+                    document.getElementById('active-consultations-stat').innerHTML = stats.active_consultations;
+                    document.getElementById('month-earnings-stat').innerHTML = formatCurrency(stats.this_month_earnings);
+                    document.getElementById('rating-stat').innerHTML = stats.average_rating.toFixed(1);
+                    document.getElementById('response-rate').innerHTML = stats.response_rate + '%';
+                    document.getElementById('completion-rate').innerHTML = stats.completion_rate + '%';
+                    document.getElementById('total-reviews').innerHTML = stats.total_reviews;
+                    document.getElementById('pending-count').innerHTML = stats.pending_requests;
+                }
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+        
+        // Load Earnings Summary
+        async function loadEarningsSummary() {
+            try {
+                const response = await fetch('/api/ca/earnings-summary');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const earnings = result.data;
+                    
+                    document.getElementById('available-balance').innerHTML = formatCurrency(earnings.available_balance);
+                    document.getElementById('total-earned').innerHTML = formatCurrency(earnings.total_earned);
+                    document.getElementById('pending-amount').innerHTML = formatCurrency(earnings.pending_amount);
+                    
+                    // Display recent transactions
+                    const transactionsList = document.getElementById('recent-transactions-list');
+                    if (earnings.transactions && earnings.transactions.length > 0) {
+                        transactionsList.innerHTML = earnings.transactions.slice(0, 5).map(t => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.875rem;">${t.description}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">${new Date(t.date).toLocaleDateString('en-IN')}</div>
+                                </div>
+                                <div style="font-weight: 700; color: ${t.type === 'credit' ? 'var(--success)' : 'var(--error)'};">
+                                    ${t.type === 'credit' ? '+' : '-'}${formatCurrency(t.amount)}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        transactionsList.innerHTML = '<div style="text-align: center; padding: var(--spacing-lg); color: var(--text-muted);">No transactions yet</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading earnings:', error);
+            }
+        }
+        
+        // Load Pending Requests
+        async function loadPendingRequests() {
+            try {
+                const response = await fetch('/api/ca/client-requests');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const requests = result.data;
+                    document.getElementById('pending-requests-count').innerHTML = requests.length;
+                    
+                    const requestsList = document.getElementById('pending-requests-list');
+                    if (requests.length > 0) {
+                        requestsList.innerHTML = requests.slice(0, 3).map(req => `
+                            <div style="background: rgba(255, 255, 255, 0.03); padding: var(--spacing-md); border-radius: var(--radius-md); margin-bottom: var(--spacing-sm); border-left: 3px solid var(--accent-blue);">
+                                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 0.875rem;">${req.user_name}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">${req.service}</div>
+                                    </div>
+                                    <span style="background: ${req.urgency === 'high' ? 'var(--error)' : 'var(--warning)'}; color: white; font-size: 0.625rem; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);">${req.urgency.toUpperCase()}</span>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${req.description.substring(0, 80)}...</div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-success" style="flex: 1; padding: 0.5rem; font-size: 0.75rem;" onclick="acceptRequest('${req.id}')">
+                                        Accept
+                                    </button>
+                                    <button class="btn btn-outline" style="flex: 1; padding: 0.5rem; font-size: 0.75rem;" onclick="declineRequest('${req.id}')">
+                                        Decline
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        requestsList.innerHTML = '<div style="text-align: center; padding: var(--spacing-xl); color: var(--text-muted);"><i class="fas fa-inbox" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i><br>No pending requests</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+            }
+        }
+        
+        // Accept Request
+        async function acceptRequest(requestId) {
+            try {
+                const response = await fetch('/api/ca/accept-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: requestId })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    loadPendingRequests();
+                    loadDashboardStats();
+                }
+            } catch (error) {
+                console.error('Error accepting request:', error);
+            }
+        }
+        
+        // Decline Request
+        async function declineRequest(requestId) {
+            const reason = prompt('Reason for declining (optional):');
+            try {
+                const response = await fetch('/api/ca/decline-request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request_id: requestId, reason })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    loadPendingRequests();
+                    loadDashboardStats();
+                }
+            } catch (error) {
+                console.error('Error declining request:', error);
+            }
+        }
+        
+        // Setup Real-Time Subscriptions
+        function setupRealtimeSubscriptions() {
+            // Subscribe to new consultations
+            sb.channel('consultations-channel')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'consultations',
+                    filter: `ca_id=eq.${CA_ID}`
+                }, (payload) => {
+                    console.log('New consultation:', payload);
+                    loadPendingRequests();
+                    loadDashboardStats();
+                    // Show notification
+                    if (Notification.permission === 'granted') {
+                        new Notification('New Client Request', {
+                            body: 'You have a new consultation request',
+                            icon: '/static/images/logo.png'
+                        });
+                    }
+                })
+                .subscribe();
+            
+            // Subscribe to earnings updates
+            sb.channel('earnings-channel')
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'ca_earnings',
+                    filter: `ca_id=eq.${CA_ID}`
+                }, (payload) => {
+                    console.log('Earnings update:', payload);
+                    loadEarningsSummary();
+                    loadDashboardStats();
+                })
+                .subscribe();
+        }
+        
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboardStats();
+            loadEarningsSummary();
+            loadPendingRequests();
+            setupRealtimeSubscriptions();
+            
+            // Refresh data every 30 seconds (fallback if realtime fails)
+            setInterval(() => {
+                loadDashboardStats();
+                loadEarningsSummary();
+                loadPendingRequests();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
