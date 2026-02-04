@@ -3,7 +3,7 @@ Centralized route handlers for the Finucity AI application.
 Author: Sumeet Sangwan
 """
 
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, abort, send_from_directory
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, abort, send_from_directory, current_app
 from flask_login import login_required, current_user, login_user, logout_user
 import uuid
 import re
@@ -15,17 +15,14 @@ import html
 from .models import User
 from .database import UserService, ChatService, FeedbackService, get_supabase
 
-# Import limiter from app
-try:
-    from app import limiter
-except ImportError:
-    # Fallback if limiter not available
-    class DummyLimiter:
-        def limit(self, *args, **kwargs):
-            def decorator(f):
-                return f
-            return decorator
-    limiter = DummyLimiter()
+# Dummy limiter decorator (rate limiting handled at app level)
+class DummyLimiter:
+    def limit(self, *args, **kwargs):
+        def decorator(f):
+            return f
+        return decorator
+
+limiter = DummyLimiter()
 
 try:
     from .ai import get_ai_response
@@ -709,7 +706,7 @@ def ca_dashboard():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/dashboard-pro.html',
+        'ca/dashboard.html',
         user=current_user,
         supabase_url=os.getenv('SUPABASE_URL'),
         supabase_anon_key=os.getenv('SUPABASE_ANON_KEY')
@@ -741,7 +738,7 @@ def ca_clients():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/clients-pro.html',
+        'ca/clients.html',
         user=current_user,
         supabase_url=os.getenv('SUPABASE_URL'),
         supabase_anon_key=os.getenv('SUPABASE_ANON_KEY')
@@ -757,7 +754,7 @@ def ca_documents():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/documents-pro.html',
+        'ca/documents.html',
         user=current_user,
         supabase_url=os.getenv('SUPABASE_URL'),
         supabase_key=os.getenv('SUPABASE_ANON_KEY')
@@ -773,7 +770,7 @@ def ca_messages():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/messages-pro.html',
+        'ca/messages.html',
         user=current_user,
         supabase_url=os.getenv('SUPABASE_URL'),
         supabase_key=os.getenv('SUPABASE_ANON_KEY')
@@ -789,7 +786,7 @@ def ca_services():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/services. html',
+        'ca/services.html',
         user=current_user,
         SUPABASE_URL=os.getenv('SUPABASE_URL'),
         SUPABASE_ANON_KEY=os.getenv('SUPABASE_ANON_KEY')
@@ -837,7 +834,7 @@ def ca_earnings():
         return redirect(url_for('main.home'))
 
     return render_template(
-        'ca/earnings-pro.html',
+        'ca/earnings.html',
         user=current_user,
         supabase_url=os.getenv('SUPABASE_URL'),
         supabase_key=os.getenv('SUPABASE_ANON_KEY')

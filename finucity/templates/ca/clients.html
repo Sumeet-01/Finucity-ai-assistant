@@ -1,333 +1,515 @@
-<! DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Requests | CA Workspace | Finucity</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic. com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/ca-dashboard.css') }}">
-</head>
-<body>
-    {% include 'ca/partials/sidebar.html' %}
+{% extends "ca/layout.html" %}
 
-    <main class="main-content">
-        {% include 'ca/partials/header.html' %}
+{% block page_title %}Clients - CA Workspace{% endblock %}
+{% block page_header %}Client Requests{% endblock %}
+{% block page_subtitle %}Manage consultations and client relationships{% endblock %}
 
-        <div class="page-content">
-            <div class="page-title">
-                <h1>Client Requests</h1>
-                <p>Manage incoming client requests and consultations</p>
-            </div>
+{% block extra_page_css %}
+<style>
+    /* Filters Bar */
+    .filters-bar {
+        display: flex;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        flex: 1;
+    }
+    
+    .filter-tab {
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: var(--border-radius-md);
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .filter-tab:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.12);
+    }
+    
+    .filter-tab.active {
+        background: rgba(212, 175, 55, 0.15);
+        border-color: var(--accent-gold);
+        color: var(--accent-gold);
+    }
+    
+    .filter-count {
+        padding: 2px 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: var(--border-radius-md);
+        min-width: 250px;
+    }
+    
+    .search-box i {
+        color: var(--text-muted);
+    }
+    
+    .search-box input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--text-primary);
+        font-size: var(--font-size-sm);
+    }
+    
+    .search-box input::placeholder {
+        color: var(--text-muted);
+    }
+    
+    /* Client Cards Grid */
+    .clients-grid {
+        display: grid;
+        gap: var(--space-3);
+    }
+    
+    .client-card {
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: var(--border-radius-lg);
+        padding: var(--space-4);
+        transition: all var(--transition-base);
+    }
+    
+    .client-card:hover {
+        border-color: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.05);
+    }
+    
+    .client-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: var(--space-3);
+    }
+    
+    .client-info {
+        display: flex;
+        gap: var(--space-3);
+        flex: 1;
+    }
+    
+    .client-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--border-radius-md);
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--accent-gold);
+        flex-shrink: 0;
+    }
+    
+    .client-details {
+        flex: 1;
+    }
+    
+    .client-name {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+    }
+    
+    .client-meta {
+        display: flex;
+        gap: var(--space-2);
+        font-size: var(--font-size-sm);
+        color: var(--text-tertiary);
+    }
+    
+    .client-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .client-description {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: var(--space-3);
+    }
+    
+    .client-tags {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--space-3);
+    }
+    
+    .client-tag {
+        padding: 4px 12px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+    }
+    
+    .client-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--space-3);
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .client-budget {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--fintech-green);
+    }
+    
+    .client-actions {
+        display: flex;
+        gap: var(--space-2);
+    }
+</style>
+{% endblock %}
 
-            <!-- Filters & Stats -->
-            <div class="filters-bar">
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">
-                        All <span class="count">12</span>
-                    </button>
-                    <button class="filter-tab" data-filter="new">
-                        New <span class="count">3</span>
-                    </button>
-                    <button class="filter-tab" data-filter="pending">
-                        Pending <span class="count">4</span>
-                    </button>
-                    <button class="filter-tab" data-filter="active">
-                        Active <span class="count">5</span>
-                    </button>
-                    <button class="filter-tab" data-filter="completed">
-                        Completed <span class="count">127</span>
-                    </button>
-                </div>
-                <div class="filter-actions">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search clients... ">
-                    </div>
-                    <select class="filter-select">
-                        <option>All Services</option>
-                        <option>Tax Planning</option>
-                        <option>GST Filing</option>
-                        <option>ITR Filing</option>
-                        <option>Audit</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Requests List -->
-            <div class="requests-list">
-                <!-- New Request -->
-                <div class="request-card new">
-                    <div class="request-status-bar"></div>
-                    <div class="request-header">
-                        <div class="request-user">
-                            <div class="user-avatar">RS</div>
-                            <div class="user-info">
-                                <h4>Rahul Sharma</h4>
-                                <span class="user-location"><i class="fas fa-map-marker-alt"></i> Delhi, NCR</span>
-                            </div>
-                        </div>
-                        <div class="request-badges">
-                            <span class="badge new">New</span>
-                            <span class="badge urgent">Urgent</span>
-                        </div>
-                    </div>
-                    <div class="request-body">
-                        <div class="request-service">
-                            <i class="fas fa-file-invoice"></i>
-                            <span>GST Compliance</span>
-                        </div>
-                        <p class="request-description">Need help with GST filing for my e-commerce business.  Multiple state registrations required.  Monthly compliance support needed for ongoing operations.</p>
-                        <div class="request-meta">
-                            <span><i class="fas fa-rupee-sign"></i> ₹15,000 - ₹25,000</span>
-                            <span><i class="fas fa-clock"></i> 2 hours ago</span>
-                            <span><i class="fas fa-calendar"></i> Ongoing support</span>
-                        </div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="btn-accept" onclick="acceptRequest('1')">
-                            <i class="fas fa-check"></i> Accept
-                        </button>
-                        <button class="btn-decline" onclick="declineRequest('1')">
-                            <i class="fas fa-times"></i> Decline
-                        </button>
-                        <button class="btn-chat" onclick="openChat('1')">
-                            <i class="fas fa-comment"></i> Chat
-                        </button>
-                        <button class="btn-more">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- New Request -->
-                <div class="request-card new">
-                    <div class="request-status-bar"></div>
-                    <div class="request-header">
-                        <div class="request-user">
-                            <div class="user-avatar">PM</div>
-                            <div class="user-info">
-                                <h4>Priya Mehta</h4>
-                                <span class="user-location"><i class="fas fa-map-marker-alt"></i> Bangalore, Karnataka</span>
-                            </div>
-                        </div>
-                        <div class="request-badges">
-                            <span class="badge new">New</span>
-                        </div>
-                    </div>
-                    <div class="request-body">
-                        <div class="request-service">
-                            <i class="fas fa-calculator"></i>
-                            <span>Tax Planning</span>
-                        </div>
-                        <p class="request-description">Looking for tax planning consultation for FY 2024-25.  Salaried professional with rental income and stock investments. Need to optimize tax liability.</p>
-                        <div class="request-meta">
-                            <span><i class="fas fa-rupee-sign"></i> ₹5,000 - ₹10,000</span>
-                            <span><i class="fas fa-clock"></i> 5 hours ago</span>
-                            <span><i class="fas fa-calendar"></i> One-time</span>
-                        </div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="btn-accept" onclick="acceptRequest('2')">
-                            <i class="fas fa-check"></i> Accept
-                        </button>
-                        <button class="btn-decline" onclick="declineRequest('2')">
-                            <i class="fas fa-times"></i> Decline
-                        </button>
-                        <button class="btn-chat" onclick="openChat('2')">
-                            <i class="fas fa-comment"></i> Chat
-                        </button>
-                        <button class="btn-more">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Pending Request -->
-                <div class="request-card pending">
-                    <div class="request-status-bar"></div>
-                    <div class="request-header">
-                        <div class="request-user">
-                            <div class="user-avatar">AK</div>
-                            <div class="user-info">
-                                <h4>Amit Kumar</h4>
-                                <span class="user-location"><i class="fas fa-map-marker-alt"></i> Pune, Maharashtra</span>
-                            </div>
-                        </div>
-                        <div class="request-badges">
-                            <span class="badge pending">Pending Response</span>
-                        </div>
-                    </div>
-                    <div class="request-body">
-                        <div class="request-service">
-                            <i class="fas fa-file-alt"></i>
-                            <span>ITR Filing</span>
-                        </div>
-                        <p class="request-description">Need to file ITR for previous 2 years.  Have salary income, capital gains from mutual funds, and some freelance income. Documents are ready.</p>
-                        <div class="request-meta">
-                            <span><i class="fas fa-rupee-sign"></i> ₹3,000 - ₹5,000</span>
-                            <span><i class="fas fa-clock"></i> 1 day ago</span>
-                            <span><i class="fas fa-hourglass-half"></i> Awaiting your response</span>
-                        </div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="btn-primary" onclick="sendQuote('3')">
-                            <i class="fas fa-paper-plane"></i> Send Quote
-                        </button>
-                        <button class="btn-chat" onclick="openChat('3')">
-                            <i class="fas fa-comment"></i> Chat
-                        </button>
-                        <button class="btn-more">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Active Client -->
-                <div class="request-card active">
-                    <div class="request-status-bar"></div>
-                    <div class="request-header">
-                        <div class="request-user">
-                            <div class="user-avatar">SG</div>
-                            <div class="user-info">
-                                <h4>Suresh Gupta</h4>
-                                <span class="user-location"><i class="fas fa-map-marker-alt"></i> Mumbai, Maharashtra</span>
-                            </div>
-                        </div>
-                        <div class="request-badges">
-                            <span class="badge active">Active</span>
-                            <span class="badge progress">In Progress</span>
-                        </div>
-                    </div>
-                    <div class="request-body">
-                        <div class="request-service">
-                            <i class="fas fa-search-dollar"></i>
-                            <span>Audit Services</span>
-                        </div>
-                        <p class="request-description">Annual statutory audit for private limited company. Turnover:  ₹5 Cr.  Need audit report and compliance certificates.</p>
-                        <div class="request-meta">
-                            <span><i class="fas fa-rupee-sign"></i> ₹75,000 (Agreed)</span>
-                            <span><i class="fas fa-clock"></i> Started 5 days ago</span>
-                            <span><i class="fas fa-tasks"></i> 60% Complete</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%"></div>
-                        </div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="btn-primary" onclick="viewDetails('4')">
-                            <i class="fas fa-folder-open"></i> View Details
-                        </button>
-                        <button class="btn-chat" onclick="openChat('4')">
-                            <i class="fas fa-comment"></i> Chat
-                        </button>
-                        <button class="btn-more">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+{% block page_content %}
+<div>
+    <!-- Filters -->
+    <div class="filters-bar">
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-status="all">
+                All <span class="filter-count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-status="pending">
+                Pending <span class="filter-count" id="countPending">0</span>
+            </button>
+            <button class="filter-tab" data-status="active">
+                Active <span class="filter-count" id="countActive">0</span>
+            </button>
+            <button class="filter-tab" data-status="completed">
+                Completed <span class="filter-count" id="countCompleted">0</span>
+            </button>
         </div>
-    </main>
-
-    <button class="mobile-toggle" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Accept Modal -->
-    <div class="modal" id="acceptModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Accept Request</h3>
-                <button class="modal-close" onclick="closeModal('acceptModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>You are about to accept this client request.  Please provide your quote and expected timeline.</p>
-                <div class="form-group">
-                    <label>Your Quote (₹)</label>
-                    <input type="number" class="form-input" placeholder="Enter amount">
-                </div>
-                <div class="form-group">
-                    <label>Expected Timeline</label>
-                    <select class="form-input">
-                        <option>Within 1 week</option>
-                        <option>1-2 weeks</option>
-                        <option>2-4 weeks</option>
-                        <option>1-2 months</option>
-                        <option>Ongoing support</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Message to Client</label>
-                    <textarea class="form-input" rows="3" placeholder="Introduce yourself and your approach... "></textarea>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-secondary" onclick="closeModal('acceptModal')">Cancel</button>
-                <button class="btn-primary" onclick="confirmAccept()">Send & Accept</button>
-            </div>
+        
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search clients...">
         </div>
     </div>
+    
+    <!-- Clients Grid -->
+    <div class="clients-grid" id="clientsGrid">
+        <!-- Loading skeleton -->
+        <div class="client-card">
+            <div class="skeleton" style="width: 100%; height: 120px;"></div>
+        </div>
+        <div class="client-card">
+            <div class="skeleton" style="width: 100%; height: 120px;"></div>
+        </div>
+        <div class="client-card">
+            <div class="skeleton" style="width: 100%; height: 120px;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
+{% block extra_scripts %}
+<script>
+let allConsultations = [];
+let currentFilter = 'all';
 
-        // Filter tabs
-        document.querySelectorAll('.filter-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                filterRequests(this.dataset.filter);
-            });
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadConsultations();
+    setupFilters();
+    setupSearch();
+    setupRealtime();
+});
+
+async function loadConsultations() {
+    const supabase = window.supabase;
+    const caId = window.CA_ID;
+    
+    try {
+        const { data, error } = await supabase
+            .from('consultations')
+            .select(`
+                *,
+                users!consultations_client_id_fkey (
+                    email,
+                    first_name,
+                    last_name
+                )
+            `)
+            .eq('ca_id', caId)
+            .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        allConsultations = data || [];
+        updateCounts();
+        renderConsultations();
+        
+    } catch (error) {
+        console.error('Error loading consultations:', error);
+        document.getElementById('clientsGrid').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-exclamation-circle"></i></div>
+                <div class="empty-title">Error Loading Clients</div>
+                <div class="empty-description">Please refresh the page</div>
+            </div>
+        `;
+    }
+}
+
+function updateCounts() {
+    const counts = {
+        all: allConsultations.length,
+        pending: allConsultations.filter(c => c.status === 'pending').length,
+        active: allConsultations.filter(c => c.status === 'active').length,
+        completed: allConsultations.filter(c => c.status === 'completed').length
+    };
+    
+    document.getElementById('countAll').textContent = counts.all;
+    document.getElementById('countPending').textContent = counts.pending;
+    document.getElementById('countActive').textContent = counts.active;
+    document.getElementById('countCompleted').textContent = counts.completed;
+}
+
+function renderConsultations() {
+    const grid = document.getElementById('clientsGrid');
+    const filtered = allConsultations.filter(c => 
+        currentFilter === 'all' || c.status === currentFilter
+    );
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                <div class="empty-title">No ${currentFilter === 'all' ? '' : currentFilter} clients</div>
+                <div class="empty-description">Clients will appear here once they request consultations</div>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = filtered.map(consultation => {
+        const client = consultation.users;
+        const clientName = client?.first_name 
+            ? `${client.first_name} ${client.last_name || ''}`
+            : client?.email || 'Unknown Client';
+        
+        const initials = client?.first_name 
+            ? `${client.first_name[0]}${client.last_name?.[0] || ''}`
+            : 'U';
+        
+        const timeAgo = getTimeAgo(new Date(consultation.created_at));
+        
+        const statusClass = consultation.status || 'pending';
+        const statusText = (consultation.status || 'pending').charAt(0).toUpperCase() + 
+                          (consultation.status || 'pending').slice(1);
+        
+        return `
+            <div class="client-card">
+                <div class="client-header">
+                    <div class="client-info">
+                        <div class="client-avatar">${initials}</div>
+                        <div class="client-details">
+                            <div class="client-name">${clientName}</div>
+                            <div class="client-meta">
+                                <div class="client-meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${timeAgo}</span>
+                                </div>
+                                ${consultation.service_type ? `
+                                    <div class="client-meta-item">
+                                        <i class="fas fa-tag"></i>
+                                        <span>${consultation.service_type}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                
+                ${consultation.description ? `
+                    <div class="client-description">${consultation.description}</div>
+                ` : ''}
+                
+                <div class="client-tags">
+                    ${consultation.service_type ? `<span class="client-tag">${consultation.service_type}</span>` : ''}
+                    ${consultation.urgency ? `<span class="client-tag">${consultation.urgency} Priority</span>` : ''}
+                </div>
+                
+                <div class="client-footer">
+                    <div class="client-budget">
+                        ${consultation.budget ? `₹${consultation.budget.toLocaleString('en-IN')}` : 'Budget TBD'}
+                    </div>
+                    <div class="client-actions">
+                        ${consultation.status === 'pending' ? `
+                            <button class="btn btn-primary" onclick="acceptRequest('${consultation.id}')">
+                                Accept
+                            </button>
+                            <button class="btn btn-ghost" onclick="declineRequest('${consultation.id}')">
+                                Decline
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-outline" onclick="viewClient('${consultation.id}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function setupFilters() {
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentFilter = tab.dataset.status;
+            renderConsultations();
         });
+    });
+}
 
-        function filterRequests(filter) {
-            const cards = document.querySelectorAll('.request-card');
-            cards.forEach(card => {
-                if (filter === 'all' || card. classList.contains(filter)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+function setupSearch() {
+    const searchInput = document.getElementById('searchInput');
+    let debounceTimer;
+    
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const query = e.target.value.toLowerCase();
+            const grid = document.getElementById('clientsGrid');
+            
+            const filtered = allConsultations.filter(c => {
+                if (currentFilter !== 'all' && c.status !== currentFilter) return false;
+                
+                const client = c.users;
+                const clientName = client?.first_name 
+                    ? `${client.first_name} ${client.last_name || ''}`
+                    : client?.email || '';
+                
+                return clientName.toLowerCase().includes(query) ||
+                       (c.service_type || '').toLowerCase().includes(query) ||
+                       (c.description || '').toLowerCase().includes(query);
             });
-        }
-
-        function acceptRequest(id) {
-            document.getElementById('acceptModal').classList.add('open');
-        }
-
-        function declineRequest(id) {
-            if (confirm('Are you sure you want to decline this request?')) {
-                showToast('Request declined', 'info');
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-search"></i></div>
+                        <div class="empty-title">No results found</div>
+                        <div class="empty-description">Try different keywords</div>
+                    </div>
+                `;
+            } else {
+                allConsultations = filtered;
+                renderConsultations();
             }
-        }
+        }, 300);
+    });
+}
 
-        function openChat(id) {
-            window.location.href = '/ca/messages? client=' + id;
-        }
+function setupRealtime() {
+    const supabase = window.supabase;
+    const caId = window.CA_ID;
+    
+    supabase
+        .channel('clients-realtime')
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'consultations',
+            filter: `ca_id=eq.${caId}`
+        }, async () => {
+            await loadConsultations();
+        })
+        .subscribe();
+}
 
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('open');
-        }
+async function acceptRequest(consultationId) {
+    const supabase = window.supabase;
+    
+    try {
+        const { error } = await supabase
+            .from('consultations')
+            .update({ status: 'active' })
+            .eq('id', consultationId);
+        
+        if (error) throw error;
+        
+        await loadConsultations();
+        
+    } catch (error) {
+        console.error('Error accepting request:', error);
+        alert('Failed to accept request');
+    }
+}
 
-        function confirmAccept() {
-            closeModal('acceptModal');
-            showToast('Request accepted successfully! ', 'success');
-        }
+async function declineRequest(consultationId) {
+    const supabase = window.supabase;
+    
+    if (!confirm('Are you sure you want to decline this request?')) return;
+    
+    try {
+        const { error } = await supabase
+            .from('consultations')
+            .update({ status: 'cancelled' })
+            .eq('id', consultationId);
+        
+        if (error) throw error;
+        
+        await loadConsultations();
+        
+    } catch (error) {
+        console.error('Error declining request:', error);
+        alert('Failed to decline request');
+    }
+}
 
-        function showToast(message, type) {
-            const toast = document. createElement('div');
-            toast.className = 'toast ' + type;
-            toast.innerHTML = '<i class="fas fa-' + (type === 'success' ?  'check-circle' : 'info-circle') + '"></i>' + message;
-            document. body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-    </script>
-</body>
-</html>
+function viewClient(consultationId) {
+    window.location.href = `/ca/messages?consultation=${consultationId}`;
+}
+
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+    return date.toLocaleDateString('en-IN');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Capital Gains Calculator - Finucity{% endblock %}
+
+{% block content %}
+<div class="capital-gains-calculator bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">Capital Gains Calculator</h1>
+            <p class="text-gray-600">Calculate LTCG and STCG tax on your investments</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Enter Investment Details</h2>
+                
+                <form id="capitalGainsForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Asset Type</label>
+                        <select id="assetType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="equity">Equity/Mutual Funds (Equity)</option>
+                            <option value="debt">Debt Mutual Funds</option>
+                            <option value="property">Real Estate</option>
+                            <option value="gold">Gold/Jewelry</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Purchase Price (₹)</label>
+                        <input type="number" id="purchasePrice" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 100000" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Sale Price (₹)</label>
+                        <input type="number" id="salePrice" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 150000" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Purchase Date</label>
+                        <input type="date" id="purchaseDate" class="w-full px-4 py-2 border rounded-lg" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Sale Date</label>
+                        <input type="date" id="saleDate" class="w-full px-4 py-2 border rounded-lg" required>
+                    </div>
+
+                    <div class="mb-4" id="expensesSection">
+                        <label class="block text-sm font-semibold mb-2">Sale Expenses (Brokerage, etc.) ₹</label>
+                        <input type="number" id="expenses" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 5000" value="0">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-4">
+                        Calculate Capital Gains
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Tax Calculation</h2>
+                
+                <div id="results" class="hidden">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">Gain Type</span>
+                            <span class="font-bold" id="gainType">-</span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">Holding Period</span>
+                            <span class="font-bold" id="holdingPeriod">-</span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">Capital Gains</span>
+                            <span class="font-bold" id="capitalGain">₹0</span>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold">Tax Payable</span>
+                                <span class="text-2xl font-bold text-blue-600" id="taxPayable">₹0</span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <span>Tax Rate: </span>
+                                <span id="taxRate">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Net Proceeds</span>
+                            <span class="font-bold text-green-600" id="netProceeds">₹0</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-yellow-50 rounded-lg" id="exemptionNote">
+                        <p class="text-sm text-yellow-800" id="exemptionText"></p>
+                    </div>
+                </div>
+
+                <div id="noResults" class="text-center text-gray-400 py-12">
+                    <div class="text-6xl mb-4">📈</div>
+                    <p>Enter your details and click "Calculate"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-8 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold mb-3">📊 Capital Gains Tax Rates (FY 2024-25)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-semibold mb-2">Equity/Mutual Funds</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>STCG (≤12 months): 15%</li>
+                        <li>LTCG (>12 months): 10% above ₹1 lakh</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Property/Gold</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>STCG (≤24/36 months): Slab rate</li>
+                        <li>LTCG: 20% with indexation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('calculators.calculator_home') }}" class="text-blue-600 hover:underline">← Back to All Calculators</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('capitalGainsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const assetType = document.getElementById('assetType').value;
+    const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+    const salePrice = parseFloat(document.getElementById('salePrice').value) || 0;
+    const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+    const purchaseDate = new Date(document.getElementById('purchaseDate').value);
+    const saleDate = new Date(document.getElementById('saleDate').value);
+    
+    // Calculate holding period in months
+    const months = (saleDate.getFullYear() - purchaseDate.getFullYear()) * 12 + 
+                   (saleDate.getMonth() - purchaseDate.getMonth());
+    
+    // Determine LTCG threshold based on asset type
+    let ltcgThreshold;
+    if (assetType === 'equity') ltcgThreshold = 12;
+    else if (assetType === 'property') ltcgThreshold = 24;
+    else ltcgThreshold = 36;
+    
+    const isLTCG = months > ltcgThreshold;
+    const capitalGain = salePrice - purchasePrice - expenses;
+    
+    // Calculate tax
+    let taxRate = 0;
+    let tax = 0;
+    let exemptionNote = '';
+    
+    if (capitalGain > 0) {
+        if (assetType === 'equity') {
+            if (isLTCG) {
+                taxRate = 10;
+                const taxableGain = Math.max(0, capitalGain - 100000);
+                tax = taxableGain * 0.10;
+                if (capitalGain <= 100000) {
+                    exemptionNote = '✅ LTCG up to ₹1 lakh is exempt from tax!';
+                } else {
+                    exemptionNote = '💡 First ₹1 lakh of LTCG is exempt. Tax calculated on gains above ₹1 lakh.';
+                }
+            } else {
+                taxRate = 15;
+                tax = capitalGain * 0.15;
+                exemptionNote = '📌 Short-term gains on equity are taxed at flat 15%.';
+            }
+        } else {
+            if (isLTCG) {
+                taxRate = 20;
+                tax = capitalGain * 0.20;
+                exemptionNote = '💡 LTCG on ' + assetType + ' is taxed at 20% with indexation benefit.';
+            } else {
+                taxRate = 30;
+                tax = capitalGain * 0.30;
+                exemptionNote = '📌 Short-term gains are added to income and taxed at your slab rate (assumed 30%).';
+            }
+        }
+    }
+    
+    const netProceeds = salePrice - expenses - tax;
+    
+    // Update UI
+    document.getElementById('gainType').textContent = isLTCG ? 'Long-Term (LTCG)' : 'Short-Term (STCG)';
+    document.getElementById('gainType').className = 'font-bold ' + (isLTCG ? 'text-green-600' : 'text-orange-600');
+    document.getElementById('holdingPeriod').textContent = months + ' months';
+    document.getElementById('capitalGain').textContent = '₹' + capitalGain.toLocaleString('en-IN');
+    document.getElementById('capitalGain').className = 'font-bold ' + (capitalGain >= 0 ? 'text-green-600' : 'text-red-600');
+    document.getElementById('taxPayable').textContent = '₹' + Math.round(tax).toLocaleString('en-IN');
+    document.getElementById('taxRate').textContent = taxRate + '%';
+    document.getElementById('netProceeds').textContent = '₹' + Math.round(netProceeds).toLocaleString('en-IN');
+    document.getElementById('exemptionText').textContent = exemptionNote;
+    
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('noResults').classList.add('hidden');
+});
+</script>
+{% endblock %}

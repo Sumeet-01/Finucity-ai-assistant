@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Gratuity Calculator - Finucity{% endblock %}
+
+{% block content %}
+<div class="gratuity-calculator bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">Gratuity Calculator</h1>
+            <p class="text-gray-600">Calculate your gratuity amount as per Payment of Gratuity Act</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Employment Details</h2>
+                
+                <form id="gratuityCalculatorForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Employment Type</label>
+                        <select id="employmentType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="covered">Covered under Gratuity Act (10+ employees)</option>
+                            <option value="notcovered">Not covered under Gratuity Act</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Last Drawn Basic Salary (Monthly ₹)</label>
+                        <input type="number" id="basicSalary" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 50000" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Dearness Allowance (Monthly ₹)</label>
+                        <input type="number" id="da" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 5000" value="0">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Years of Service</label>
+                        <input type="number" id="yearsOfService" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 10" required step="0.1">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 5 years required for gratuity eligibility</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-4">
+                        Calculate Gratuity
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Gratuity Amount</h2>
+                
+                <div id="results" class="hidden">
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-6 rounded-lg text-center">
+                            <p class="text-sm text-gray-600 mb-1">Your Gratuity Amount</p>
+                            <p class="text-4xl font-bold text-green-600" id="gratuityAmount">₹0</p>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Tax-Free Limit</span>
+                                <span class="font-bold" id="taxFreeLimit">₹20,00,000</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-gray-600">Taxable Gratuity</span>
+                                <span class="font-bold text-orange-600" id="taxableGratuity">₹0</span>
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold mt-4 mb-2">Calculation Formula</h3>
+                        <div class="bg-gray-50 p-4 rounded text-sm">
+                            <p class="font-mono" id="formulaDisplay">Gratuity = (Basic + DA) × 15 × Years / 26</p>
+                        </div>
+
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-600">Basic + DA</span>
+                                <span class="font-medium" id="displaySalary">₹0</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="text-gray-600">Completed Years</span>
+                                <span class="font-medium" id="displayYears">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Days Factor</span>
+                                <span class="font-medium" id="displayFactor">15/26</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-3 rounded-lg" id="eligibilityNote">
+                        <p class="text-sm" id="eligibilityText"></p>
+                    </div>
+                </div>
+
+                <div id="noResults" class="text-center text-gray-400 py-12">
+                    <div class="text-6xl mb-4">🎁</div>
+                    <p>Enter your details to calculate gratuity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-8 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold mb-3">📋 Gratuity Rules</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="font-semibold mb-2">Eligibility</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>Minimum 5 years of continuous service</li>
+                        <li>Applicable on retirement, resignation, or death</li>
+                        <li>Death/disability: No minimum service required</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">Tax Benefits</h4>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>Government employees: Fully exempt</li>
+                        <li>Private employees: Exempt up to ₹20 lakh</li>
+                        <li>Excess amount taxable as income</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('calculators.calculator_home') }}" class="text-blue-600 hover:underline">← Back to All Calculators</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('gratuityCalculatorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const employmentType = document.getElementById('employmentType').value;
+    const basicSalary = parseFloat(document.getElementById('basicSalary').value) || 0;
+    const da = parseFloat(document.getElementById('da').value) || 0;
+    const yearsOfService = parseFloat(document.getElementById('yearsOfService').value) || 0;
+    
+    const totalSalary = basicSalary + da;
+    
+    // Round years (6 months or more = 1 year)
+    const completedYears = Math.round(yearsOfService);
+    
+    let gratuity = 0;
+    let formula = '';
+    let factor = '';
+    let eligibilityText = '';
+    let eligibilityClass = '';
+    
+    if (yearsOfService < 5) {
+        eligibilityText = '⚠️ Minimum 5 years of service required for gratuity eligibility.';
+        eligibilityClass = 'bg-yellow-50 text-yellow-800';
+    } else {
+        eligibilityText = '✅ You are eligible for gratuity!';
+        eligibilityClass = 'bg-green-50 text-green-800';
+        
+        if (employmentType === 'covered') {
+            // Covered under Gratuity Act: (Basic + DA) × 15 × Years / 26
+            gratuity = (totalSalary * 15 * completedYears) / 26;
+            formula = 'Gratuity = (Basic + DA) × 15 × Years / 26';
+            factor = '15/26';
+        } else {
+            // Not covered: (Basic + DA) × 15 × Years / 30
+            gratuity = (totalSalary * 15 * completedYears) / 30;
+            formula = 'Gratuity = (Basic + DA) × 15 × Years / 30';
+            factor = '15/30';
+        }
+    }
+    
+    const taxFreeLimit = 2000000;
+    const taxableGratuity = Math.max(0, gratuity - taxFreeLimit);
+    
+    // Update UI
+    document.getElementById('gratuityAmount').textContent = '₹' + Math.round(gratuity).toLocaleString('en-IN');
+    document.getElementById('taxFreeLimit').textContent = '₹' + taxFreeLimit.toLocaleString('en-IN');
+    document.getElementById('taxableGratuity').textContent = '₹' + Math.round(taxableGratuity).toLocaleString('en-IN');
+    document.getElementById('formulaDisplay').textContent = formula;
+    document.getElementById('displaySalary').textContent = '₹' + totalSalary.toLocaleString('en-IN');
+    document.getElementById('displayYears').textContent = completedYears + ' years';
+    document.getElementById('displayFactor').textContent = factor;
+    document.getElementById('eligibilityText').textContent = eligibilityText;
+    
+    const noteEl = document.getElementById('eligibilityNote');
+    noteEl.className = 'mt-6 p-3 rounded-lg ' + eligibilityClass;
+    
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('noResults').classList.add('hidden');
+});
+</script>
+{% endblock %}

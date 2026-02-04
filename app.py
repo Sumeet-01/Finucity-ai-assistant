@@ -1,35 +1,61 @@
+"""
+Finucity - AI-Powered Indian Tax & Financial Platform
+Main Application Entry Point
+Author: Sumeet Sangwan
+"""
+
 import os
 from flask import Flask, render_template
-from flask_login import login_required
+from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from dotenv import load_dotenv
 from supabase import create_client
 import html
 
-# Load .env from current directory or parent
+# =====================================================================
+# ENVIRONMENT SETUP
+# =====================================================================
 load_dotenv()
-if os.getenv('SUPABASE_URL'):
-    print("✅ Environment variables loaded successfully")
-else:
-    print("⚠️  WARNING: SUPABASE_URL not found in environment")
 
-# Supabase config
+# Verify critical environment variables
+required_vars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_KEY', 'SECRET_KEY']
+missing_vars = [var for var in required_vars if not os.getenv(var)]
+
+if missing_vars:
+    print("❌ ERROR: Missing required environment variables:")
+    for var in missing_vars:
+        print(f"   - {var}")
+    print("\nPlease set them in your .env file")
+    exit(1)
+
+print("✅ Environment variables loaded successfully")
+
+# Supabase configuration
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_ANON_KEY = os.environ["SUPABASE_ANON_KEY"]
 SUPABASE_SERVICE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-SUPABASE_JWT_SECRET = os.environ["SUPABASE_JWT_SECRET"]
+SUPABASE_JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET", "")
 
 def get_supabase_admin():
+    """Get Supabase client with admin privileges"""
     return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
-# Flask app
-app = Flask(__name__, template_folder='finucity/templates', static_folder='finucity/static')
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-if not app.config['SECRET_KEY']:
-    raise RuntimeError("SECRET_KEY environment variable must be set")
+# =====================================================================
+# FLASK APP INITIALIZATION
+# =====================================================================
+app = Flask(__name__, 
+            template_folder='finucity/templates', 
+            static_folder='finucity/static')
 
-# Security: Rate Limiting
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# =====================================================================
+# SECURITY: RATE LIMITING
+# =====================================================================
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
@@ -37,140 +63,180 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Security: Input Sanitization Utility
+# =====================================================================
+# SECURITY: INPUT SANITIZATION
+# =====================================================================
 def sanitize_input(text):
-    """Sanitize user input to prevent XSS attacks."""
+    """Sanitize user input to prevent XSS attacks"""
     if isinstance(text, str):
         return html.escape(text)
     return text
 
-# Make sanitize available globally
 app.jinja_env.globals.update(sanitize=sanitize_input)
 
-# Flask app
-app = Flask(__name__, template_folder='finucity/templates', static_folder='finucity/static')
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-if not app.config['SECRET_KEY']:
-    raise RuntimeError("SECRET_KEY environment variable must be set")
-
-# Initialize Supabase database layer
-from finucity.database import supabase_db
+# =====================================================================
+# DATABASE INITIALIZATION
+# =====================================================================
+from finucity.database import supabase_db, UserService
 from finucity.models import User
+
 supabase_db.init_app(app)
 
-# Blueprints
-from finucity.routes import main_bp, auth_bp, api_bp
-from finucity.chat_routes import chat_bp
-from finucity.ca_ecosystem_routes import ca_ecosystem_bp
-app.register_blueprint(main_bp)
-app.register_blueprint(auth_bp)
-app.register_blueprint(api_bp)
-app.register_blueprint(chat_bp)
-app.register_blueprint(ca_ecosystem_bp)
-
-# Login manager for session management
-from flask_login import LoginManager
-from finucity.database import UserService
-
+# =====================================================================
+# FLASK-LOGIN SETUP
+# =====================================================================
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'info'
 
 @login_manager.user_loader
 def load_user(user_id):
     """Load user from Supabase for Flask-Login session"""
-    user_data = UserService.get_by_id(user_id)
-    if user_data:
-        return User(user_data)
+    try:
+        user_data = UserService.get_by_id(user_id)
+        if user_data:
+            return User(user_data)
+    except Exception as e:
+        app.logger.error(f"Error loading user {user_id}: {e}")
     return None
 
-# Utility for Jinja
+# =====================================================================
+# BLUEPRINT REGISTRATION
+# =====================================================================
+try:
+    # Core blueprints (required)
+    from finucity.routes import main_bp, auth_bp, api_bp
+    from finucity.chat_routes import chat_bp
+    from finucity.ca_ecosystem_routes import ca_ecosystem_bp
+    
+    app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(api_bp)
+    app.register_blueprint(chat_bp)
+    app.register_blueprint(ca_ecosystem_bp)
+    
+    print("✅ Core blueprints loaded")
+    
+except ImportError as e:
+    print(f"❌ ERROR: Failed to import core blueprints: {e}")
+    exit(1)
+
+# Optional blueprints (new features - graceful degradation)
+try:
+    from finucity.services_routes import services_bp, calculators_bp
+    app.register_blueprint(services_bp)
+    app.register_blueprint(calculators_bp)
+    print("✅ Services and Calculators blueprints loaded")
+except ImportError as e:
+    print(f"⚠️  Services/Calculators modules not found: {e}")
+
+try:
+    from finucity.admin_routes import admin_enhanced_bp
+    app.register_blueprint(admin_enhanced_bp)
+    print("✅ Admin Enhanced blueprint loaded")
+except ImportError as e:
+    print(f"⚠️  Admin Enhanced module not found: {e}")
+
+try:
+    from finucity.trust_routes import trust_bp
+    app.register_blueprint(trust_bp)
+    print("✅ Trust System blueprint loaded")
+except ImportError as e:
+    print(f"⚠️  Trust System module not found: {e}")
+
+# =====================================================================
+# JINJA TEMPLATE UTILITIES
+# =====================================================================
 @app.context_processor
 def utility_processor():
-    return dict(hasattr=hasattr, getattr=getattr, isinstance=isinstance, len=len, str=str, int=int, float=float, bool=bool)
+    """Make Python built-ins available in templates"""
+    return dict(
+        hasattr=hasattr,
+        getattr=getattr,
+        isinstance=isinstance,
+        len=len,
+        str=str,
+        int=int,
+        float=float,
+        bool=bool,
+        list=list,
+        dict=dict
+    )
 
-app.jinja_env.globals.update(hasattr=hasattr, getattr=getattr, isinstance=isinstance, len=len, str=str, int=int, float=float, bool=bool)
-
-# All routes are now handled by blueprints in finucity/routes.py
-# No duplicate routes in app.py - keeps it clean and organized
-
-# Errors
+# =====================================================================
+# ERROR HANDLERS
+# =====================================================================
 @app.errorhandler(404)
 def not_found_error(error):
-    return render_template('errors/404.html'), 404
+    """Handle 404 errors"""
+    return render_template('Errors/404.html'), 404
 
 @app.errorhandler(500)
 def internal_error(error):
-    return render_template('errors/500.html'), 500
+    """Handle 500 errors"""
+    app.logger.error(f"Internal server error: {error}")
+    return render_template('Errors/500.html'), 500
 
 @app.errorhandler(403)
 def forbidden_error(error):
-    return render_template('errors/403.html'), 403
+    """Handle 403 errors"""
+    return render_template('Errors/403.html'), 403
 
-# All routes are now handled by blueprints in finucity/routes.py
-# No duplicate routes in app.py - keeps it clean and organized
+@app.errorhandler(429)
+def ratelimit_handler(error):
+    """Handle rate limit errors"""
+    return render_template('Errors/429.html'), 429
 
+# =====================================================================
+# HEALTH CHECK
+# =====================================================================
+@app.route('/health')
+def health_check():
+    """Health check endpoint for monitoring"""
+    return {
+        'status': 'healthy',
+        'service': 'finucity',
+        'database': 'supabase'
+    }, 200
+
+# =====================================================================
+# APPLICATION STARTUP
+# =====================================================================
 if __name__ == '__main__':
     print("")
     print("=" * 70)
-    print("🚀 FINUCITY AI ASSISTANT - STARTING")
+    print("🚀 FINUCITY - AI-POWERED TAX & FINANCIAL PLATFORM")
     print("=" * 70)
     print("")
     print("💾 Database: Supabase (PostgreSQL)")
-    print("✨ AI Powered Financial Assistant")
-    print("👨‍💻 Created by Sumeet Sangwan")
-    print("🔗 GitHub: https://github.com/Sumeet-01")
+    print("🤖 AI Provider: Groq (llama-3.1-8b-instant)")
+    print("✨ Features:")
+    print("   • Income Tax Filing (ITR)")
+    print("   • GST Registration & Filing")
+    print("   • Business Compliance")
+    print("   • Tax Planning & Advisory")
+    print("   • 10+ Financial Calculators")
+    print("   • AI-Powered Tax Intelligence")
+    print("   • Verified CA Network")
     print("")
-    print("-" * 70)
-    print("📍 AVAILABLE URLS:")
-    print("-" * 70)
-    print("")
-    print("🏠 Main Application:")
-    print("   → http://localhost:3000")
-    print("")
-    print("🔐 Admin Panel:")
-    print("   → http://localhost:3000/admin/dashboard")
-    print("   → http://localhost:3000/admin/users")
-    print("   → http://localhost:3000/admin/ca-applications")
-    print("")
-    print("👔 CA Dashboard:")
-    print("   → http://localhost:3000/ca/dashboard")
-    print("   → http://localhost:3000/ca-application (Apply as CA)")
-    print("   → http://localhost:3000/ca-application-status")
-    print("")
-    print("👤 User Dashboard:")
-    print("   → http://localhost:3000/user/dashboard")
-    print("   → http://localhost:3000/user/find-ca")
-    print("   → http://localhost:3000/profile")
-    print("")
-    print("💬 AI Chat:")
-    print("   → http://localhost:3000/chat")
-    print("")
-    print("🔑 Authentication:")
-    print("   → http://localhost:3000/auth/login")
-    print("   → http://localhost:3000/auth/register")
-    print("")
-    print("-" * 70)
-    print("🎯 QUICK ACTIONS:")
-    print("-" * 70)
-    print("")
-    print("Test CA Dashboard:  http://localhost:3000/test-ca-dashboard")
-    print("Apply as CA:        http://localhost:3000/ca-application")
-    print("Admin Panel:        http://localhost:3000/admin")
-    print("Main App:           http://localhost:3000")
+    print("🌐 Server starting on http://localhost:5000")
+    print("📚 Admin Panel: http://localhost:5000/admin/dashboard")
+    print("🧮 Calculators: http://localhost:5000/calculators/")
+    print("💼 Services: http://localhost:5000/services/")
     print("")
     print("=" * 70)
+    print("")
     
-    # Verify Supabase configuration
-    if not os.getenv('SUPABASE_URL') or not os.getenv('SUPABASE_SERVICE_KEY'):
-        print("❌ ERROR: Supabase configuration missing")
-        print("   Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env")
-        print("=" * 70)
-        exit(1)
-    
-    print("✅ Configuration: OK")
-    print("✅ Environment: " + os.environ.get('FLASK_ENV', 'development'))
-    print("=" * 70)
+    # Run development server
+    app.run(
+        host='0.0.0.0',
+        port=5000,
+        debug=True,
+        use_reloader=True
+    )
+
     print("")
     print("🌐 Server running on: http://localhost:3000")
     print("📡 Ready to accept connections...")

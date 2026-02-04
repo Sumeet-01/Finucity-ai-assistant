@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}GST Calculator - Finucity{% endblock %}
+
+{% block content %}
+<div class="gst-calculator bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">GST Calculator</h1>
+            <p class="text-gray-600">Calculate GST for your goods and services</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Enter Details</h2>
+                
+                <form id="gstCalculatorForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Calculation Type</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center">
+                                <input type="radio" name="calcType" value="exclusive" checked class="mr-2">
+                                <span>Add GST</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="calcType" value="inclusive" class="mr-2">
+                                <span>Remove GST</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Amount (₹)</label>
+                        <input type="number" id="amount" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 10000" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">GST Rate (%)</label>
+                        <select id="gstRate" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="0">0% (Essential items)</option>
+                            <option value="5">5% (Basic necessities)</option>
+                            <option value="12">12% (Standard items)</option>
+                            <option value="18" selected>18% (Most goods & services)</option>
+                            <option value="28">28% (Luxury items)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">GST Type</label>
+                        <select id="gstType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="intrastate">Intra-state (CGST + SGST)</option>
+                            <option value="interstate">Inter-state (IGST)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-4">
+                        Calculate GST
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">GST Breakdown</h2>
+                
+                <div id="results" class="hidden">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600" id="baseLabel">Base Amount</span>
+                            <span class="font-bold text-lg" id="baseAmount">₹0</span>
+                        </div>
+
+                        <div id="cgstRow" class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">CGST (<span id="cgstPercent">9</span>%)</span>
+                            <span class="font-bold text-orange-600" id="cgstAmount">₹0</span>
+                        </div>
+
+                        <div id="sgstRow" class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">SGST (<span id="sgstPercent">9</span>%)</span>
+                            <span class="font-bold text-orange-600" id="sgstAmount">₹0</span>
+                        </div>
+
+                        <div id="igstRow" class="flex justify-between items-center border-b pb-2 hidden">
+                            <span class="text-gray-600">IGST (<span id="igstPercent">18</span>%)</span>
+                            <span class="font-bold text-orange-600" id="igstAmount">₹0</span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">Total GST</span>
+                            <span class="font-bold text-red-600" id="totalGST">₹0</span>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Final Amount</span>
+                                <span class="text-2xl font-bold text-green-600" id="finalAmount">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noResults" class="text-center text-gray-400 py-12">
+                    <div class="text-6xl mb-4">🧾</div>
+                    <p>Enter amount and click "Calculate GST"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GST Rates Info -->
+        <div class="mt-8 bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold mb-3">📊 GST Rate Categories</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white p-3 rounded shadow-sm">
+                    <span class="text-2xl font-bold text-green-600">0%</span>
+                    <p class="text-sm text-gray-600">Essential items, fresh food, books</p>
+                </div>
+                <div class="bg-white p-3 rounded shadow-sm">
+                    <span class="text-2xl font-bold text-blue-600">5%</span>
+                    <p class="text-sm text-gray-600">Basic necessities, transport</p>
+                </div>
+                <div class="bg-white p-3 rounded shadow-sm">
+                    <span class="text-2xl font-bold text-yellow-600">12%</span>
+                    <p class="text-sm text-gray-600">Processed food, medicines</p>
+                </div>
+                <div class="bg-white p-3 rounded shadow-sm">
+                    <span class="text-2xl font-bold text-orange-600">18%</span>
+                    <p class="text-sm text-gray-600">Most goods, services, electronics</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('calculators.calculator_home') }}" class="text-blue-600 hover:underline">← Back to All Calculators</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('gstCalculatorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const gstRate = parseFloat(document.getElementById('gstRate').value) || 0;
+    const calcType = document.querySelector('input[name="calcType"]:checked').value;
+    const gstType = document.getElementById('gstType').value;
+    
+    let baseAmount, gstAmount, finalAmount;
+    
+    if (calcType === 'exclusive') {
+        // Add GST to amount
+        baseAmount = amount;
+        gstAmount = amount * (gstRate / 100);
+        finalAmount = amount + gstAmount;
+        document.getElementById('baseLabel').textContent = 'Original Amount';
+    } else {
+        // Remove GST from amount (GST inclusive)
+        finalAmount = amount;
+        baseAmount = amount / (1 + gstRate / 100);
+        gstAmount = amount - baseAmount;
+        document.getElementById('baseLabel').textContent = 'Base Amount (excl. GST)';
+    }
+    
+    // Update display
+    document.getElementById('baseAmount').textContent = '₹' + baseAmount.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    document.getElementById('totalGST').textContent = '₹' + gstAmount.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    document.getElementById('finalAmount').textContent = '₹' + finalAmount.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    
+    if (gstType === 'intrastate') {
+        document.getElementById('cgstRow').classList.remove('hidden');
+        document.getElementById('sgstRow').classList.remove('hidden');
+        document.getElementById('igstRow').classList.add('hidden');
+        
+        const halfRate = gstRate / 2;
+        const halfGst = gstAmount / 2;
+        
+        document.getElementById('cgstPercent').textContent = halfRate;
+        document.getElementById('sgstPercent').textContent = halfRate;
+        document.getElementById('cgstAmount').textContent = '₹' + halfGst.toLocaleString('en-IN', {maximumFractionDigits: 2});
+        document.getElementById('sgstAmount').textContent = '₹' + halfGst.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    } else {
+        document.getElementById('cgstRow').classList.add('hidden');
+        document.getElementById('sgstRow').classList.add('hidden');
+        document.getElementById('igstRow').classList.remove('hidden');
+        
+        document.getElementById('igstPercent').textContent = gstRate;
+        document.getElementById('igstAmount').textContent = '₹' + gstAmount.toLocaleString('en-IN', {maximumFractionDigits: 2});
+    }
+    
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('noResults').classList.add('hidden');
+});
+</script>
+{% endblock %}

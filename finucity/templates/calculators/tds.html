@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}TDS Calculator - Finucity{% endblock %}
+
+{% block content %}
+<div class="tds-calculator bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">TDS Calculator</h1>
+            <p class="text-gray-600">Calculate Tax Deducted at Source for various payments</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Payment Details</h2>
+                
+                <form id="tdsCalculatorForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Payment Type</label>
+                        <select id="paymentType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="salary">Salary (192)</option>
+                            <option value="interest">Interest - Other than Securities (194A)</option>
+                            <option value="dividend">Dividend (194)</option>
+                            <option value="professional">Professional/Technical Fees (194J)</option>
+                            <option value="contractor">Contractor Payment (194C)</option>
+                            <option value="rent">Rent (194I)</option>
+                            <option value="commission">Commission/Brokerage (194H)</option>
+                            <option value="property">Sale of Property (194IA)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Payment Amount (₹)</label>
+                        <input type="number" id="paymentAmount" class="w-full px-4 py-2 border rounded-lg" placeholder="e.g., 100000" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-semibold mb-2">Payee Type</label>
+                        <select id="payeeType" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="resident">Resident Individual/HUF</option>
+                            <option value="company">Domestic Company</option>
+                            <option value="nri">Non-Resident (NRI)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="hasPan" checked class="mr-2">
+                            <span class="text-sm font-semibold">PAN Available</span>
+                        </label>
+                        <p class="text-xs text-gray-500 mt-1">Higher TDS @ 20% if PAN not available</p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-4">
+                        Calculate TDS
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">TDS Calculation</h2>
+                
+                <div id="results" class="hidden">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">Payment Amount</span>
+                            <span class="font-bold" id="displayAmount">₹0</span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">TDS Section</span>
+                            <span class="font-bold" id="displaySection">-</span>
+                        </div>
+
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="text-gray-600">TDS Rate</span>
+                            <span class="font-bold" id="displayRate">0%</span>
+                        </div>
+
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold">TDS Amount</span>
+                                <span class="text-2xl font-bold text-red-600" id="tdsAmount">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Net Payment</span>
+                                <span class="text-2xl font-bold text-green-600" id="netPayment">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-yellow-50 rounded-lg" id="thresholdNote">
+                            <p class="text-sm text-yellow-800" id="thresholdText"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noResults" class="text-center text-gray-400 py-12">
+                    <div class="text-6xl mb-4">💰</div>
+                    <p>Enter payment details to calculate TDS</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TDS Rates Table -->
+        <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h3 class="font-bold mb-4">📋 Common TDS Rates (FY 2024-25)</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="text-left p-2">Section</th>
+                            <th class="text-left p-2">Nature of Payment</th>
+                            <th class="text-center p-2">Rate</th>
+                            <th class="text-center p-2">Threshold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">194A</td><td class="p-2">Interest (other than securities)</td><td class="text-center p-2">10%</td><td class="text-center p-2">₹40,000</td></tr>
+                        <tr class="border-b"><td class="p-2">194C</td><td class="p-2">Contractor - Individual</td><td class="text-center p-2">1%</td><td class="text-center p-2">₹30,000</td></tr>
+                        <tr class="border-b"><td class="p-2">194C</td><td class="p-2">Contractor - Company</td><td class="text-center p-2">2%</td><td class="text-center p-2">₹30,000</td></tr>
+                        <tr class="border-b"><td class="p-2">194H</td><td class="p-2">Commission/Brokerage</td><td class="text-center p-2">5%</td><td class="text-center p-2">₹15,000</td></tr>
+                        <tr class="border-b"><td class="p-2">194I</td><td class="p-2">Rent - Land/Building</td><td class="text-center p-2">10%</td><td class="text-center p-2">₹2,40,000</td></tr>
+                        <tr class="border-b"><td class="p-2">194J</td><td class="p-2">Professional Fees</td><td class="text-center p-2">10%</td><td class="text-center p-2">₹30,000</td></tr>
+                        <tr><td class="p-2">194IA</td><td class="p-2">Sale of Property</td><td class="text-center p-2">1%</td><td class="text-center p-2">₹50,00,000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('calculators.calculator_home') }}" class="text-blue-600 hover:underline">← Back to All Calculators</a>
+        </div>
+    </div>
+</div>
+
+<script>
+const tdsRates = {
+    salary: { section: '192', rate: 0, threshold: 0, note: 'TDS on salary is based on income tax slab rates' },
+    interest: { section: '194A', rate: 10, threshold: 40000, note: 'No TDS if interest ≤ ₹40,000 (₹50,000 for senior citizens)' },
+    dividend: { section: '194', rate: 10, threshold: 5000, note: 'No TDS if dividend ≤ ₹5,000' },
+    professional: { section: '194J', rate: 10, threshold: 30000, note: 'No TDS if fees ≤ ₹30,000 per year' },
+    contractor: { section: '194C', rate: 1, threshold: 30000, note: 'Rate is 2% for company. No TDS if ≤ ₹30,000 single payment' },
+    rent: { section: '194I', rate: 10, threshold: 240000, note: 'No TDS if rent ≤ ₹2,40,000 per year' },
+    commission: { section: '194H', rate: 5, threshold: 15000, note: 'No TDS if commission ≤ ₹15,000 per year' },
+    property: { section: '194IA', rate: 1, threshold: 5000000, note: 'TDS applicable on property sale ≥ ₹50 lakh' }
+};
+
+document.getElementById('tdsCalculatorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const paymentType = document.getElementById('paymentType').value;
+    const amount = parseFloat(document.getElementById('paymentAmount').value) || 0;
+    const payeeType = document.getElementById('payeeType').value;
+    const hasPan = document.getElementById('hasPan').checked;
+    
+    const config = tdsRates[paymentType];
+    let rate = config.rate;
+    
+    // Adjust rate for company contractors
+    if (paymentType === 'contractor' && payeeType === 'company') {
+        rate = 2;
+    }
+    
+    // Higher rate if no PAN
+    if (!hasPan && rate > 0) {
+        rate = 20;
+    }
+    
+    // Check threshold
+    let tds = 0;
+    if (amount > config.threshold || config.threshold === 0) {
+        tds = amount * (rate / 100);
+    }
+    
+    const netPayment = amount - tds;
+    
+    // Update UI
+    document.getElementById('displayAmount').textContent = '₹' + amount.toLocaleString('en-IN');
+    document.getElementById('displaySection').textContent = 'Section ' + config.section;
+    document.getElementById('displayRate').textContent = rate + '%';
+    document.getElementById('tdsAmount').textContent = '₹' + Math.round(tds).toLocaleString('en-IN');
+    document.getElementById('netPayment').textContent = '₹' + Math.round(netPayment).toLocaleString('en-IN');
+    document.getElementById('thresholdText').textContent = config.note;
+    
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('noResults').classList.add('hidden');
+});
+</script>
+{% endblock %}
