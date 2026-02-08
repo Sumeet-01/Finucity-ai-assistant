@@ -1,0 +1,154 @@
+/* ============================================================================
+   FINUCITY AI CHAT - PRO ENHANCEMENTS
+   Non-conflicting animation & micro-interaction layer
+   Loaded after chat.css - NO variable redefinitions
+   ============================================================================ */
+
+/* Focus ring animation on send button when enabled */
+.input-action-btn.send:not(:disabled) {
+    animation: sendPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes sendPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(251,160,2,0.25); }
+    50%      { box-shadow: 0 0 0 6px rgba(251,160,2,0); }
+}
+
+/* Shimmer on new-chat button */
+.btn-new-chat::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255,255,255,0.08) 50%,
+        transparent 70%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0%   { transform: translateX(-100%) rotate(0deg); }
+    100% { transform: translateX(100%) rotate(0deg); }
+}
+
+/* Stagger conversation items entrance */
+.conversation-item:nth-child(1)  { animation-delay: 0.02s; }
+.conversation-item:nth-child(2)  { animation-delay: 0.04s; }
+.conversation-item:nth-child(3)  { animation-delay: 0.06s; }
+.conversation-item:nth-child(4)  { animation-delay: 0.08s; }
+.conversation-item:nth-child(5)  { animation-delay: 0.10s; }
+.conversation-item:nth-child(6)  { animation-delay: 0.12s; }
+.conversation-item:nth-child(7)  { animation-delay: 0.14s; }
+.conversation-item:nth-child(8)  { animation-delay: 0.16s; }
+.conversation-item:nth-child(9)  { animation-delay: 0.18s; }
+.conversation-item:nth-child(10) { animation-delay: 0.20s; }
+
+/* Stagger message entrance */
+.message:nth-child(odd)  { animation-delay: 0.05s; }
+.message:nth-child(even) { animation-delay: 0.10s; }
+
+/* Glass effect on user message */
+.message.user .message-bubble::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.12) 0%,
+        transparent 60%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.message.user .message-bubble {
+    position: relative;
+}
+
+/* Subtle border glow on active conversation */
+.conversation-item.active {
+    box-shadow: inset 0 0 0 1px rgba(251,160,2,0.12),
+                0 0 12px rgba(251,160,2,0.04);
+}
+
+/* Smooth code block styling */
+.message-content pre {
+    position: relative;
+}
+
+.message-content pre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 4px 4px 0 0;
+    opacity: 0.6;
+}
+
+/* Active state animation for like/dislike */
+.message-action-btn.active {
+    animation: pop 0.3s var(--ease-spring);
+}
+
+@keyframes pop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Toast progress bar */
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.15;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    animation: toastProgress 3s linear forwards;
+}
+
+@keyframes toastProgress {
+    from { transform: scaleX(1); transform-origin: left; }
+    to   { transform: scaleX(0); transform-origin: left; }
+}
+
+.toast {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Smooth avatar hover */
+.user-avatar {
+    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+}
+
+.user-profile:hover .user-avatar {
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(251,160,2,0.2);
+}
+
+/* Keyboard shortcut badge */
+.toolbar-btn::after {
+    content: attr(data-shortcut);
+    font-size: 0.5625rem;
+    color: var(--text-tertiary);
+    opacity: 0;
+    margin-left: 4px;
+    transition: opacity 0.2s;
+}
+
+.toolbar-btn:hover::after {
+    opacity: 0.6;
+}

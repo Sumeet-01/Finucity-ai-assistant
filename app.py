@@ -5,13 +5,17 @@ Author: Sumeet Sangwan
 """
 
 import os
-from flask import Flask, render_template
+import logging
+from logging.handlers import RotatingFileHandler
+from flask import Flask, render_template, request, jsonify, g
 from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 from supabase import create_client
 import html
+import time
 
 # =====================================================================
 # ENVIRONMENT SETUP
@@ -48,10 +52,22 @@ app = Flask(__name__,
             template_folder='finucity/templates', 
             static_folder='finucity/static')
 
+# Core config
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+
+# Environment-aware security settings
+is_production = os.getenv('FLASK_ENV', 'development') == 'production'
+app.config['SESSION_COOKIE_SECURE'] = is_production
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_NAME'] = '__finucity_session'
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
+app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 hour CSRF token validity
+
+# CSRF Protection
+csrf = CSRFProtect(app)
+# Note: Blueprint exemptions are applied after blueprint registration below
 
 # =====================================================================
 # SECURITY: RATE LIMITING
@@ -64,7 +80,7 @@ limiter = Limiter(
 )
 
 # =====================================================================
-# SECURITY: INPUT SANITIZATION
+# SECURITY: INPUT SANITIZATION & HEADERS
 # =====================================================================
 def sanitize_input(text):
     """Sanitize user input to prevent XSS attacks"""
@@ -73,6 +89,38 @@ def sanitize_input(text):
     return text
 
 app.jinja_env.globals.update(sanitize=sanitize_input)
+
+@app.after_request
+def set_security_headers(response):
+    """Apply security headers to every response"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    if is_production:
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Remove server header
+    response.headers.pop('Server', None)
+    return response
+
+@app.before_request
+def before_request_logging():
+    """Log request timing and attach request ID"""
+    g.request_start_time = time.time()
+    g.request_id = os.urandom(8).hex()
+
+@app.after_request
+def after_request_logging(response):
+    """Log request duration for performance monitoring"""
+    if hasattr(g, 'request_start_time'):
+        duration = (time.time() - g.request_start_time) * 1000
+        if duration > 1000:  # Log slow requests (>1s)
+            app.logger.warning(
+                f"Slow request: {request.method} {request.path} "
+                f"took {duration:.0f}ms [rid={getattr(g, 'request_id', 'unknown')}]"
+            )
+    return response
 
 # =====================================================================
 # DATABASE INITIALIZATION
@@ -116,6 +164,11 @@ try:
     app.register_blueprint(api_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(ca_ecosystem_bp)
+    
+    # Exempt auth & chat blueprints from CSRF (they use token/session auth)
+    csrf.exempt(auth_bp)
+    csrf.exempt(chat_bp)
+    csrf.exempt(api_bp)
     
     print("✅ Core blueprints loaded")
     
@@ -189,6 +242,15 @@ def ratelimit_handler(error):
     """Handle rate limit errors"""
     return render_template('Errors/429.html'), 429
 
+from flask_wtf.csrf import CSRFError
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(error):
+    """Return JSON for CSRF errors on API requests instead of HTML"""
+    if request.is_json or request.headers.get('Accept', '').startswith('application/json'):
+        return jsonify({'success': False, 'error': 'CSRF token missing or invalid'}), 400
+    return render_template('Errors/403.html'), 400
+
 # =====================================================================
 # HEALTH CHECK
 # =====================================================================
@@ -204,44 +266,58 @@ def health_check():
 # =====================================================================
 # APPLICATION STARTUP
 # =====================================================================
+# =====================================================================
+# LOGGING SETUP
+# =====================================================================
+def setup_logging(app):
+    """Configure production-grade logging"""
+    log_level = logging.DEBUG if app.debug else logging.INFO
+    
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    console_handler.setFormatter(logging.Formatter(
+        '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+    ))
+    
+    # File handler (rotating)
+    os.makedirs('logs', exist_ok=True)
+    file_handler = RotatingFileHandler(
+        'logs/finucity.log',
+        maxBytes=10 * 1024 * 1024,  # 10MB
+        backupCount=5
+    )
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s [%(name)s:%(lineno)d] %(message)s'
+    ))
+    
+    app.logger.addHandler(console_handler)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(log_level)
+
+setup_logging(app)
+
+# =====================================================================
+# APPLICATION STARTUP
+# =====================================================================
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.getenv('FLASK_ENV', 'development') == 'development'
+    
     print("")
     print("=" * 70)
-    print("🚀 FINUCITY - AI-POWERED TAX & FINANCIAL PLATFORM")
+    print("  FINUCITY - AI-POWERED TAX & FINANCIAL PLATFORM")
     print("=" * 70)
-    print("")
-    print("💾 Database: Supabase (PostgreSQL)")
-    print("🤖 AI Provider: Groq (llama-3.1-8b-instant)")
-    print("✨ Features:")
-    print("   • Income Tax Filing (ITR)")
-    print("   • GST Registration & Filing")
-    print("   • Business Compliance")
-    print("   • Tax Planning & Advisory")
-    print("   • 10+ Financial Calculators")
-    print("   • AI-Powered Tax Intelligence")
-    print("   • Verified CA Network")
-    print("")
-    print("🌐 Server starting on http://localhost:5000")
-    print("📚 Admin Panel: http://localhost:5000/admin/dashboard")
-    print("🧮 Calculators: http://localhost:5000/calculators/")
-    print("💼 Services: http://localhost:5000/services/")
-    print("")
+    print(f"  Database: Supabase (PostgreSQL)")
+    print(f"  Environment: {'Development' if debug else 'Production'}")
+    print(f"  Server: http://localhost:{port}")
     print("=" * 70)
     print("")
     
-    # Run development server
     app.run(
         host='0.0.0.0',
-        port=5000,
-        debug=True,
-        use_reloader=True
+        port=port,
+        debug=debug,
+        use_reloader=debug
     )
-
-    print("")
-    print("🌐 Server running on: http://localhost:3000")
-    print("📡 Ready to accept connections...")
-    print("")
-    
-    port = int(os.environ.get('PORT', 3000))
-    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
-    app.run(host='0.0.0.0', port=port, debug=debug)

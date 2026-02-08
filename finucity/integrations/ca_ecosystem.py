@@ -45,7 +45,8 @@ def register_ca_ecosystem_routes(app):
         except Exception as e:
             app.logger.error(f"Error checking existing application: {e}")
         
-        return render_template('ca_application.html', current_year=2024)
+        from datetime import datetime
+        return render_template('ca_application.html', current_year=datetime.now().year)
     
     # Register CA application status route
     @app.route('/ca-application-status')
@@ -123,7 +124,7 @@ def initialize_ca_ecosystem(app):
         """Inject CA ecosystem variables into templates"""
         return {
             'ca_ecosystem_enabled': True,
-            'current_year': 2024
+            'current_year': __import__('datetime').datetime.now().year
         }
     
     # Add error handlers for CA ecosystem

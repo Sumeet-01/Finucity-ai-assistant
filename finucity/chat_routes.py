@@ -15,82 +15,40 @@ import requests
 
 from finucity.models import User
 from finucity.database import ChatService, UserService, get_supabase
-from finucity.ai import get_ai_response
+from finucity.ai import get_ai_response, detect_category
 
 # Create blueprint
 chat_bp = Blueprint('chat', __name__, url_prefix='/chat')
+
+# ===== HELPER FUNCTIONS =====
+
+def generate_conversation_title(message: str, category: str) -> str:
+    """Generate a conversation title from the first message"""
+    # Take first 50 characters of message as title
+    title = message[:50].strip()
+    if len(message) > 50:
+        title += "..."
+    return title or f"New {category.title()} Conversation"
 
 # ===== FALLBACK AI FUNCTIONALITY =====
 
 def get_fallback_response(question, category="general"):
     """Generate a relevant fallback response when main AI service is down"""
-    
-    try:
-        # Try direct API call first as a backup method
-        groq_api_key = os.getenv("GROQ_API_KEY")
-        if groq_api_key:
-            try:
-                print(f"[FALLBACK] Attempting direct GROQ API call for: {question[:30]}...")
-                
-                # Direct API call to Groq
-                api_url = "https://api.groq.com/openai/v1/chat/completions"
-                headers = {
-                    "Authorization": f"Bearer {groq_api_key}",
-                    "Content-Type": "application/json"
-                }
-                
-                payload = {
-                    "model": "llama-3.1-8b-instant",  # Use a reliable model
-                    "messages": [
-                        {"role": "system", "content": "You are Finucity AI, a financial advisor specializing in Indian tax laws, investments, and business finance. Provide accurate, concise advice."},
-                        {"role": "user", "content": question}
-                    ],
-                    "temperature": 0.7,
-                    "max_tokens": 800
-                }
-                
-                response = requests.post(
-                    api_url,
-                    headers=headers,
-                    json=payload,
-                    timeout=10
-                )
-                
-                if response.status_code == 200:
-                    result = response.json()
-                    ai_content = result['choices'][0]['message']['content']
-                    print("[FALLBACK] Direct API call successful")
-                    
-                    return {
-                        'success': True,
-                        'response': ai_content.strip(),
-                        'category': category,
-                        'confidence': 0.9,
-                        'disclaimer': "This financial advice is for informational purposes only. Please consult a professional for personalized guidance.",
-                        'follow_up_suggestions': []
-                    }
-                else:
-                    print(f"[FALLBACK] Direct API call failed: {response.status_code}")
-            except Exception as e:
-                print(f"[FALLBACK] Direct API call exception: {str(e)}")
-    except Exception as e:
-        print(f"[FALLBACK] Error in fallback API attempt: {str(e)}")
-    
-    # If direct API call fails, use pre-written responses
+    # Only use pre-written responses now
     print("[FALLBACK] Using pre-written response")
     
     # Common tax responses
     tax_responses = [
-        "Based on current tax regulations for AY 2025-26, Section 80C allows deductions up to ₹1,50,000 for investments in PPF, ELSS mutual funds, life insurance premiums, and other eligible instruments. For optimal tax savings, consider diversifying across these options based on your risk tolerance and financial goals.",
+        "Based on current tax regulations, Section 80C allows deductions up to ₹1,50,000 for investments in PPF, ELSS mutual funds, life insurance premiums, and other eligible instruments. For optimal tax savings, consider diversifying across these options based on your risk tolerance and financial goals.",
         
-        "For AY 2025-26, you can save taxes under Section 80C through:\n\n1. ELSS Mutual Funds: 3-year lock-in with potential for market returns\n2. PPF: 15-year tenure with tax-free interest (current rate ~7.1%)\n3. Tax-saving FDs: 5-year lock-in with guaranteed returns\n4. NPS: Additional deduction of ₹50,000 under Section 80CCD(1B)\n\nThe best approach is to allocate funds based on your risk appetite and liquidity needs."
+        "You can save taxes under Section 80C through:\n\n1. ELSS Mutual Funds: 3-year lock-in with potential for market returns\n2. PPF: 15-year tenure with tax-free interest (current rate ~7.1%)\n3. Tax-saving FDs: 5-year lock-in with guaranteed returns\n4. NPS: Additional deduction of ₹50,000 under Section 80CCD(1B)\n\nThe best approach is to allocate funds based on your risk appetite and liquidity needs."
     ]
     
     # Common investment responses
     investment_responses = [
         "For long-term wealth creation in India, consider building a portfolio with 60-70% allocation to equity (through index funds and diversified mutual funds), 20-30% to debt instruments for stability, and 5-10% to gold as a hedge against inflation. With current market conditions, systematic investment plans (SIPs) are recommended to average out market volatility.",
         
-        "A well-balanced investment portfolio for 2025 should include:\n\n1. Large-cap funds for stability (40%)\n2. Mid and small-cap funds for growth (30%)\n3. Debt funds for regular income and stability (20%)\n4. Gold and international funds for diversification (10%)\n\nConsider tax efficiency by using ELSS funds for equity exposure and debt funds with indexation benefits for long-term debt allocation."
+        "A well-balanced investment portfolio should include:\n\n1. Large-cap funds for stability (40%)\n2. Mid and small-cap funds for growth (30%)\n3. Debt funds for regular income and stability (20%)\n4. Gold and international funds for diversification (10%)\n\nConsider tax efficiency by using ELSS funds for equity exposure and debt funds with indexation benefits for long-term debt allocation."
     ]
     
     # Common GST responses
@@ -148,7 +106,7 @@ def get_fallback_response(question, category="general"):
 @login_required
 def chat_interface():
     """Serve the main chat interface"""
-    return render_template('chat.html', user=current_user)
+    return render_template('chat.html', user=current_user, conversation_id=None)
 
 @chat_bp.route('/conversation/<int:conversation_id>')
 @login_required
@@ -166,6 +124,7 @@ def view_conversation(conversation_id):
     
     return render_template('chat.html', 
                          conversation=conversation_data,
+                         conversation_id=conversation_id,
                          messages=messages_data,
                          user=current_user)
 
@@ -194,11 +153,29 @@ def chat_history():
             self.pages = (total + per_page - 1) // per_page
             self.has_prev = page > 1
             self.has_next = page < self.pages
+            self.prev_num = page - 1 if self.has_prev else None
+            self.next_num = page + 1 if self.has_next else None
     
     conversations = Pagination(conversations_page, page, per_page, len(all_conversations) if all_conversations else 0)
     
+    # Pre-compute stats for template
+    five_star_count = sum(1 for q in (all_conversations or []) if q.get('rating') == 5)
+    this_month_count = 0
+    if all_conversations:
+        from datetime import datetime as dt
+        now = dt.utcnow()
+        for q in all_conversations:
+            try:
+                created = q.get('created_at', '')
+                if created and created[:7] == now.strftime('%Y-%m'):
+                    this_month_count += 1
+            except Exception:
+                pass
+    
     return render_template('chat_history.html', 
                          conversations=conversations,
+                         five_star_count=five_star_count,
+                         this_month_count=this_month_count,
                          user=current_user,
                          datetime=datetime,
                          timedelta=timedelta)
@@ -213,6 +190,11 @@ def api_send_message():
     Handles both text and file uploads
     """
     try:
+        print("=" * 80)
+        print(f"[CHAT API] Request received from user: {current_user.id if current_user.is_authenticated else 'Not authenticated'}")
+        print(f"[CHAT API] Content-Type: {request.content_type}")
+        print(f"[CHAT API] Method: {request.method}")
+        
         # Get form data (handles both JSON and FormData)
         if request.content_type and 'application/json' in request.content_type:
             data = request.get_json()
@@ -220,19 +202,47 @@ def api_send_message():
             conversation_id = data.get('conversation_id')
             category = data.get('category', 'general')
             files = []
+            print(f"[CHAT API] Received JSON data - Message: '{message[:50]}...', Category: {category}")
         else:
             # Handle FormData (for file uploads)
             message = request.form.get('message', '').strip()
             conversation_id = request.form.get('conversation_id')
             category = request.form.get('category', 'general')
             files = request.files.getlist('files') if 'files' in request.files else []
+            print(f"[CHAT API] Received FormData - Message: '{message[:50]}...', Files: {len(files)}")
         
         # Validation
         if not message and not files:
+            print("[CHAT API] ERROR: No message or files provided")
             return jsonify({
                 'success': False,
                 'error': 'Message or files required'
             }), 400
+        
+        # Input sanitization — prevent XSS in stored messages
+        if message:
+            import html as html_module
+            # Sanitize for storage but preserve original for AI processing
+            message_sanitized = html_module.escape(message)
+            # Length validation
+            if len(message) > 10000:
+                return jsonify({
+                    'success': False,
+                    'error': 'Message too long (max 10,000 characters)'
+                }), 400
+        
+        # Auto-detect category from message content if 'general'
+        if category == 'general' and message:
+            category = detect_category(message)
+            if category != 'general':
+                print(f"[CHAT API] Auto-detected category: {category}")
+        
+        # Validate category against allowed values
+        allowed_categories = ['general', 'income_tax', 'tax', 'gst', 'investment', 'business', 'insurance']
+        if category not in allowed_categories:
+            category = 'general'
+        
+        print(f"[CHAT API] Validation passed. Processing message...")
         
         # Generate session ID if this is a new conversation
         if not conversation_id:
@@ -448,6 +458,72 @@ def api_get_conversation(conversation_id):
         
     except Exception as e:
         current_app.logger.error(f"Get conversation API error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@chat_bp.route('/api/conversation/<int:conversation_id>', methods=['DELETE'])
+@login_required
+def api_delete_conversation(conversation_id):
+    """Delete a specific conversation and all its messages"""
+    try:
+        # Get conversation to verify ownership
+        conversation = ChatService.get_query_by_id(conversation_id)
+        
+        if not conversation or conversation.get('user_id') != current_user.id:
+            return jsonify({
+                'success': False,
+                'error': 'Conversation not found or unauthorized'
+            }), 404
+        
+        # Delete all messages in the conversation
+        session_id = conversation.get('session_id')
+        if session_id:
+            success = ChatService.delete_by_session(session_id, current_user.id)
+            if success:
+                current_app.logger.info(f"Deleted conversation {conversation_id} (session {session_id}) for user {current_user.id}")
+                return jsonify({
+                    'success': True,
+                    'message': 'Conversation deleted successfully'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to delete conversation'
+                }), 500
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'No session ID found'
+            }), 400
+            
+    except Exception as e:
+        current_app.logger.error(f"Delete conversation API error: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@chat_bp.route('/api/clear-history', methods=['POST'])
+@login_required
+def api_clear_history():
+    """Clear all chat history for the current user"""
+    try:
+        sb = get_supabase()
+        sb.table('chat_queries').delete().eq('user_id', current_user.id).execute()
+        return jsonify({
+            'success': True,
+            'message': 'Chat history cleared successfully'
+        })
+    except Exception as e:
+        current_app.logger.error(f"Clear history API error: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to clear history'
+        }), 500
+
+@chat_bp.route('/api/conversation/<int:conversation_id>/rename', methods=['PUT'])
 @login_required
 def api_rename_conversation(conversation_id):
     """Rename a conversation"""
@@ -559,18 +635,3 @@ def get_user_recent_history(user_id, current_session_id, limit=5):
     except Exception as e:
         current_app.logger.warning(f"Error getting user history: {e}")
         return []
-    
-    # Truncate and add category prefix
-    category_prefixes = {
-        'income_tax': 'Tax: ',
-        'tax': 'Tax: ',
-        'gst': 'GST: ',
-        'investment': 'Investment: ',
-        'business': 'Business: ',
-        'insurance': 'Insurance: ',
-        'general': ''
-    }
-    
-    prefix = category_prefixes.get(category, '')
-    title = question[:47 - len(prefix)] + "..."
-    return prefix + title

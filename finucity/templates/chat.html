@@ -17,6 +17,7 @@
     
     <!-- Custom Styles -->
     <link href="{{ url_for('static', filename='css/chat.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/chat-pro.css') }}" rel="stylesheet">
     
     <!-- Meta Tags -->
     <meta name="description" content="Finucity AI - Your AI-powered Chartered Accountant for Indian taxes, investments, GST, and business finance.">
@@ -195,6 +196,11 @@
             <!-- Chat Header -->
             <header class="chat-header">
                 <div class="header-left">
+                    <!-- Mobile Sidebar Toggle -->
+                    <button class="btn-icon btn-sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar" aria-label="Toggle Sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
                     <!-- Home Button in Header (Desktop Primary) -->
                     <a href="{{ url_for('main.home') }}" class="btn-home-header" title="Back to Home">
                         <i class="fas fa-home"></i>
@@ -228,7 +234,7 @@
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div class="header-dropdown" id="optionsDropdown" style="display: none;">
+                        <div class="header-dropdown" id="optionsDropdown">
                             <div class="dropdown-header">Options</div>
                             
                             <a href="#" class="dropdown-item" id="settingsBtn">
@@ -286,15 +292,15 @@
                                 <h3>Tax Planning</h3>
                             </div>
                             <div class="suggestion-chips">
-                                <div class="suggestion-chip" data-suggestion="How can I save tax under Section 80C for AY 2025-26?">
+                                <div class="suggestion-chip" data-suggestion="How can I save tax under Section 80C for the current assessment year?">
                                     <i class="fas fa-lightbulb"></i>
                                     <span>Tax Saving under Section 80C</span>
                                 </div>
-                                <div class="suggestion-chip" data-suggestion="What is the income tax slab for FY 2025-26?">
+                                <div class="suggestion-chip" data-suggestion="What is the latest income tax slab for the current financial year?">
                                     <i class="fas fa-lightbulb"></i>
-                                    <span>Income Tax Slabs 2025-26</span>
+                                    <span>Latest Income Tax Slabs</span>
                                 </div>
-                                <div class="suggestion-chip" data-suggestion="How do I calculate capital gains tax for property sold in 2025?">
+                                <div class="suggestion-chip" data-suggestion="How do I calculate capital gains tax for property sold this year?">
                                     <i class="fas fa-lightbulb"></i>
                                     <span>Capital Gains Tax Calculation</span>
                                 </div>
@@ -308,7 +314,7 @@
                                 <h3>Investments</h3>
                             </div>
                             <div class="suggestion-chips">
-                                <div class="suggestion-chip" data-suggestion="What are the best investment options for beginners in 2025?">
+                                <div class="suggestion-chip" data-suggestion="What are the best investment options for beginners?">
                                     <i class="fas fa-lightbulb"></i>
                                     <span>Beginner Investment Options</span>
                                 </div>
@@ -372,9 +378,9 @@
                     <div class="popular-queries" data-aos="fade-up" data-aos-delay="500">
                         <h3>Popular Today <span class="hot-badge">Hot Topics</span></h3>
                         <div class="popular-queries-grid">
-                            <div class="popular-query" data-suggestion="What are the tax benefits of investing in NPS in 2025?">
+                            <div class="popular-query" data-suggestion="What are the tax benefits of investing in NPS in {{ current_year }}?">
                                 <i class="fas fa-fire"></i>
-                                <span>NPS Tax Benefits 2025</span>
+                                <span>NPS Tax Benefits {{ current_year }}</span>
                             </div>
                             <div class="popular-query" data-suggestion="How does the new crypto tax regulation work in India?">
                                 <i class="fas fa-fire"></i>
@@ -531,7 +537,7 @@
                             </div>
                             <h4>Annual Tax Planning</h4>
                         </div>
-                        <p>Help me create a tax saving plan for financial year 2025-26. My annual income is [amount], I have investments in [list investments], and my age is [age].</p>
+                        <p>Help me create a tax saving plan for the current financial year. My annual income is [amount], I have investments in [list investments], and my age is [age].</p>
                         <button class="btn btn-sm btn-primary use-template-btn">Use Template</button>
                     </div>
                     
@@ -595,7 +601,7 @@
         // App metadata
         const APP_VERSION = '2.1.0';
         const APP_NAME = 'Finucity AI';
-        const BUILD_DATE = '2025-11-12';
+        const BUILD_DATE = new Date().toISOString().slice(0, 10);
         const BUILD_BY = 'Sumeet-01';
         
         // Console branding
@@ -608,14 +614,8 @@
         console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #FBA002;');
     </script>
     
-    <!-- Debug Script -->
-    <script src="{{ url_for('static', filename='js/chat_debug.js') }}"></script>
-    
-    <!-- INSTANT FIX - Makes all buttons work immediately -->
-    <script src="{{ url_for('static', filename='js/chat_instant_fix.js') }}"></script>
-    
     <!-- Main Chat JavaScript -->
-    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}?v=2.3.1"></script>
     
     <!-- Loading Screen Failsafe -->
     <script>
@@ -628,22 +628,18 @@
     
     <!-- Dropdown Initialization Safety Script -->
     <script>
-        // Ensure all dropdowns are hidden on page load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔒 Initializing dropdown safety...');
+            // Sidebar toggle for mobile
+            var toggleBtn = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
             
-            const dropdowns = [
-                document.getElementById('optionsDropdown')
-            ];
-            
-            dropdowns.forEach(dropdown => {
-                if (dropdown) {
-                    dropdown.style.display = 'none';
-                    console.log('✅ Dropdown hidden:', dropdown.id);
-                }
-            });
-            
-            console.log('✅ All dropdowns initialized safely');
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function() {
+                    sidebar.classList.toggle('open');
+                    if (overlay) overlay.classList.toggle('show');
+                });
+            }
         });
     </script>
 </body>

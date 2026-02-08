@@ -65,11 +65,21 @@ class UserService:
     def get_by_id(user_id: str) -> Optional[Dict]:
         """Get user by ID"""
         try:
-            sb = get_supabase()
+            sb = supabase_db.get_client()
             result = sb.table('profiles').select('*').eq('id', user_id).limit(1).execute()
             return result.data[0] if result.data else None
         except Exception as e:
             current_app.logger.error(f"Error getting user by ID: {e}")
+            # Try reconnecting on connection error
+            try:
+                supabase_url = os.getenv('SUPABASE_URL')
+                supabase_service_key = os.getenv('SUPABASE_SERVICE_KEY')
+                if supabase_url and supabase_service_key:
+                    supabase_db.client = create_client(supabase_url, supabase_service_key)
+                    result = supabase_db.client.table('profiles').select('*').eq('id', user_id).limit(1).execute()
+                    return result.data[0] if result.data else None
+            except Exception as retry_error:
+                current_app.logger.error(f"Retry failed: {retry_error}")
             return None
     
     @staticmethod
@@ -157,6 +167,11 @@ class ChatService:
             return []
     
     @staticmethod
+    def get_user_queries(user_id: str, limit: int = 100) -> List[Dict]:
+        """Get user's queries (alias for get_user_history)"""
+        return ChatService.get_user_history(user_id, limit)
+    
+    @staticmethod
     def get_by_session(session_id: str) -> List[Dict]:
         """Get all messages in a session"""
         try:
@@ -195,7 +210,7 @@ class ChatService:
                 .select('*')\
                 .eq('session_id', session_id)\
                 .eq('user_id', user_id)\
-                .order('created_at', asc=True)\
+                .order('created_at', desc=False)\
                 .execute()
             return result.data if result.data else []
         except Exception as e:

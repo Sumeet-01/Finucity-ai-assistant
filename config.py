@@ -29,12 +29,13 @@ class Config:
     # No SQLAlchemy or local database configuration needed
     
     # ===== AI Configuration =====
-    GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-    if not GROQ_API_KEY:
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    if not GEMINI_API_KEY:
         raise RuntimeError(
-            "GROQ_API_KEY environment variable must be set."
+            "GEMINI_API_KEY environment variable must be set. "
+            "Get one free at https://aistudio.google.com/apikey"
         )
-    AI_MODEL_NAME = os.getenv('AI_MODEL_NAME', 'llama-3.1-8b-instant')
+    AI_MODEL_NAME = os.getenv('AI_MODEL_NAME', 'gemini-2.5-flash')
     AI_MAX_TOKENS = int(os.getenv('AI_MAX_TOKENS', '1500'))
     AI_TEMPERATURE = float(os.getenv('AI_TEMPERATURE', '0.7'))
     

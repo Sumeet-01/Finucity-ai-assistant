@@ -14,7 +14,7 @@ class TaxAI:
     """AI-powered tax intelligence and advisory"""
     
     def __init__(self, ai_provider):
-        """Initialize with existing AI provider (Groq)"""
+        """Initialize with existing AI provider (OpenAI-compatible GitHub endpoint)"""
         self.ai = ai_provider
         self.calculators = FinancialCalculators()
         self.tax_planner = TaxPlanningService()

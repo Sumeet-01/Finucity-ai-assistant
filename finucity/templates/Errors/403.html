@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied | Finucity{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <div class="error-code">403</div>
+        <h1>Access Denied</h1>
+        <p>You don't have permission to access this page.</p>
+        <p>If you believe this is an error, please contact support.</p>
+        
+        <div class="error-suggestions">
+            <h3>Here are some helpful links:</h3>
+            <div class="suggestions-grid">
+                <a href="{{ url_for('main.home') }}" class="suggestion-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home Page</span>
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="suggestion-link">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

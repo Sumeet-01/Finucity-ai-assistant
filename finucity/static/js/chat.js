@@ -7,12 +7,65 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Chat.js DOMContentLoaded event fired');
+    
+    // --- CATEGORY DETECTION ---
+    const CATEGORY_KEYWORDS = {
+        gst: ['gst', 'goods and services tax', 'gstr', 'input tax credit', 'itc', 'e-way bill',
+              'hsn', 'sac code', 'reverse charge', 'composition scheme', 'gst registration',
+              'gst return', 'gst filing', 'cgst', 'sgst', 'igst', 'tax invoice'],
+        income_tax: ['income tax', 'itr', 'section 80', 'tax return', 'tds', 'advance tax',
+                     'tax deduction', 'tax exemption', 'hra', 'standard deduction', 'tax slab',
+                     'tax regime', 'old regime', 'new regime', 'form 16', 'form 26as',
+                     'capital gains', 'ltcg', 'stcg', 'tax saving', '80c', '80d', '80e',
+                     'pan card', 'assessment year', 'financial year', 'refund'],
+        investment: ['invest', 'mutual fund', 'sip', 'portfolio', 'stock', 'share', 'nifty',
+                     'sensex', 'equity', 'debt fund', 'elss', 'ppf', 'nps', 'fd', 'returns',
+                     'fixed deposit', 'recurring deposit', 'bonds', 'etf', 'index fund',
+                     'large cap', 'mid cap', 'small cap', 'dividend', 'wealth', 'gold'],
+        business: ['business', 'startup', 'company', 'entrepreneur', 'llp', 'partnership',
+                   'proprietorship', 'private limited', 'msme', 'udyam', 'compliance',
+                   'incorporation', 'trade license', 'mudra loan', 'business loan',
+                   'working capital', 'epf', 'esi'],
+        insurance: ['insurance', 'life insurance', 'health insurance', 'term plan', 'ulip',
+                    'mediclaim', 'premium', 'claim', 'nominee', 'endowment', 'lic', 'policy']
+    };
+    
+    function detectCategory(message) {
+        const msgLower = message.toLowerCase();
+        let bestCat = 'general';
+        let bestScore = 0;
+        for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+            const score = keywords.filter(kw => msgLower.includes(kw)).length;
+            if (score > bestScore) {
+                bestScore = score;
+                bestCat = cat;
+            }
+        }
+        return bestCat;
+    }
+    
     // --- STATE MANAGEMENT ---
-    let currentConversationId = initialConversationId || null;
+    let currentConversationId = (typeof initialConversationId !== 'undefined' && initialConversationId) ? initialConversationId : null;
     let isLoading = false;
     let conversations = [];
     let currentTheme = localStorage.getItem('finucity-theme') || 'finucity';
     let isInitialLoad = true;
+    
+    // Make global variables accessible in this scope
+    const _currentUser = typeof currentUser !== 'undefined' ? currentUser : { id: null, first_name: 'Guest', full_name: 'Guest User' };
+    const _currentUserId = typeof currentUserId !== 'undefined' ? currentUserId : null;
+    const _isAuthenticated = typeof isAuthenticated !== 'undefined' ? isAuthenticated : false;
+    
+    console.log('📊 Initial State:', {
+        currentConversationId,
+        isLoading,
+        currentTheme,
+        isInitialLoad,
+        isAuthenticated: _isAuthenticated,
+        currentUserId: _currentUserId,
+        currentUser: _currentUser
+    });
     
     // Theme configurations
     const themes = {
@@ -22,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // --- DOM ELEMENTS ---
+    console.log('🔍 Finding DOM elements...');
     const elements = {
         body: document.body,
         appContainer: document.querySelector('.app-container'),
@@ -75,11 +129,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Toast Container
         toastContainer: document.getElementById('toastContainer')
     };
+    
+    console.log('✅ DOM Elements found:', {
+        chatForm: !!elements.chatForm,
+        messageInput: !!elements.messageInput,
+        sendButton: !!elements.sendButton,
+        messagesContainer: !!elements.messagesContainer
+    });
 
     // --- API FUNCTIONS ---
     const api = {
         async sendMessage(message, conversationId = null) {
+            console.log('🌐 API.sendMessage called');
+            console.log('  - Message:', message);
+            console.log('  - Conversation ID:', conversationId);
             try {
+                console.log('📡 Sending POST request to /chat/api/send-message');
                 const response = await fetch('/chat/api/send-message', {
                     method: 'POST',
                     headers: {
@@ -88,18 +153,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         message: message,
                         conversation_id: conversationId,
-                        category: 'general'
+                        category: detectCategory(message)
                     })
                 });
     
+                console.log('📥 Response status:', response.status);
+                console.log('📥 Response OK:', response.ok);
+                
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error('❌ API Error:', errorData);
                     throw new Error(errorData.error || 'Network error');
                 }
     
-                return await response.json();
+                const result = await response.json();
+                console.log('✅ API Success:', result);
+                return result;
             } catch (error) {
-                console.error('Send message error:', error);
+                console.error('❌❌ Send message API error:', error);
+                console.error('❌❌ Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                });
                 throw error;
             }
         },
@@ -154,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Generate avatar content (letter or icon)
             let avatarContent = role === 'user' 
-                ? (currentUser && currentUser.first_name ? currentUser.first_name[0].toUpperCase() : 'U')
+                ? (_currentUser && _currentUser.first_name ? _currentUser.first_name[0].toUpperCase() : 'U')
                 : 'A';
             
             // Use marked for assistant messages, plain text for user messages
@@ -281,7 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         scrollToBottom() {
-            elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
+            if (elements.messagesContainer) {
+                elements.messagesContainer.scrollTo({
+                    top: elements.messagesContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         },
 
         updateChatTitle(title, subtitle = '') {
@@ -527,9 +608,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CORE FUNCTIONS ---
     async function sendMessage(messageText) {
-        if (!messageText.trim() || isLoading) return;
+        console.log('📤 sendMessage called with:', messageText);
+        if (!messageText.trim() || isLoading) {
+            console.log('❌ Message rejected - empty or loading');
+            return;
+        }
         
         try {
+            console.log('✅ Starting message send process...');
             // Add user message to UI
             ui.addMessage('user', messageText);
             ui.showTypingIndicator();
@@ -541,12 +627,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 autoResizeTextarea();
             }
             
+            console.log('📡 Calling API with conversation ID:', currentConversationId);
             // Send message to API
             const response = await api.sendMessage(messageText, currentConversationId);
+            console.log('📥 API Response received:', response);
             
             ui.removeTypingIndicator();
 
             if (response.success) {
+                console.log('✅ Success! Adding AI response to UI');
                 // Add AI response
                 ui.addMessage('assistant', response.response, {
                     disclaimer: response.disclaimer
@@ -793,9 +882,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form submission
     elements.chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('🔥 Form submitted!');
         const messageText = elements.messageInput.value.trim();
+        console.log('📝 Message text:', messageText);
+        console.log('🔒 isLoading:', isLoading);
         if (messageText && !isLoading) {
+            console.log('✅ Calling sendMessage...');
             await sendMessage(messageText);
+        } else {
+            console.log('❌ Message not sent - conditions not met');
         }
     });
 
@@ -904,21 +999,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Toggle dropdown on button click
         elements.optionsMenuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            
-            // Toggle this dropdown
             const isShowing = elements.optionsDropdown.classList.contains('show');
-            
-            if (isShowing) {
-                elements.optionsDropdown.classList.remove('show');
-                elements.optionsDropdown.style.display = 'none';
-            } else {
-                elements.optionsDropdown.style.display = 'block';
-                // Force reflow
-                elements.optionsDropdown.offsetHeight;
-                elements.optionsDropdown.classList.add('show');
-            }
-            
-            console.log('Options dropdown', isShowing ? 'closed' : 'opened');
+            elements.optionsDropdown.classList.toggle('show', !isShowing);
         });
         
         // Close dropdown when clicking outside
@@ -927,8 +1009,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 !elements.optionsMenuBtn.contains(e.target) &&
                 !elements.optionsDropdown.contains(e.target)) {
                 elements.optionsDropdown.classList.remove('show');
-                elements.optionsDropdown.style.display = 'none';
-                console.log('Options dropdown closed (click outside)');
             }
         });
         
@@ -942,7 +1022,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Close the dropdown
                 elements.optionsDropdown.classList.remove('show');
-                elements.optionsDropdown.style.display = 'none';
                 
                 // Handle the action based on the item clicked
                 switch(itemId) {
@@ -1354,8 +1433,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         console.log('✅ Finucity Chat initialized successfully');
         console.log('Current theme:', currentTheme);
-        console.log('Is authenticated:', isAuthenticated);
-        console.log('Initial conversation ID:', initialConversationId);
+        console.log('Is authenticated:', _isAuthenticated);
+        console.log('Initial conversation ID:', currentConversationId);
         
         // Apply saved theme
         applyTheme(currentTheme);
@@ -1375,18 +1454,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // Check if user is authenticated
-        if (!isAuthenticated) {
-            ui.addMessage('assistant', 'Please log in to use the chat feature. <a href="/auth/login">Click here to login</a>');
-            return;
-        }
+        // User authenticated - load chat normally
+        console.log('✅ User authenticated, loading chat...');
 
         // Load conversations
         await loadConversations();
 
         // If there's an initial conversation ID, load it
-        if (initialConversationId) {
-            await loadConversation(parseInt(initialConversationId));
+        if (currentConversationId) {
+            await loadConversation(parseInt(currentConversationId));
         }
 
         // Focus on input
@@ -1452,7 +1528,6 @@ window.debugFinucity = {
         
         if (btn && dropdown) {
             dropdown.classList.toggle('show');
-            dropdown.style.display = dropdown.classList.contains('show') ? 'block' : 'none';
             console.log('Dropdown toggled. Is visible:', dropdown.classList.contains('show'));
         }
     },

@@ -281,7 +281,7 @@ def calculate_income_tax():
                     'calculator_type': 'income_tax',
                     'input_data': data,
                     'output_data': result,
-                    'financial_year': '2024-25'
+                    'financial_year': f"{datetime.now().year}-{str(datetime.now().year + 1)[-2:]}"
                 }).execute()
             except:
                 pass  # Don't fail if history save fails

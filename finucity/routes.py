@@ -15,14 +15,8 @@ import html
 from .models import User
 from .database import UserService, ChatService, FeedbackService, get_supabase
 
-# Dummy limiter decorator (rate limiting handled at app level)
-class DummyLimiter:
-    def limit(self, *args, **kwargs):
-        def decorator(f):
-            return f
-        return decorator
-
-limiter = DummyLimiter()
+# Rate limiting is handled at app level via flask-limiter
+# Individual route limits can be applied via the app's limiter instance
 
 try:
     from .ai import get_ai_response
@@ -248,9 +242,8 @@ def about():
     """Renders the about page."""
     try:
         return render_template('about.html')
-    except:
+    except Exception:
         return render_template('Errors/404.html'), 404
-    return render_template('about.html')
 
 
 @main_bp. route('/faq', endpoint='faq')
@@ -258,7 +251,7 @@ def faq():
     """Renders the FAQ page."""
     try:
         return render_template('faq.html')
-    except:
+    except Exception:
         return render_template('Errors/404.html'), 404
 
 
@@ -267,10 +260,10 @@ def security():
     """Renders the security information page."""
     try:
         return render_template('Support/security.html')
-    except: 
+    except Exception: 
         try:
             return render_template('security.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -279,10 +272,10 @@ def contact():
     """Renders the contact page."""
     try:
         return render_template('contact.html')
-    except:
+    except Exception:
         try:
             return render_template('Support/contact.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -291,7 +284,7 @@ def pricing():
     """Renders the pricing page."""
     try:
         return render_template('pricing.html')
-    except:
+    except Exception:
         return render_template('Errors/404.html'), 404
 
 
@@ -300,10 +293,10 @@ def careers():
     """Renders the careers page."""
     try:
         return render_template('careers.html')
-    except:
+    except Exception:
         try:
             return render_template('Support/careers.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -314,10 +307,10 @@ def tax_planning():
     """Renders the tax planning page."""
     try:
         return render_template('financial-services/tax-planning.html')
-    except:
+    except Exception:
         try:
             return render_template('tax_planning.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -326,10 +319,10 @@ def investment_advisory():
     """Renders the investment advisory page."""
     try:
         return render_template('financial-services/investment-advisory.html')
-    except:
+    except Exception:
         try:
             return render_template('investment_advisory.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -338,10 +331,10 @@ def gst_compliance():
     """Renders the GST compliance page."""
     try:
         return render_template('financial-services/gst-compliance.html')
-    except:
+    except Exception:
         try:
             return render_template('gst_compliance.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -350,10 +343,10 @@ def business_finance():
     """Renders the business finance page."""
     try:
         return render_template('financial-services/bussiness-finance.html')
-    except:
+    except Exception:
         try: 
             return render_template('bussiness_finance.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -362,10 +355,10 @@ def insurance_planning():
     """Renders the insurance planning page."""
     try:
         return render_template('financial-services/insurance-planning.html')
-    except:
+    except Exception:
         try:
             return render_template('insurance_planning.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -374,10 +367,10 @@ def audit_services():
     """Renders the audit services page."""
     try:
         return render_template('financial-services/audit-services.html')
-    except:
+    except Exception:
         try:
             return render_template('audit_services.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -386,10 +379,10 @@ def startup_advisory():
     """Renders the startup advisory page."""
     try:
         return render_template('financial-services/startup-advisory.html')
-    except:
+    except Exception:
         try:
             return render_template('startup_advisory.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -398,10 +391,10 @@ def nri_taxation():
     """Renders the NRI taxation page."""
     try:
         return render_template('financial-services/nri-taxation.html')
-    except:
+    except Exception:
         try:
             return render_template('nri_taxation.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -410,10 +403,10 @@ def company_registration():
     """Renders the company registration page."""
     try:
         return render_template('financial-services/company-registration.html')
-    except:
+    except Exception:
         try:
             return render_template('company_registration.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -428,7 +421,7 @@ def financial_blog():
         print(f"Error loading financial blog: {e}")
         try:
             return render_template('financial_blog.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -441,7 +434,7 @@ def learning_centre():
         print(f"Error loading learning center: {e}")
         try:
             return render_template('learning_centre.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -454,7 +447,7 @@ def tax_calculator():
         print(f"Error loading tax calculator: {e}")
         try: 
             return render_template('tax_calculator.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -467,7 +460,7 @@ def investment_tools():
         print(f"Error loading investment tools:  {e}")
         try:
             return render_template('investment_tools.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -480,7 +473,7 @@ def retirement_planning():
         print(f"Error loading retirement planning: {e}")
         try: 
             return render_template('retirement_planning.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -489,10 +482,10 @@ def gst_calculator():
     """Renders the GST calculator page."""
     try:
         return render_template('Resources/gst_calculator.html')
-    except: 
+    except Exception: 
         try: 
             return render_template('gst_calculator.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -501,10 +494,10 @@ def emi_calculator():
     """Renders the EMI calculator page."""
     try:
         return render_template('Resources/emi_calculator.html')
-    except:
+    except Exception:
         try:
             return render_template('emi_calculator.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -513,10 +506,10 @@ def sip_calculator():
     """Renders the SIP calculator page."""
     try:
         return render_template('Resources/sip_calculator.html')
-    except:
+    except Exception:
         try:
             return render_template('sip_calculator.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -525,10 +518,10 @@ def financial_glossary():
     """Renders the financial glossary page."""
     try:
         return render_template('Resources/financial_glossary.html')
-    except: 
+    except Exception: 
         try: 
             return render_template('financial_glossary.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -539,10 +532,10 @@ def privacy_policy():
     """Renders the privacy policy page."""
     try: 
         return render_template('Support/privacy_policy.html')
-    except:
+    except Exception:
         try:
             return render_template('privacy_policy.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -551,10 +544,10 @@ def terms_of_service():
     """Renders the terms of service page."""
     try:
         return render_template('Support/terms-of-services.html')
-    except:
+    except Exception:
         try:
             return render_template('terms_of_service.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -563,10 +556,10 @@ def refund_policy():
     """Renders the refund policy page."""
     try:
         return render_template('Support/refund_policy.html')
-    except:
+    except Exception:
         try:
             return render_template('refund_policy.html')
-        except:
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
@@ -575,10 +568,10 @@ def help_center():
     """Renders the help center page."""
     try: 
         return render_template('Support/help_center.html')
-    except:
+    except Exception:
         try:
             return render_template('help_center.html')
-        except: 
+        except Exception: 
             return render_template('Errors/404.html'), 404
 
 
@@ -632,25 +625,6 @@ def chat():
     return render_template('chat.html', user=current_user)
 
 
-@main_bp.route('/chat/history', endpoint='chat_history')
-@login_required
-def chat_history():
-    """Get user's chat history."""
-    try:
-        # Get chat history from Supabase
-        queries = ChatService.get_user_history(current_user.id, limit=50)
-        history = [{
-            'id': q.get('id'),
-            'query': q.get('question'),
-            'response': q.get('response'),
-            'created_at': q.get('created_at')
-        } for q in queries] if queries else []
-        return jsonify({'success': True, 'data': history})
-    except Exception as e: 
-        print(f"Chat history error: {e}")
-        return jsonify({'success': False, 'error': 'Failed to fetch chat history'}), 500
-
-
 # ==================== CA APPLICATION ROUTES ====================
 
 @main_bp.route('/ca-application', endpoint='ca_application')
@@ -673,7 +647,7 @@ def ca_application():
         print(f"Error checking existing application: {e}")
         # Continue to application form if there's an error
     
-    return render_template('ca_application.html', current_year=2026)
+    return render_template('ca_application.html', current_year=datetime.now().year)
 
 
 @main_bp.route('/ca-application-status', endpoint='ca_application_status')
@@ -1310,7 +1284,7 @@ def supabase_login():
     try:
         body_data = request.get_json() or {}
         requested_role = body_data.get('role', 'user')
-    except: 
+    except Exception: 
         requested_role = 'user'
 
     # Get role from claims if available
@@ -2568,7 +2542,6 @@ def get_ca_documents():
 
 @api_bp.route('/ca/upload-document', methods=['POST'])
 @login_required
-@limiter.limit("10 per minute")
 def upload_ca_document():
     """Upload a document to CA storage."""
     if not check_ca_access():
@@ -2722,7 +2695,6 @@ def get_consultation_messages(consultation_id):
 
 @api_bp.route('/ca/send-message', methods=['POST'])
 @login_required
-@limiter.limit("30 per minute")
 def send_ca_message():
     """Send a message in a consultation."""
     if not check_ca_access():
@@ -3222,7 +3194,7 @@ def get_user_consultations():
             'id': '2',
             'ca_name': 'CA Priya Mehta',
             'ca_id':  2,
-            'service': 'Tax Planning FY 2024-25',
+            'service': f'Tax Planning FY {datetime.now().year}-{str(datetime.now().year + 1)[-2:]}',
             'status': 'waiting',
             'created_at': datetime.utcnow().isoformat(),
             'last_activity':  datetime.utcnow().isoformat()
@@ -3369,7 +3341,7 @@ def get_documents():
     documents = [
         {
             'id': '1',
-            'name':  'Form 16 - FY 2023-24.pdf',
+            'name':  f'Form 16 - FY {datetime.now().year - 1}-{str(datetime.now().year)[-2:]}.pdf',
             'category': 'Tax Documents',
             'size': '1.2 MB',
             'uploaded_at': datetime. utcnow().isoformat(),
@@ -3377,7 +3349,7 @@ def get_documents():
         },
         {
             'id': '2',
-            'name': 'GSTR-1 November 2024.pdf',
+            'name': f'GSTR-1 {datetime.now().strftime("%B %Y")}.pdf',
             'category': 'GST Files',
             'size': '856 KB',
             'uploaded_at':  datetime.utcnow().isoformat(),
@@ -3812,7 +3784,7 @@ def page_not_found(e):
     """Handle 404 errors."""
     try:
         return render_template('Errors/404.html'), 404
-    except:
+    except Exception:
         return """
         <html>
             <head><title>404 - Page Not Found</title></head>
@@ -3833,7 +3805,7 @@ def internal_server_error(e):
     """Handle 500 errors."""
     try:
         return render_template('Errors/500.html'), 500
-    except:
+    except Exception:
         return """
         <html>
             <head><title>500 - Server Error</title></head>
@@ -3861,7 +3833,7 @@ def forbidden(e):
     
     try:
         return render_template('Errors/403.html'), 403
-    except:
+    except Exception:
         return """
         <html>
             <head><title>403 - Access Forbidden</title></head>
@@ -3889,7 +3861,7 @@ def rate_limit_exceeded(e):
     
     try:
         return render_template('Errors/429.html'), 429
-    except:
+    except Exception:
         return """
         <html>
             <head><title>429 - Too Many Requests</title></head>
@@ -4023,7 +3995,7 @@ def format_currency(amount):
             return f"₹{amount / 100000:.2f} L"
         else:
             return f"₹{amount: ,.2f}"
-    except:
+    except Exception:
         return f"₹{amount}"
 
 
@@ -4033,7 +4005,7 @@ def format_date(date_obj):
         if isinstance(date_obj, str):
             date_obj = datetime.fromisoformat(date_obj. replace('Z', '+00:00'))
         return date_obj.strftime('%B %d, %Y')
-    except:
+    except Exception:
         return str(date_obj)
 
 
@@ -4043,7 +4015,7 @@ def format_datetime(date_obj):
         if isinstance(date_obj, str):
             date_obj = datetime. fromisoformat(date_obj.replace('Z', '+00:00'))
         return date_obj. strftime('%B %d, %Y at %I:%M %p')
-    except:
+    except Exception:
         return str(date_obj)
 
 
@@ -4078,7 +4050,7 @@ def time_ago(date_obj):
         else:
             years = int(seconds / 31536000)
             return f'{years} year{"s" if years > 1 else ""} ago'
-    except: 
+    except Exception: 
         return str(date_obj)
 
 
@@ -4159,7 +4131,7 @@ def file_size_filter(size_bytes):
             return f"{size_bytes / (1024 * 1024):.1f} MB"
         else: 
             return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
-    except:
+    except Exception:
         return str(size_bytes)
 
 
@@ -4240,5 +4212,7 @@ def utility_processor():
     return dict(
         get_status_color=get_status_color,
         get_priority_color=get_priority_color,
-        get_file_icon=get_file_icon
+        get_file_icon=get_file_icon,
+        current_year=datetime.now().year,
+        current_date=datetime.now().strftime('%B %d, %Y')
     )
