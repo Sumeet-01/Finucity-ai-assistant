@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us | Finucity{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #0f1410 0%, #1a231c 100%);
+        padding: 5rem 0 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(251,160,2,0.08) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    .contact-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #f8f9fa;
+        margin-bottom: 0.75rem;
+    }
+    .contact-hero p {
+        color: #9aa899;
+        font-size: 1.1rem;
+        max-width: 540px;
+        margin: 0 auto;
+    }
+    .contact-section {
+        padding: 4rem 0 5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 3rem;
+        align-items: start;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+    .info-card {
+        background: rgba(26,35,28,0.5);
+        border: 1px solid rgba(251,160,2,0.1);
+        border-radius: 14px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: border-color 0.3s;
+    }
+    .info-card:hover { border-color: rgba(251,160,2,0.3); }
+    .info-card .icon {
+        width: 44px; height: 44px;
+        background: rgba(251,160,2,0.1);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fba002; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .info-card h3 { color: #f8f9fa; font-size: 1rem; font-weight: 600; margin: 0 0 0.3rem; }
+    .info-card p { color: #9aa899; font-size: 0.9rem; margin: 0; line-height: 1.5; }
+    .contact-form-card {
+        background: rgba(26,35,28,0.5);
+        border: 1px solid rgba(251,160,2,0.12);
+        border-radius: 16px;
+        padding: 2rem;
+    }
+    .contact-form-card h2 {
+        color: #f8f9fa; font-size: 1.4rem; font-weight: 700; margin: 0 0 1.5rem;
+    }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label {
+        display: block; color: #b8c7b7; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%; padding: 0.75rem 1rem;
+        background: rgba(15,20,16,0.6);
+        border: 1px solid rgba(251,160,2,0.15);
+        border-radius: 10px;
+        color: #f8f9fa; font-size: 0.95rem;
+        font-family: inherit;
+        transition: border-color 0.3s;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        outline: none; border-color: #fba002;
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .submit-btn {
+        width: 100%; padding: 0.85rem;
+        background: linear-gradient(135deg, #fba002, #d88c00);
+        border: none; border-radius: 10px;
+        color: #0f1410; font-weight: 700; font-size: 1rem;
+        cursor: pointer; transition: all 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .form-feedback {
+        margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 8px;
+        font-size: 0.9rem; display: none;
+    }
+    .form-feedback.success { display: block; background: rgba(76,175,80,0.1); color: #4caf50; border: 1px solid rgba(76,175,80,0.2); }
+    .form-feedback.error { display: block; background: rgba(244,67,54,0.1); color: #f44336; border: 1px solid rgba(244,67,54,0.2); }
+    @media (max-width: 768px) {
+        .contact-grid { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+        .contact-hero h1 { font-size: 2rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <div class="container">
+        <h1>Get in Touch</h1>
+        <p>Have questions about our services? We're here to help you with all your financial needs.</p>
+    </div>
+</section>
+
+<section class="contact-section">
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h3>Email Us</h3>
+                        <p>support@finucity.com<br>We respond within 24 hours</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <h3>Business Hours</h3>
+                        <p>Monday – Saturday<br>9:00 AM – 6:00 PM IST</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-robot"></i></div>
+                    <div>
+                        <h3>AI Chat Support</h3>
+                        <p>Get instant answers 24/7 from our AI financial assistant</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <h3>Location</h3>
+                        <p>India<br>Serving clients nationwide</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-card">
+                <h2>Send us a Message</h2>
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactName">Full Name</label>
+                            <input type="text" id="contactName" name="name" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" name="email" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Subject</label>
+                        <select id="contactSubject" name="subject">
+                            <option value="general">General Inquiry</option>
+                            <option value="tax">Tax Services</option>
+                            <option value="gst">GST Services</option>
+                            <option value="ca">CA Services</option>
+                            <option value="billing">Billing & Payments</option>
+                            <option value="technical">Technical Support</option>
+                            <option value="feedback">Feedback</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" name="message" placeholder="How can we help you?" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="contactSubmitBtn">
+                        <span>Send Message</span> <i class="fas fa-paper-plane"></i>
+                    </button>
+                    <div class="form-feedback" id="contactFeedback"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('contactSubmitBtn');
+    const feedback = document.getElementById('contactFeedback');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    btn.disabled = true;
+    feedback.className = 'form-feedback'; feedback.style.display = 'none';
+
+    try {
+        const res = await fetch('{{ url_for("api.contact_form") }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: document.getElementById('contactName').value.trim(),
+                email: document.getElementById('contactEmail').value.trim(),
+                subject: document.getElementById('contactSubject').value,
+                message: document.getElementById('contactMessage').value.trim()
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            feedback.className = 'form-feedback success';
+            feedback.textContent = data.message || 'Message sent successfully!';
+            feedback.style.display = 'block';
+            this.reset();
+        } else {
+            throw new Error(data.error || 'Something went wrong');
+        }
+    } catch (err) {
+        feedback.className = 'form-feedback error';
+        feedback.textContent = err.message;
+        feedback.style.display = 'block';
+    } finally {
+        btn.innerHTML = original;
+        btn.disabled = false;
+    }
+});
+</script>
+{% endblock %}

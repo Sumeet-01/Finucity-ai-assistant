@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}NRI Taxation Services | Finucity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>🌍 NRI Taxation Services</h1>
+        <p>Comprehensive tax solutions for Non-Resident Indians</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-content">
+        <section class="feature-overview">
+            <h2>Tax Solutions for NRIs</h2>
+            <p>Navigate the complexities of Indian taxation as a Non-Resident Indian. Our expert guidance covers income earned in India, capital gains on Indian assets, DTAA benefits, and tax filing obligations for NRIs.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>🏦 Income from India</h3>
+                    <p>Manage tax on rental income, interest, dividends, and other India-sourced earnings efficiently.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>📈 Capital Gains</h3>
+                    <p>Expert handling of taxes on sale of property, mutual funds, and shares in India.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>🌐 DTAA Benefits</h3>
+                    <p>Leverage Double Taxation Avoidance Agreements to prevent paying tax twice on the same income.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tax-saving-section">
+            <h2>🛡️ NRI Tax Obligations</h2>
+            <div class="tax-instruments-grid">
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>Residential Status</h3>
+                        <span class="deduction-badge">Critical Factor</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>Determine NRI / RNOR / Resident status</li>
+                            <li>182-day / 60-day stay rules</li>
+                            <li>Impact on taxable income in India</li>
+                            <li>Deemed resident provisions</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>TDS for NRIs</h3>
+                        <span class="deduction-badge">Higher Rates Apply</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>TDS on property sale — 20% + surcharge</li>
+                            <li>TDS on rental income — 30%</li>
+                            <li>TDS on FD interest — 30%</li>
+                            <li>Lower TDS certificate (Section 197)</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="instrument-card">
+                    <div class="instrument-header">
+                        <h3>Repatriation</h3>
+                        <span class="deduction-badge">RBI Rules</span>
+                    </div>
+                    <div class="instrument-content">
+                        <ul class="instrument-list">
+                            <li>NRO to NRE account transfers</li>
+                            <li>$1 million annual repatriation limit</li>
+                            <li>Form 15CA / 15CB requirements</li>
+                            <li>Tax clearance certificates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-box">
+                <h2>Need NRI Tax Assistance?</h2>
+                <p>Our AI assistant can answer your NRI taxation questions instantly, or connect with a verified CA specializing in NRI tax matters.</p>
+                <div class="cta-buttons">
+                    <a href="{{ url_for('chat.chat_interface') }}" class="cta-primary">Ask AI Assistant</a>
+                    <a href="{{ url_for('main.contact') }}" class="cta-secondary">Connect with CA</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

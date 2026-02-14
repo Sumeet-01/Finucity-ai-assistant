@@ -1,908 +1,567 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finucity Footer</title>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ========================================
-           RESET & CORE STYLES
-        ======================================== */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505; /* Preview background */
-            margin: 0;
-            padding-bottom: 50px; /* Space for demo */
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        /* Container utility to match your likely bootstrap/custom container */
-        .container {
-            width: 100%;
-            padding-right: 15px;
-            padding-left: 15px;
-            margin-right: auto;
-            margin-left: auto;
-            max-width: 1400px;
-        }
-
-        /* ========================================
-           PREMIUM FINTECH FOOTER STYLES
-           Dark Glassmorphism Theme
-        ======================================== */
-
-        .fintech-footer {
-            margin-top: 0;
-            position: relative;
-            overflow: hidden;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        .footer-container {
-            background: linear-gradient(135deg, #0f1410 0%, #1a231c 50%, #0d1b11 100%);
-            position: relative;
-            padding-bottom: 2rem;
-        }
-
-        /* Background Effects */
-        .footer-container::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(circle at 15% 20%, rgba(251, 160, 2, 0.08) 0%, transparent 35%),
-                radial-gradient(circle at 85% 80%, rgba(251, 160, 2, 0.06) 0%, transparent 40%);
-            pointer-events: none;
-        }
-
-        .footer-container::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                rgba(251, 160, 2, 0.3) 50%, 
-                transparent 100%);
-        }
-
-        /* ========================================
-           GRID LAYOUT (The Fix)
-        ======================================== */
-        
-        .footer-grid {
-            display: grid;
-            /* Default Desktop: Brand gets fixed width, rest share space */
-            grid-template-columns: 320px repeat(5, 1fr); 
-            gap: 2rem; /* Reduced slightly from 3rem for better fit */
-            padding: 4rem 0 2.5rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Column 1: Brand */
-        .footer-brand-col {
-            padding-right: 1rem;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            text-decoration: none;
-        }
-
-        .logo-image {
-            width: 50px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        /* If no image logo is present, fallback icon style */
-        .logo-icon-fallback {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #fba002 0%, #d88c00 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0f1410;
-            font-size: 1.5rem;
-        }
-
-        .logo-text h2 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #f8f9fa;
-            margin: 0 0 0.15rem 0;
-            letter-spacing: -0.5px;
-            line-height: 1.1;
-        }
-
-        .tagline {
-            color: #fba002;
-            font-size: 0.8rem;
-            margin: 0;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .trust-statement {
-            color: #b8c7b7;
-            line-height: 1.6;
-            margin: 1rem 0 1.5rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            max-width: 300px;
-        }
-
-        /* Security Badges */
-        .security-badges {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .security-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: #b8c7b7;
-            font-size: 0.88rem;
-            padding: 0.6rem 0.9rem;
-            background: rgba(251, 160, 2, 0.06);
-            border: 1px solid rgba(251, 160, 2, 0.12);
-            border-radius: 8px;
-            backdrop-filter: blur(8px);
-            width: fit-content;
-        }
-
-        .security-badge i {
-            color: #fba002;
-            font-size: 1rem;
-        }
-
-        /* Social Links */
-        .social-links {
-            display: flex;
-            gap: 0.8rem;
-        }
-
-        .social-link {
-            width: 40px;
-            height: 40px;
-            background: rgba(251, 160, 2, 0.08);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #fba002;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 1.1rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .social-link:hover {
-            background: linear-gradient(135deg, #fba002 0%, #d88c00 100%);
-            color: #0f1410;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(251, 160, 2, 0.3);
-            border-color: transparent;
-        }
-
-        /* Link Columns */
-        .footer-column h3 {
-            color: #f8f9fa;
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin: 0 0 1.25rem 0;
-            position: relative;
-            padding-bottom: 0.6rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 30px;
-            height: 2px;
-            background: linear-gradient(90deg, #fba002 0%, transparent 100%);
-        }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-links a {
-            color: #9aa899;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.25s ease;
-            font-size: 0.92rem;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            color: #fba002;
-            transform: translateX(4px);
-        }
-
-        /* ========================================
-           NEWSLETTER SECTION
-        ======================================== */
-        .newsletter-premium {
-            margin: 1rem 0 3rem;
-            position: relative;
-        }
-
-        .newsletter-card {
-            background: rgba(26, 35, 28, 0.6);
-            border: 1px solid rgba(251, 160, 2, 0.18);
-            border-radius: 20px;
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(16px);
-        }
-
-        .newsletter-glow {
-            position: absolute;
-            inset: -2px;
-            background: radial-gradient(circle at 50% 50%, rgba(251, 160, 2, 0.15), transparent 70%);
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .newsletter-content {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .newsletter-icon {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #fba002 0%, #d88c00 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0f1410;
-            font-size: 1.8rem;
-            flex-shrink: 0;
-            box-shadow: 0 10px 25px rgba(251, 160, 2, 0.2);
-        }
-
-        .newsletter-text {
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .newsletter-text h3 {
-            color: #f8f9fa;
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin: 0 0 0.5rem 0;
-        }
-
-        .newsletter-text p {
-            color: #b8c7b7;
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .newsletter-form {
-            flex: 1.2;
-            min-width: 300px;
-        }
-
-        .input-wrapper {
-            display: flex;
-            background: rgba(15, 20, 16, 0.6);
-            border: 1px solid rgba(251, 160, 2, 0.3);
-            border-radius: 50px;
-            overflow: hidden;
-            padding: 4px;
-        }
-
-        .input-wrapper input {
-            flex: 1;
-            padding: 0.8rem 1.2rem;
-            background: none;
-            border: none;
-            color: #f8f9fa;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .newsletter-btn {
-            padding: 0.8rem 1.8rem;
-            background: linear-gradient(135deg, #fba002 0%, #d88c00 100%);
-            border: none;
-            border-radius: 40px;
-            color: #0f1410;
-            cursor: pointer;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .newsletter-btn:hover {
-            filter: brightness(1.1);
-            transform: translateX(-2px);
-        }
-
-        /* ========================================
-           FOOTER BOTTOM
-        ======================================== */
-        .footer-bottom {
-            border-top: 1px solid rgba(251, 160, 2, 0.12);
-            padding: 2rem 0 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .copyright {
-            color: #7a8c79;
-            font-size: 0.9rem;
-            margin: 0 0 0.25rem 0;
-        }
-
-        .creator {
-            color: #5d6b5c;
-            font-size: 0.85rem;
-            margin: 0;
-        }
-        
-        .creator a { color: #fba002; text-decoration: none; }
-        .creator a:hover { text-decoration: underline; }
-
-        .trust-badges {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .trust-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #b8c7b7;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 0.4rem 0.8rem;
-            background: rgba(251, 160, 2, 0.05);
-            border: 1px solid rgba(251, 160, 2, 0.1);
-            border-radius: 6px;
-        }
-
-        .trust-footer {
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(251, 160, 2, 0.08);
-            margin-top: 1.5rem;
-        }
-        
-        .trust-footer p {
-            color: #5d6b5c;
-            font-size: 0.85rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        /* ========================================
-           RESPONSIVE LOGIC (The crucial fixes)
-        ======================================== */
-
-        /* FIX 1: Laptop Breakpoint (approx 1350px)
-           Instead of squeezing 6 cols, we move Brand to top row 
-           and link columns to bottom row. This prevents overlap.
-        */
-        @media (max-width: 1350px) {
-            .footer-grid {
-                /* Grid becomes: 5 equal columns for links */
-                grid-template-columns: repeat(5, 1fr);
-                row-gap: 3rem;
-            }
-
-            .footer-brand-col {
-                /* Brand takes full width on the top row */
-                grid-column: 1 / -1; 
-                max-width: 100%;
-                border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-                padding-bottom: 2rem;
-                display: flex;
-                justify-content: space-between; /* Spread content out */
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 2rem;
-            }
-
-            .trust-statement {
-                margin: 0;
-                max-width: 400px;
-            }
-
-            .security-badges {
-                flex-direction: row;
-                margin: 0;
-            }
-        }
-
-        /* Tablet Breakpoint */
-        @media (max-width: 992px) {
-            .footer-grid {
-                grid-template-columns: repeat(3, 1fr); /* 3 cols for links */
-            }
-
-            .footer-brand-col {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1.5rem;
-            }
-
-            .newsletter-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .input-wrapper {
-                width: 100%;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-
-        /* Mobile Breakpoint */
-        @media (max-width: 768px) {
-            .footer-grid {
-                display: none; /* Hide grid, use accordion */
-            }
-            
-            .mobile-footer-accordion {
-                display: block;
-                padding: 2rem 0;
-            }
-
-            .footer-brand-mobile {
-                display: block;
-                padding-bottom: 2rem;
-                text-align: center;
-            }
-
-            .footer-logo {
-                justify-content: center;
-            }
-
-            .trust-statement {
-                margin: 1rem auto;
-            }
-            
-            .security-badges {
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .social-links {
-                justify-content: center;
-            }
-        }
-
-        /* Mobile Accordion Styles */
-        .mobile-footer-accordion {
-            display: none;
-        }
-
-        .accordion-item {
-            border-bottom: 1px solid rgba(251, 160, 2, 0.12);
-        }
-
-        .accordion-header {
-            width: 100%;
-            background: none;
-            border: none;
-            color: #f8f9fa;
-            padding: 1rem 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        
-        .accordion-content.active {
-            max-height: 500px; /* Arbitrary large height */
-        }
-
-        .accordion-content ul {
-            list-style: none;
-            padding: 0 0 1rem;
-            margin: 0;
-        }
-        
-        .accordion-content li a {
-            color: #9aa899;
-            text-decoration: none;
-            display: block;
-            padding: 0.5rem 0;
-        }
-
-        /* Back to Top */
-        .back-to-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #fba002 0%, #d88c00 100%);
-            border: none;
-            border-radius: 50%;
-            color: #0f1410;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(251, 160, 2, 0.3);
-            z-index: 99;
-        }
-        
-        .back-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Premium Fintech Footer -->
-    <footer class="fintech-footer">
-        <div class="footer-container">
-            <div class="container">
-                
-                <!-- Main Footer Grid -->
-                <!-- Note: Added mobile-specific brand block separately for cleaner HTML structure on mobile -->
-                <div class="footer-brand-mobile" style="display: none;">
-                    <!-- Will be shown via CSS media query only on mobile -->
-                    <div class="footer-brand-col">
-                        <a href="#" class="footer-logo">
-                            <!-- Placeholder Logo if image fails -->
-                            <div class="logo-icon-fallback"><i class="fas fa-crown"></i></div>
-                            <div class="logo-text">
-                                <h2>Finucity</h2>
-                                <p class="tagline">AI-Powered Financial Platform</p>
-                            </div>
-                        </a>
-                        <p class="trust-statement">
-                            India's AI-powered financial platform with verified CAs. Trusted by 50,000+ users.
-                        </p>
-                        <div class="social-links">
-                            <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        </div>
+{# FINUCITY PREMIUM FOOTER — Jinja2 Partial (included from base.html) #}
+
+<style>
+/* ========================================
+   FINUCITY FOOTER — Production CSS
+   Clean, Minimal, Apple/Stripe-level
+======================================== */
+.fin-footer {
+    position: relative;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(180deg, #0a0f0b 0%, #0f1410 40%, #111a14 100%);
+    color: #8a9889;
+    overflow: hidden;
+}
+.fin-footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(251,160,2,0.25) 50%, transparent 100%);
+}
+.fin-footer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 10% 0%, rgba(251,160,2,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 100%, rgba(251,160,2,0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+.fin-footer .f-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Top Grid ── */
+.f-grid {
+    display: grid;
+    grid-template-columns: 280px repeat(4, 1fr);
+    gap: 2.5rem;
+    padding: 4rem 0 3rem;
+}
+
+/* Brand Column */
+.f-brand a.f-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    margin-bottom: 1rem;
+}
+.f-brand-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #fba002, #e09000);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #0f1410; font-size: 1.2rem;
+    flex-shrink: 0;
+}
+.f-brand-name {
+    font-size: 1.5rem; font-weight: 800;
+    color: #f0f1ec;
+    letter-spacing: -0.5px;
+}
+.f-brand-tag {
+    font-size: 0.72rem; font-weight: 600;
+    color: #fba002; letter-spacing: 0.3px;
+    display: block;
+    margin-top: 1px;
+}
+.f-brand p.f-desc {
+    color: #7a8c79;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0 0 1.25rem;
+    max-width: 260px;
+}
+.f-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+.f-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #9aa899;
+    padding: 0.45rem 0.75rem;
+    background: rgba(251,160,2,0.04);
+    border: 1px solid rgba(251,160,2,0.08);
+    border-radius: 7px;
+    width: fit-content;
+    transition: border-color 0.3s;
+}
+.f-badge:hover { border-color: rgba(251,160,2,0.2); }
+.f-badge i { color: #fba002; font-size: 0.85rem; }
+.f-socials {
+    display: flex;
+    gap: 0.6rem;
+}
+.f-social {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(251,160,2,0.05);
+    border: 1px solid rgba(251,160,2,0.12);
+    color: #c5b47a;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.f-social:hover {
+    background: linear-gradient(135deg, #fba002, #d88c00);
+    color: #0f1410;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251,160,2,0.25);
+}
+
+/* Link Columns */
+.f-col h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #e8e9e4;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 1.1rem;
+    position: relative;
+    padding-bottom: 0.55rem;
+}
+.f-col h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 24px; height: 2px;
+    background: #fba002;
+    border-radius: 1px;
+}
+.f-col ul {
+    list-style: none;
+    padding: 0; margin: 0;
+}
+.f-col li { margin-bottom: 0.6rem; }
+.f-col a {
+    color: #7e907d;
+    text-decoration: none;
+    font-size: 0.87rem;
+    font-weight: 450;
+    transition: color 0.2s, transform 0.2s;
+    display: inline-block;
+}
+.f-col a:hover {
+    color: #fba002;
+    transform: translateX(3px);
+}
+
+/* ── Newsletter ── */
+.f-newsletter {
+    padding: 0 0 2.5rem;
+}
+.f-nl-card {
+    background: rgba(20,28,22,0.6);
+    border: 1px solid rgba(251,160,2,0.1);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+.f-nl-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(251,160,2,0.06), transparent 70%);
+    pointer-events: none;
+}
+.f-nl-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #fba002, #d88c00);
+    border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    color: #0f1410; font-size: 1.4rem;
+    flex-shrink: 0;
+    box-shadow: 0 6px 18px rgba(251,160,2,0.15);
+}
+.f-nl-text {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+    z-index: 2;
+}
+.f-nl-text h3 {
+    color: #f0f1ec;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem;
+}
+.f-nl-text p {
+    color: #7e907d;
+    font-size: 0.88rem;
+    margin: 0;
+}
+.f-nl-form {
+    flex: 1;
+    min-width: 280px;
+    position: relative;
+    z-index: 2;
+}
+.f-nl-input-wrap {
+    display: flex;
+    background: rgba(10,15,11,0.7);
+    border: 1px solid rgba(251,160,2,0.18);
+    border-radius: 50px;
+    padding: 4px;
+    transition: border-color 0.3s;
+}
+.f-nl-input-wrap:focus-within {
+    border-color: rgba(251,160,2,0.4);
+}
+.f-nl-input-wrap input {
+    flex: 1;
+    padding: 0.7rem 1.1rem;
+    background: none;
+    border: none;
+    color: #f0f1ec;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+}
+.f-nl-input-wrap input::placeholder { color: #5d6b5c; }
+.f-nl-btn {
+    padding: 0.7rem 1.5rem;
+    background: linear-gradient(135deg, #fba002, #d88c00);
+    border: none;
+    border-radius: 50px;
+    color: #0f1410;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 0.4rem;
+    transition: all 0.3s;
+    white-space: nowrap;
+    font-family: inherit;
+}
+.f-nl-btn:hover { filter: brightness(1.1); }
+.f-nl-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.f-nl-feedback {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+    font-size: 0.8rem;
+    min-height: 1.2em;
+}
+.f-nl-feedback.success { color: #4caf50; }
+.f-nl-feedback.error { color: #f44336; }
+
+/* ── Bottom Bar ── */
+.f-bottom {
+    border-top: 1px solid rgba(251,160,2,0.08);
+    padding: 1.5rem 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+.f-copy {
+    font-size: 0.82rem;
+    color: #5d6b5c;
+    line-height: 1.6;
+}
+.f-copy a {
+    color: #fba002;
+    text-decoration: none;
+}
+.f-copy a:hover { text-decoration: underline; }
+.f-trust-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+.f-trust-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #8a9889;
+    padding: 0.3rem 0.7rem;
+    background: rgba(251,160,2,0.03);
+    border: 1px solid rgba(251,160,2,0.07);
+    border-radius: 5px;
+}
+.f-trust-pill i { color: #fba002; font-size: 0.7rem; }
+.f-india {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #8a9889;
+    padding: 0.3rem 0.7rem;
+    background: rgba(251,160,2,0.05);
+    border: 1px solid rgba(251,160,2,0.08);
+    border-radius: 5px;
+}
+
+/* ── Disclaimer ── */
+.f-disclaimer {
+    border-top: 1px solid rgba(251,160,2,0.05);
+    padding: 1rem 0 1.5rem;
+    text-align: center;
+}
+.f-disclaimer p {
+    font-size: 0.78rem;
+    color: #4a5849;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+.f-disclaimer i { color: #fba002; font-size: 0.75rem; }
+
+/* ── Back to Top ── */
+.f-back-top {
+    position: fixed;
+    bottom: 1.5rem; right: 1.5rem;
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, #fba002, #d88c00);
+    border: none; border-radius: 50%;
+    color: #0f1410;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(251,160,2,0.25);
+    z-index: 99;
+    font-size: 1rem;
+}
+.f-back-top.visible { opacity: 1; visibility: visible; }
+.f-back-top:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(251,160,2,0.35); }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+    .f-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .f-brand {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(251,160,2,0.06);
+    }
+    .f-brand p.f-desc { margin-bottom: 0; }
+    .f-badges { flex-direction: row; margin-bottom: 0; }
+}
+@media (max-width: 768px) {
+    .f-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    .f-brand { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .f-nl-card { flex-direction: column; padding: 1.5rem; text-align: center; }
+    .f-nl-text { min-width: auto; }
+    .f-bottom { flex-direction: column; text-align: center; }
+    .f-trust-row { justify-content: center; }
+}
+@media (max-width: 480px) {
+    .f-grid { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 0 2rem; }
+    .f-nl-input-wrap { flex-direction: column; border-radius: 12px; }
+    .f-nl-input-wrap input { padding: 0.8rem 1rem; }
+    .f-nl-btn { justify-content: center; border-radius: 10px; padding: 0.8rem; }
+}
+</style>
+
+<footer class="fin-footer" role="contentinfo">
+    <div class="f-container">
+
+        <!-- ═══ Main Grid ═══ -->
+        <nav class="f-grid" aria-label="Footer navigation">
+
+            <!-- Brand -->
+            <div class="f-brand">
+                <a href="{{ url_for('main.home') }}" class="f-brand-link">
+                    <div class="f-brand-icon"><i class="fas fa-crown"></i></div>
+                    <div>
+                        <span class="f-brand-name">Finucity</span>
+                        <span class="f-brand-tag">AI-Powered Financial Platform</span>
                     </div>
+                </a>
+                <p class="f-desc">India's trusted AI financial platform with verified Chartered Accountants.</p>
+                <div class="f-badges">
+                    <div class="f-badge"><i class="fas fa-lock"></i> Bank-level Encryption</div>
+                    <div class="f-badge"><i class="fas fa-user-shield"></i> Privacy-First</div>
                 </div>
-
-                <nav class="footer-grid" aria-label="Footer Navigation">
-                    
-                    <!-- Column 1: Brand & Trust (Desktop/Tablet) -->
-                    <div class="footer-brand-col">
-                        <a href="#" class="footer-logo">
-                             <!-- Using icon for demo, replace with img tag if needed -->
-                            <div class="logo-icon-fallback"><i class="fas fa-crown"></i></div>
-                            <div class="logo-text">
-                                <h2>Finucity</h2>
-                                <p class="tagline">AI-Powered Financial Platform</p>
-                            </div>
-                        </a>
-                        
-                        
-                        
-                        <div class="security-badges">
-                            <div class="security-badge">
-                                <i class="fas fa-lock"></i>
-                                <span>Bank-level Encryption</span>
-                            </div>
-                            <div class="security-badge">
-                                <i class="fas fa-user-shield"></i>
-                                <span>Privacy-First Platform</span>
-                            </div>
-                        </div>
-                        
-                        <div class="social-links">
-                            <a href="https://github.com/Sumeet-01" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
-                            <a href="https://linkedin.com/in/sumeet-sangwan" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/sumeet.sangwan" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="https://twitter.com" class="social-link" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Column 2: Income Tax -->
-                    <div class="footer-column">
-                        <h3>Income Tax</h3>
-                        <ul class="footer-links">
-                            <li><a href="#">File ITR</a></li>
-                            <li><a href="#">CA Assisted Filing</a></li>
-                            <li><a href="#">Capital Gains Filing</a></li>
-                            <li><a href="#">NRI Taxation</a></li>
-                            <li><a href="#">Tax Notice Help</a></li>
-                            <li><a href="#">Refund Status</a></li>
-                            <li><a href="#">Revised Returns</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 3: GST Services -->
-                    <div class="footer-column">
-                        <h3>GST Services</h3>
-                        <ul class="footer-links">
-                            <li><a href="#">GST Registration</a></li>
-                            <li><a href="#">GST Filing</a></li>
-                            <li><a href="#">GST Compliance</a></li>
-                            <li><a href="#">GST Advisory</a></li>
-                            <li><a href="#">GST Notices</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 4: Business Services -->
-                    <div class="footer-column">
-                        <h3>Business Services</h3>
-                        <ul class="footer-links">
-                            <li><a href="#">Company Registration</a></li>
-                            <li><a href="#">LLP Registration</a></li>
-                            <li><a href="#">ROC Compliance</a></li>
-                            <li><a href="#">TDS Filing</a></li>
-                            <li><a href="#">Accounting Services</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 5: Tools -->
-                    <div class="footer-column">
-                        <h3>Tools</h3>
-                        <ul class="footer-links">
-                            <li><a href="#">Income Tax Calculator</a></li>
-                            <li><a href="#">HRA Calculator</a></li>
-                            <li><a href="#">SIP Calculator</a></li>
-                            <li><a href="#">GST Calculator</a></li>
-                            <li><a href="#">Retirement Planner</a></li>
-                            <li><a href="#">Old vs New Regime</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 6: Company & Support -->
-                    <div class="footer-column">
-                        <h3>Company</h3>
-                        <ul class="footer-links">
-                            <li><a href="#">About</a></li>
-                            <li><a href="#">Contact</a></li>
-                            <li><a href="#">Blog</a></li>
-                            <li><a href="#">Learning Center</a></li>
-                            <li><a href="#">FAQs</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Refund Policy</a></li>
-                            <li><a href="#">Security</a></li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Mobile Accordion (Visible only < 768px via CSS) -->
-                <div class="mobile-footer-accordion">
-                     <!-- Only showing styling wrapper, content same as above conceptually -->
-                     <style>
-                        @media (min-width: 769px) { .mobile-footer-brand-header { display: none; } }
-                        .mobile-footer-brand-header { text-align: center; margin-bottom: 2rem; }
-                     </style>
-                     <div class="mobile-footer-brand-header">
-                        <!-- Brand Block for Mobile -->
-                         <div class="footer-logo" style="justify-content: center;">
-                            <div class="logo-icon-fallback"><i class="fas fa-crown"></i></div>
-                            <div class="logo-text"><h2>Finucity</h2></div>
-                        </div>
-                        <p style="color:#b8c7b7; font-size: 0.9rem;">India's AI-powered financial platform.</p>
-                     </div>
-
-                    <div class="accordion-item">
-                        <button class="accordion-header" onclick="toggleAccordion(this)">
-                            Income Tax <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="accordion-content">
-                            <ul>
-                                <li><a href="#">File ITR</a></li>
-                                <li><a href="#">CA Assisted Filing</a></li>
-                                <li><a href="#">Capital Gains</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header" onclick="toggleAccordion(this)">
-                            GST Services <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="accordion-content">
-                            <ul>
-                                <li><a href="#">GST Registration</a></li>
-                                <li><a href="#">GST Filing</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <button class="accordion-header" onclick="toggleAccordion(this)">
-                            Tools <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="accordion-content">
-                            <ul>
-                                <li><a href="#">Tax Calculator</a></li>
-                                <li><a href="#">SIP Calculator</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Premium Newsletter Section -->
-                <div class="newsletter-premium">
-                    <div class="newsletter-card">
-                        <div class="newsletter-glow"></div>
-                        <div class="newsletter-content">
-                            <div class="newsletter-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="newsletter-text">
-                                <h3>Get Tax Tips & Updates</h3>
-                                <p>Join 50,000+ users receiving expert financial insights.</p>
-                            </div>
-                            <form class="newsletter-form" id="newsletterForm">
-                                <div class="input-wrapper">
-                                    <input type="email" id="newsletterEmail" placeholder="Enter your email" required>
-                                    <button type="submit" class="newsletter-btn">
-                                        <span>Subscribe</span> <i class="fas fa-arrow-right"></i>
-                                    </button>
-                                </div>
-                                <div id="newsletterFeedback" style="margin-top: 5px; font-size: 0.85rem; padding-left: 10px;"></div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bottom Bar -->
-                <div class="footer-bottom">
-                    <div class="footer-bottom-left">
-                        <p class="copyright">
-                            © <span id="currentYear">2026</span> Finucity AI. All rights reserved.
-                        </p>
-                        <p class="creator">
-                            Crafted with <span style="color: #e74c3c;">❤️</span> by <a href="#">Sumeet Sangwan</a>
-                        </p>
-                    </div>
-
-                    <div class="trust-badges">
-                        <div class="trust-badge"><i class="fas fa-shield-alt"></i> Secure & Private</div>
-                        <div class="trust-badge"><i class="fas fa-clock"></i> 24/7 Available</div>
-                        <div class="trust-badge"><i class="fas fa-robot"></i> AI Powered</div>
-                        <div class="trust-badge"><i class="fas fa-check-circle"></i> Verified CAs</div>
-                    </div>
-
-                    <div class="made-in-india">
-                        <div class="trust-badge" style="background: rgba(251, 160, 2, 0.1);">
-                            Made for India 🇮🇳
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trust Footer -->
-                <div class="trust-footer">
-                    <p><i class="fas fa-lock" style="color: #fba002;"></i> Bank-level encryption. Verified CA network. Your data never leaves India.</p>
+                <div class="f-socials">
+                    <a href="https://github.com/Sumeet-01" class="f-social" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/sumeet-sangwan" class="f-social" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.instagram.com/sumeet.sangwan" class="f-social" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com/sumeetsangwan" class="f-social" title="X (Twitter)" target="_blank" rel="noopener noreferrer"><i class="fab fa-x-twitter"></i></a>
                 </div>
             </div>
+
+            <!-- Services -->
+            <div class="f-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="{{ url_for('main.tax_planning') }}">Tax Planning</a></li>
+                    <li><a href="{{ url_for('main.gst_compliance') }}">GST Compliance</a></li>
+                    <li><a href="{{ url_for('main.business_finance') }}">Business Finance</a></li>
+                    <li><a href="{{ url_for('main.investment_advisory') }}">Investment Advisory</a></li>
+                    <li><a href="{{ url_for('main.nri_taxation') }}">NRI Taxation</a></li>
+                    <li><a href="{{ url_for('main.insurance_planning') }}">Insurance Planning</a></li>
+                </ul>
+            </div>
+
+            <!-- Tools -->
+            <div class="f-col">
+                <h4>Tools</h4>
+                <ul>
+                    <li><a href="{{ url_for('calculators.income_tax_calculator') }}">Income Tax Calculator</a></li>
+                    <li><a href="{{ url_for('calculators.hra_calculator') }}">HRA Calculator</a></li>
+                    <li><a href="{{ url_for('calculators.gst_calculator') }}">GST Calculator</a></li>
+                    <li><a href="{{ url_for('calculators.sip_calculator') }}">SIP Calculator</a></li>
+                    <li><a href="{{ url_for('calculators.tax_regime_calculator') }}">Old vs New Regime</a></li>
+                    <li><a href="{{ url_for('calculators.capital_gains_calculator') }}">Capital Gains</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="f-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="{{ url_for('main.financial_blog') }}">Blog</a></li>
+                    <li><a href="{{ url_for('main.learning_centre') }}">Learning Center</a></li>
+                    <li><a href="{{ url_for('main.faq') }}">FAQs</a></li>
+                    <li><a href="{{ url_for('main.retirement_planning') }}">Retirement Planning</a></li>
+                    <li><a href="{{ url_for('main.investment_tools') }}">Investment Tools</a></li>
+                </ul>
+            </div>
+
+            <!-- Company -->
+            <div class="f-col">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="{{ url_for('main.about') }}">About</a></li>
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                    <li><a href="{{ url_for('main.security') }}">Security</a></li>
+                    <li><a href="{{ url_for('main.privacy_policy') }}">Privacy Policy</a></li>
+                    <li><a href="{{ url_for('main.terms_of_service') }}">Terms of Service</a></li>
+                    <li><a href="{{ url_for('main.refund_policy') }}">Refund Policy</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- ═══ Newsletter ═══ -->
+        <div class="f-newsletter">
+            <div class="f-nl-card">
+                <div class="f-nl-icon"><i class="fas fa-envelope"></i></div>
+                <div class="f-nl-text">
+                    <h3>Get Tax Tips & Updates</h3>
+                    <p>Join thousands receiving expert financial insights.</p>
+                </div>
+                <form class="f-nl-form" id="footerNewsletterForm" aria-label="Newsletter signup">
+                    <div class="f-nl-input-wrap">
+                        <input type="email" id="footerNlEmail" placeholder="Enter your email" required aria-label="Email address">
+                        <button type="submit" class="f-nl-btn" id="footerNlBtn">
+                            Subscribe <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="f-nl-feedback" id="footerNlFeedback" role="status" aria-live="polite"></div>
+                </form>
+            </div>
         </div>
-    </footer>
 
-    <!-- Back to Top -->
-    <button class="back-to-top" onclick="scrollToTop()" aria-label="Scroll to top">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+        <!-- ═══ Bottom ═══ -->
+        <div class="f-bottom">
+            <div class="f-copy">
+                <span>&copy; <span id="fYear"></span> Finucity AI. All rights reserved.</span>
+                <br>
+                <span>Crafted with <span style="color:#e74c3c">&#10084;</span> by <a href="https://github.com/Sumeet-01" target="_blank" rel="noopener noreferrer">Sumeet Sangwan</a></span>
+            </div>
+            <div class="f-trust-row">
+                <span class="f-trust-pill"><i class="fas fa-shield-alt"></i> Secure &amp; Private</span>
+                <span class="f-trust-pill"><i class="fas fa-clock"></i> 24/7 Available</span>
+                <span class="f-trust-pill"><i class="fas fa-robot"></i> AI Powered</span>
+                <span class="f-trust-pill"><i class="fas fa-check-circle"></i> Verified CAs</span>
+            </div>
+            <span class="f-india">Made for India &#127470;&#127475;</span>
+        </div>
 
-    <script>
-        // Update Year
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        <!-- ═══ Disclaimer ═══ -->
+        <div class="f-disclaimer">
+            <p><i class="fas fa-lock"></i> Bank-level encryption &middot; Verified CA network &middot; Your data never leaves India</p>
+        </div>
+    </div>
+</footer>
 
-        // Newsletter Logic
-        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+<!-- Back to Top -->
+<button class="f-back-top" id="fBackTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<script>
+(function(){
+    // Dynamic year
+    var y = document.getElementById('fYear');
+    if(y) y.textContent = new Date().getFullYear();
+
+    // Back to top visibility
+    var btt = document.getElementById('fBackTop');
+    if(btt) {
+        window.addEventListener('scroll', function(){
+            btt.classList.toggle('visible', window.scrollY > 400);
+        }, {passive: true});
+    }
+
+    // Newsletter — connected to /api/newsletter-signup
+    var form = document.getElementById('footerNewsletterForm');
+    if(form) {
+        form.addEventListener('submit', async function(e){
             e.preventDefault();
-            const btn = this.querySelector('button');
-            const originalText = btn.innerHTML;
-            const feedback = document.getElementById('newsletterFeedback');
-            
-            btn.innerHTML = '<i class="fas fa-check"></i> Subscribed';
-            feedback.innerHTML = '<span style="color: #4caf50;">Successfully subscribed!</span>';
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                this.reset();
-                feedback.innerHTML = '';
-            }, 3000);
-        });
+            var btn = document.getElementById('footerNlBtn');
+            var fb = document.getElementById('footerNlFeedback');
+            var emailInput = document.getElementById('footerNlEmail');
+            var email = emailInput.value.trim();
+            if(!email) return;
 
-        // Mobile Accordion
-        function toggleAccordion(element) {
-            const content = element.nextElementSibling;
-            const icon = element.querySelector('i');
-            
-            // Close others
-            document.querySelectorAll('.accordion-content').forEach(c => {
-                if(c !== content) c.classList.remove('active');
-            });
-            document.querySelectorAll('.accordion-header i').forEach(i => {
-                if(i !== icon) i.style.transform = 'rotate(0deg)';
-            });
+            var orig = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            fb.className = 'f-nl-feedback';
+            fb.textContent = '';
 
-            // Toggle current
-            content.classList.toggle('active');
-            if(content.classList.contains('active')) {
-                icon.style.transform = 'rotate(180deg)';
-            } else {
-                icon.style.transform = 'rotate(0deg)';
+            try {
+                var res = await fetch('/api/newsletter-signup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: email})
+                });
+                var data = await res.json();
+                if(data.success) {
+                    fb.className = 'f-nl-feedback success';
+                    fb.textContent = '\u2713 ' + (data.message || 'Subscribed successfully!');
+                    form.reset();
+                } else {
+                    throw new Error(data.error || 'Subscription failed');
+                }
+            } catch(err) {
+                fb.className = 'f-nl-feedback error';
+                fb.textContent = err.message;
+            } finally {
+                btn.innerHTML = orig;
+                btn.disabled = false;
+                setTimeout(function(){ fb.textContent = ''; fb.className = 'f-nl-feedback'; }, 5000);
             }
-        }
-
-        // Back to Top
-        window.addEventListener('scroll', () => {
-            const btn = document.querySelector('.back-to-top');
-            if (window.scrollY > 300) btn.classList.add('visible');
-            else btn.classList.remove('visible');
         });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    </script>
-</body>
-</html>
+    }
+})();
+</script>
