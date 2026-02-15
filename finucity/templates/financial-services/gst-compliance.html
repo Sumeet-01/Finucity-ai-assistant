@@ -3,73 +3,274 @@
 {% block title %}GST Compliance Services | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="gs-hero">
+    <div class="gs-hero__particles" id="gsParticles"></div>
     <div class="container">
-        <h1>🏢 GST Compliance Services</h1>
-        <p>Simplify your GST compliance with AI-powered guidance</p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="feature-content">
-        <section class="feature-overview">
-            <h2>Complete GST Compliance Solution</h2>
-            <p>Our AI assistant helps you navigate GST regulations, file returns on time, and maintain compliance with the latest GST rules and requirements.</p>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <h3>📋 Return Filing</h3>
-                    <p>Step-by-step guidance for GSTR-1, GSTR-3B, and annual returns.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>🔄 Input Tax Credit</h3>
-                    <p>Maximize your ITC benefits and avoid common mistakes.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>⚖️ Compliance Check</h3>
-                    <p>Regular compliance audits and deadline reminders.</p>
-                </div>
+        <div class="gs-hero__content reveal-up">
+            <span class="gs-hero__badge">GST Services</span>
+            <h1 class="gs-hero__title">GST <span class="gradient-text">Compliance</span></h1>
+            <p class="gs-hero__subtitle">End-to-end GST management — from registration and return filing to ITC optimization, e-invoicing, and audit support for businesses of all sizes.</p>
+            <div class="gs-hero__stats">
+                <div class="gs-stat"><span class="gs-stat__number" data-count="18">0</span><span class="gs-stat__unit">%</span><span class="gs-stat__label">Standard Rate</span></div>
+                <div class="gs-stat"><span class="gs-stat__number" data-count="40">0</span><span class="gs-stat__unit">L</span><span class="gs-stat__label">Registration Threshold</span></div>
+                <div class="gs-stat"><span class="gs-stat__number" data-count="13">0</span><span class="gs-stat__unit">+</span><span class="gs-stat__label">Return Types</span></div>
             </div>
-        </section>
-
-        <div class="cta-section">
-            <h3>Need GST Compliance Help?</h3>
-            <p>Get expert GST guidance from our AI assistant</p>
-            <a href="/chat" class="cta-button">Ask About GST</a>
         </div>
     </div>
-</div>
+</section>
+
+<section class="gs-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Overview</span>
+            <h2>GST Framework at a Glance</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="gs-overview reveal-up">
+            <div class="gs-overview__content">
+                <h3>India's Unified Indirect Tax System</h3>
+                <p>GST replaced 17 indirect taxes (Service Tax, VAT, Excise, CST, etc.) with a single, unified tax structure. For businesses, this means <strong>one registration, one return framework, and seamless Input Tax Credit</strong> across the supply chain. Compliance is critical — late filing attracts ₹200/day late fees and 18% interest on unpaid tax.</p>
+                <div class="gs-rate-grid">
+                    <div class="gs-rate-card"><span class="gs-rate-pct" style="color:#43e97b">0%</span><strong>Essential Goods</strong><p>Milk, grains, fresh vegetables, bread, stamps, judicial papers</p></div>
+                    <div class="gs-rate-card"><span class="gs-rate-pct" style="color:#4facfe">5%</span><strong>Basic Necessities</strong><p>Packaged food, footwear (&lt;₹1000), economy hotels, transport</p></div>
+                    <div class="gs-rate-card"><span class="gs-rate-pct" style="color:#fba002">12%</span><strong>Standard Goods</strong><p>Processed food, mobile phones, business hotels, IT services</p></div>
+                    <div class="gs-rate-card"><span class="gs-rate-pct" style="color:#ff6b6b">18%</span><strong>Most Services</strong><p>Software, consulting, insurance, telecom, restaurants (AC), financial services</p></div>
+                    <div class="gs-rate-card"><span class="gs-rate-pct" style="color:#a18cd1">28%</span><strong>Luxury &amp; Sin</strong><p>Automobiles, tobacco, aerated drinks, luxury hotels, cement, ACs</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="gs-section gs-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Services</span>
+            <h2>Comprehensive GST Solutions</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="gs-services-grid">
+            <div class="gs-service reveal-up" style="--delay:0.1s">
+                <div class="gs-service__accent" style="background:linear-gradient(135deg,#fba002,#ff6b35)"></div>
+                <div class="gs-service__body">
+                    <h3>&#128203; Registration &amp; Setup</h3>
+                    <p>Mandatory for businesses with turnover above ₹40L (goods) or ₹20L (services). We handle end-to-end registration, HSN/SAC code mapping, and invoice format setup.</p>
+                    <div class="gs-features">
+                        <div class="gs-feature"><span class="tick">&#10003;</span> New GST registration (regular/composition)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Multi-state GSTIN for inter-state business</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Voluntary registration for startups (to claim ITC)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Amendment, cancellation, and revocation services</div>
+                    </div>
+                    <div class="gs-service__highlight"><strong>Startup Tip:</strong> Even if below threshold, register voluntarily to claim Input Tax Credit on expenses and appear more professional to B2B clients.</div>
+                </div>
+            </div>
+
+            <div class="gs-service reveal-up" style="--delay:0.2s">
+                <div class="gs-service__accent" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+                <div class="gs-service__body">
+                    <h3>&#128197; Return Filing &amp; Compliance</h3>
+                    <p>GST requires monthly/quarterly returns with precise data matching. GSTR-1 (outward supplies), GSTR-3B (summary + payment), and GSTR-9 (annual) — all with strict deadlines.</p>
+                    <div class="gs-features">
+                        <div class="gs-feature"><span class="tick">&#10003;</span> GSTR-1: Monthly by 11th (outward supplies)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> GSTR-3B: Monthly by 20th (summary return + tax payment)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> GSTR-9/9C: Annual return + reconciliation (31st Dec)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> QRMP Scheme: Quarterly returns for turnover &lt; ₹5 Cr</div>
+                    </div>
+                    <div class="gs-service__highlight"><strong>Penalty Alert:</strong> Late GSTR-3B = ₹50/day (₹20 for nil) + 18% interest. GSTR-1 delay can block your buyer's ITC claims.</div>
+                </div>
+            </div>
+
+            <div class="gs-service reveal-up" style="--delay:0.3s">
+                <div class="gs-service__accent" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></div>
+                <div class="gs-service__body">
+                    <h3>&#128176; Input Tax Credit Optimization</h3>
+                    <p>ITC is the backbone of GST — pay tax only on the <strong>value you add</strong>. But ITC claims are frequently rejected due to mismatches. We reconcile GSTR-2B with your purchase data to maximize legitimate claims.</p>
+                    <div class="gs-features">
+                        <div class="gs-feature"><span class="tick">&#10003;</span> GSTR-2B reconciliation (auto-populated ITC ledger)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Vendor compliance monitoring (ensure suppliers file)</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Blocked credit identification (Section 17(5))</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> ITC reversal rules (Rule 42/43 for mixed supplies)</div>
+                    </div>
+                    <div class="gs-service__highlight"><strong>Key Rule:</strong> ITC is available only if your supplier has filed their GSTR-1 AND paid their tax. Monitor vendor compliance monthly.</div>
+                </div>
+            </div>
+
+            <div class="gs-service reveal-up" style="--delay:0.4s">
+                <div class="gs-service__accent" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></div>
+                <div class="gs-service__body">
+                    <h3>&#128196; E-Invoicing &amp; E-Way Bills</h3>
+                    <p>E-invoicing is mandatory for businesses with turnover above ₹5 Cr. Every B2B invoice must be registered on the IRP portal and get an IRN (Invoice Reference Number). E-way bills are required for goods movement above ₹50,000.</p>
+                    <div class="gs-features">
+                        <div class="gs-feature"><span class="tick">&#10003;</span> E-invoice generation via IRP/NIC portal</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> IRN &amp; QR code integration with billing software</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> E-way bill generation for goods transport</div>
+                        <div class="gs-feature"><span class="tick">&#10003;</span> Multi-vehicle &amp; consolidated e-way bills</div>
+                    </div>
+                    <div class="gs-service__highlight"><strong>2024 Update:</strong> E-invoicing threshold reduced to ₹5 Cr. If your turnover crossed this in any FY from 2017-18, e-invoicing is mandatory.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="gs-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Calendar</span>
+            <h2>Monthly GST Compliance Deadlines</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="gs-calendar reveal-up">
+            <div class="gs-cal-row gs-cal-row--header"><span>Date</span><span>Return/Action</span><span>Applicable To</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">10th</span><span>GSTR-7 (TDS), GSTR-8 (TCS)</span><span>Tax Deductors/Collectors</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">11th</span><span>GSTR-1 (Outward Supplies)</span><span>All Regular Taxpayers</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">13th</span><span>GSTR-6 (ISD Distribution)</span><span>Input Service Distributors</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">20th</span><span>GSTR-3B (Summary + Payment)</span><span>All Regular Taxpayers</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">18th</span><span>CMP-08 (Composition Challan)</span><span>Composition Scheme (Quarterly)</span></div>
+            <div class="gs-cal-row"><span class="gs-cal-date">31st Dec</span><span>GSTR-9 / GSTR-9C (Annual)</span><span>All (9C for turnover > ₹5Cr)</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="gs-section gs-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Schemes</span>
+            <h2>Composition vs Regular Scheme</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="gs-compare-grid">
+            <div class="gs-compare reveal-up" style="--delay:0.1s">
+                <h4 style="color:#fba002">Composition Scheme</h4>
+                <ul>
+                    <li>Turnover up to ₹1.5 Cr (goods) / ₹50L (services)</li>
+                    <li>Pay flat 1-6% tax on turnover</li>
+                    <li>Quarterly returns only (CMP-08)</li>
+                    <li><strong style="color:#ff6b6b">Cannot</strong> claim Input Tax Credit</li>
+                    <li><strong style="color:#ff6b6b">Cannot</strong> do inter-state supplies</li>
+                    <li>No e-invoicing required</li>
+                </ul>
+            </div>
+            <div class="gs-compare reveal-up" style="--delay:0.2s">
+                <h4 style="color:#43e97b">Regular Scheme</h4>
+                <ul>
+                    <li>No turnover limit</li>
+                    <li>Pay tax at applicable slab rate</li>
+                    <li>Monthly returns (GSTR-1, GSTR-3B)</li>
+                    <li><strong style="color:#43e97b">Can</strong> claim full Input Tax Credit</li>
+                    <li><strong style="color:#43e97b">Can</strong> do inter-state &amp; export supplies</li>
+                    <li>E-invoicing mandatory if turnover &gt; ₹5Cr</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="gs-section gs-cta-section">
+    <div class="container">
+        <div class="gs-cta reveal-up">
+            <div class="gs-cta__glow"></div>
+            <h2>Simplify Your GST Compliance</h2>
+            <p>From registration to annual returns — our AI assistant answers GST queries instantly, and our CA network handles complex compliance needs.</p>
+            <div class="gs-cta__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Ask AI About GST</span></a>
+                <a href="{{ url_for('main.gst_calculator') }}" class="tp-btn tp-btn--secondary"><span>GST Calculator</span></a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-.benefit-card {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-}
+.gs-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(251,160,2,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.gs-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.gs-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(251,160,2,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.gs-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.gs-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(251,160,2,0.1); border:1px solid rgba(251,160,2,0.3); border-radius:50px; color:#fba002; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.gs-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#fba002,#ff6b35,#fba002); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.gs-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:2.5rem; max-width:650px; margin-left:auto; margin-right:auto; }
+.gs-hero__stats { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.gs-stat { text-align:center; padding:1.2rem 1.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(251,160,2,0.1); border-radius:16px; transition:all 0.3s; }
+.gs-stat:hover { border-color:rgba(251,160,2,0.3); transform:translateY(-3px); }
+.gs-stat__number { font-size:2rem; font-weight:800; color:#fba002; }
+.gs-stat__unit { font-size:1rem; font-weight:700; color:#fba002; }
+.gs-stat__label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem; display:block; }
 
-.cta-section {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    text-align: center;
-    margin: 3rem 0;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
+.gs-section { padding:6rem 0; } .gs-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(251,160,2,0.08); border:1px solid rgba(251,160,2,0.15); border-radius:50px; color:#fba002; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#fba002,#ff6b35); margin:0 auto; border-radius:2px; }
+
+.gs-overview { background:var(--bg-alt); padding:3rem; border-radius:20px; border:1px solid rgba(251,160,2,0.1); }
+.gs-overview h3 { color:var(--text-light); font-size:1.4rem; margin-bottom:1rem; }
+.gs-overview__content > p { color:var(--text-muted); line-height:1.7; margin-bottom:2rem; }
+.gs-rate-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; }
+.gs-rate-card { background:rgba(251,160,2,0.03); padding:1.2rem; border-radius:12px; border:1px solid rgba(251,160,2,0.06); text-align:center; }
+.gs-rate-pct { font-size:1.8rem; font-weight:900; display:block; margin-bottom:0.3rem; }
+.gs-rate-card strong { color:var(--text-light); display:block; font-size:0.85rem; margin-bottom:0.3rem; }
+.gs-rate-card p { color:var(--text-muted); font-size:0.75rem; line-height:1.4; margin:0; }
+
+.gs-services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(460px,1fr)); gap:1.5rem; }
+.gs-service { background:var(--bg-alt); border-radius:20px; overflow:hidden; border:1px solid rgba(251,160,2,0.08); transition:all 0.4s; transition-delay:var(--delay,0s); }
+.gs-service:hover { border-color:rgba(251,160,2,0.2); transform:translateY(-6px); box-shadow:0 15px 50px rgba(0,0,0,0.2); }
+.gs-service__accent { height:4px; }
+.gs-service__body { padding:2rem; }
+.gs-service h3 { color:var(--text-light); font-size:1.15rem; margin-bottom:0.8rem; }
+.gs-service__body > p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-bottom:1rem; }
+.gs-features { margin:1rem 0; }
+.gs-feature { display:flex; align-items:flex-start; gap:0.6rem; padding:0.4rem 0; color:var(--text-muted); font-size:0.88rem; }
+.tick { color:#43e97b; font-weight:700; flex-shrink:0; }
+.gs-service__highlight { margin-top:1rem; padding:0.8rem 1rem; background:rgba(251,160,2,0.05); border-left:3px solid #fba002; border-radius:0 8px 8px 0; font-size:0.85rem; color:var(--text-muted); }
+
+.gs-calendar { max-width:700px; margin:0 auto; background:var(--bg-alt); border-radius:16px; border:1px solid rgba(251,160,2,0.08); overflow:hidden; }
+.gs-cal-row { display:grid; grid-template-columns:80px 1fr 1fr; padding:0.8rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.88rem; color:var(--text-muted); align-items:center; }
+.gs-cal-row--header { background:rgba(251,160,2,0.05); font-weight:700; color:#fba002; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.5px; }
+.gs-cal-row:last-child { border-bottom:none; }
+.gs-cal-date { color:#fba002; font-weight:800; }
+
+.gs-compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; max-width:800px; margin:0 auto; }
+.gs-compare { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(251,160,2,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); }
+.gs-compare:hover { border-color:rgba(251,160,2,0.2); transform:translateY(-4px); }
+.gs-compare h4 { font-size:1.1rem; margin-bottom:1rem; }
+.gs-compare ul { list-style:none; padding:0; margin:0; }
+.gs-compare li { padding:0.5rem 0; color:var(--text-muted); font-size:0.88rem; padding-left:1.2rem; position:relative; border-bottom:1px solid rgba(255,255,255,0.03); }
+.gs-compare li:last-child { border-bottom:none; }
+.gs-compare li::before { content:'•'; position:absolute; left:0; color:#fba002; }
+
+.gs-cta-section { padding:4rem 0 6rem; }
+.gs-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(251,160,2,0.15); overflow:hidden; }
+.gs-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(251,160,2,0.08) 0%,transparent 70%); pointer-events:none; }
+.gs-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.gs-cta p { color:var(--text-muted); max-width:550px; margin:0 auto 2rem; position:relative; }
+.gs-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#fba002,#ff6b35); color:#000; box-shadow:0 4px 15px rgba(251,160,2,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(251,160,2,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
+
+@media (max-width:768px) { .gs-hero { padding:7rem 1rem 3rem; } .gs-hero__stats { flex-direction:column; align-items:center; } .gs-services-grid { grid-template-columns:1fr; } .gs-cal-row { grid-template-columns:60px 1fr; } .gs-cal-row span:last-child { display:none; } .gs-compare-grid { grid-template-columns:1fr; } }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+    const c=document.getElementById('gsParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+});
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
+</script>
 {% endblock %}

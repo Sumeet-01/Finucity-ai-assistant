@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}GST Calculator | Finucity{% endblock %}
+
+{% block content %}
+<section class="gc-hero">
+    <div class="container">
+        <div class="gc-hero__content reveal-up">
+            <span class="gc-hero__badge">GST Tool</span>
+            <h1 class="gc-hero__title">GST <span class="gradient-text">Calculator</span></h1>
+            <p class="gc-hero__subtitle">Instantly add or remove GST at any rate. Get CGST, SGST, and IGST breakdowns for invoicing and compliance.</p>
+        </div>
+    </div>
+</section>
+
+<section class="gc-section">
+    <div class="container">
+        <div class="gc-calculator reveal-up">
+            <div class="gc-calc__header"><h2>Calculate GST</h2></div>
+            <div class="gc-calc__form">
+                <div class="gc-calc__row">
+                    <div class="gc-calc__group gc-calc__group--full"><label>Amount (₹)</label><input type="number" id="gcAmount" value="10000" step="100"></div>
+                </div>
+                <div class="gc-calc__row">
+                    <div class="gc-calc__group"><label>GST Rate</label>
+                        <div class="gc-rate-btns">
+                            <button class="gc-rate-btn gc-rate-btn--active" onclick="setRate(5,this)">5%</button>
+                            <button class="gc-rate-btn" onclick="setRate(12,this)">12%</button>
+                            <button class="gc-rate-btn" onclick="setRate(18,this)">18%</button>
+                            <button class="gc-rate-btn" onclick="setRate(28,this)">28%</button>
+                        </div>
+                    </div>
+                    <div class="gc-calc__group"><label>Calculation Type</label>
+                        <div class="gc-type-btns">
+                            <button class="gc-type-btn gc-type-btn--active" onclick="setType('add',this)">Add GST</button>
+                            <button class="gc-type-btn" onclick="setType('remove',this)">Remove GST</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="gc-calc__row">
+                    <div class="gc-calc__group"><label>Supply Type</label>
+                        <select id="gcSupply"><option value="intra">Intra-State (CGST + SGST)</option><option value="inter">Inter-State (IGST)</option></select>
+                    </div>
+                </div>
+                <button class="gc-calc__btn" onclick="calcGST()">Calculate</button>
+            </div>
+            <div class="gc-calc__results" id="gcResults" style="display:none">
+                <div class="gc-result-grid">
+                    <div class="gc-result-card"><span class="gc-result-label">Base Amount</span><span class="gc-result-value" id="gcBase"></span></div>
+                    <div class="gc-result-card" id="gcCGSTCard"><span class="gc-result-label">CGST</span><span class="gc-result-value" id="gcCGST"></span></div>
+                    <div class="gc-result-card" id="gcSGSTCard"><span class="gc-result-label">SGST</span><span class="gc-result-value" id="gcSGST"></span></div>
+                    <div class="gc-result-card" id="gcIGSTCard" style="display:none"><span class="gc-result-label">IGST</span><span class="gc-result-value" id="gcIGST"></span></div>
+                    <div class="gc-result-card gc-result-card--total"><span class="gc-result-label">Total GST</span><span class="gc-result-value" id="gcTotalGST"></span></div>
+                    <div class="gc-result-card gc-result-card--grand"><span class="gc-result-label">Grand Total</span><span class="gc-result-value" id="gcGrand"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="gc-section gc-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up"><span class="section-tag">Reference</span><h2>Common GST Rates</h2><div class="section-line"></div></div>
+        <div class="gc-rates-grid">
+            <div class="gc-rates-card reveal-up" style="--delay:0.1s"><div class="gc-rates-pct" style="color:#43e97b">5%</div><h4>Essentials</h4><p>Packaged food, footwear (below ₹1000), transport, economy hotel rooms, small restaurants</p></div>
+            <div class="gc-rates-card reveal-up" style="--delay:0.15s"><div class="gc-rates-pct" style="color:#4facfe">12%</div><h4>Standard</h4><p>Frozen foods, fruit juices, mobile phones, sewing machines, business-class hotels, IT services</p></div>
+            <div class="gc-rates-card reveal-up" style="--delay:0.2s"><div class="gc-rates-pct" style="color:#fba002">18%</div><h4>Most Services</h4><p>Software, consulting, financial services, restaurants (AC), telecom, insurance, branded garments</p></div>
+            <div class="gc-rates-card reveal-up" style="--delay:0.25s"><div class="gc-rates-pct" style="color:#ff6b6b">28%</div><h4>Luxury & Sin</h4><p>Automobiles, tobacco, aerated drinks, luxury hotels (₹7500+), cement, ACs, washing machines</p></div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
+
+.gc-hero { padding:10rem 0 3rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(251,160,2,0.03) 50%,var(--bg-main) 100%); margin-top:80px; text-align:center; }
+.gc-hero__content { max-width:700px; margin:0 auto; }
+.gc-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(251,160,2,0.1); border:1px solid rgba(251,160,2,0.3); border-radius:50px; color:#fba002; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.gc-hero__title { font-size:clamp(2.5rem,5vw,3.5rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#fba002,#ff6b35,#fba002); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.gc-hero__subtitle { color:var(--text-muted); font-size:1rem; line-height:1.7; }
+
+.gc-section { padding:4rem 0; } .gc-section--dark { background:rgba(0,0,0,0.15); padding:5rem 0; }
+.section-header { text-align:center; margin-bottom:3rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(251,160,2,0.08); border:1px solid rgba(251,160,2,0.15); border-radius:50px; color:#fba002; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#fba002,#ff6b35); margin:0 auto; border-radius:2px; }
+
+.gc-calculator { max-width:650px; margin:0 auto; background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(251,160,2,0.1); }
+.gc-calc__header { text-align:center; margin-bottom:2rem; } .gc-calc__header h2 { color:var(--text-light); font-size:1.4rem; }
+.gc-calc__form { display:flex; flex-direction:column; gap:1.2rem; }
+.gc-calc__row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.gc-calc__group { display:flex; flex-direction:column; gap:0.4rem; }
+.gc-calc__group--full { grid-column:1/-1; }
+.gc-calc__group label { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+.gc-calc__group input, .gc-calc__group select { background:rgba(255,255,255,0.05); border:1px solid rgba(251,160,2,0.15); border-radius:10px; padding:0.7rem 1rem; color:var(--text-light); font-size:1rem; transition:border-color 0.3s; }
+.gc-calc__group input:focus, .gc-calc__group select:focus { outline:none; border-color:rgba(251,160,2,0.5); }
+.gc-calc__group select option { background:var(--bg-alt); color:var(--text-light); }
+
+.gc-rate-btns, .gc-type-btns { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.gc-rate-btn, .gc-type-btn { padding:0.5rem 1rem; background:rgba(255,255,255,0.05); border:1px solid rgba(251,160,2,0.12); border-radius:8px; color:var(--text-muted); font-weight:600; font-size:0.88rem; cursor:pointer; transition:all 0.3s; }
+.gc-rate-btn--active, .gc-type-btn--active { background:rgba(251,160,2,0.15); border-color:rgba(251,160,2,0.4); color:#fba002; }
+.gc-rate-btn:hover, .gc-type-btn:hover { border-color:rgba(251,160,2,0.3); }
+
+.gc-calc__btn { padding:1rem; background:linear-gradient(135deg,#fba002,#ff6b35); color:#000; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; }
+.gc-calc__btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(251,160,2,0.35); }
+
+.gc-result-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:2rem; }
+.gc-result-card { background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:12px; border:1px solid rgba(251,160,2,0.08); text-align:center; }
+.gc-result-card--total { border-color:rgba(251,160,2,0.2); background:rgba(251,160,2,0.04); }
+.gc-result-card--grand { border-color:rgba(67,233,123,0.2); background:rgba(67,233,123,0.04); }
+.gc-result-label { display:block; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem; }
+.gc-result-value { display:block; font-size:1.15rem; font-weight:800; color:var(--text-light); }
+.gc-result-card--total .gc-result-value { color:#fba002; }
+.gc-result-card--grand .gc-result-value { color:#43e97b; font-size:1.3rem; }
+
+.gc-rates-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem; max-width:900px; margin:0 auto; }
+.gc-rates-card { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(251,160,2,0.08); text-align:center; transition:all 0.3s; transition-delay:var(--delay,0s); }
+.gc-rates-card:hover { border-color:rgba(251,160,2,0.2); transform:translateY(-4px); }
+.gc-rates-pct { font-size:2rem; font-weight:900; margin-bottom:0.5rem; }
+.gc-rates-card h4 { color:var(--text-light); font-size:0.95rem; margin-bottom:0.5rem; }
+.gc-rates-card p { color:var(--text-muted); font-size:0.82rem; line-height:1.5; margin:0; }
+
+@media (max-width:768px) { .gc-hero { padding:7rem 1rem 2rem; } .gc-calc__row { grid-template-columns:1fr; } .gc-result-grid { grid-template-columns:1fr 1fr; } }
+</style>
+
+<script>
+let gstRate=5, gstType='add';
+function setRate(r,btn){ gstRate=r; document.querySelectorAll('.gc-rate-btn').forEach(b=>b.classList.remove('gc-rate-btn--active')); btn.classList.add('gc-rate-btn--active'); }
+function setType(t,btn){ gstType=t; document.querySelectorAll('.gc-type-btn').forEach(b=>b.classList.remove('gc-type-btn--active')); btn.classList.add('gc-type-btn--active'); }
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+});
+function calcGST(){
+    const amt=parseFloat(document.getElementById('gcAmount').value)||0;
+    const supply=document.getElementById('gcSupply').value;
+    let base,gst;
+    if(gstType==='add'){base=amt;gst=amt*gstRate/100;}
+    else{base=amt*100/(100+gstRate);gst=amt-base;}
+    const grand=base+gst;
+    const f=n=>'₹ '+Math.round(n).toLocaleString('en-IN');
+    document.getElementById('gcBase').textContent=f(base);
+    document.getElementById('gcTotalGST').textContent=f(gst);
+    document.getElementById('gcGrand').textContent=f(grand);
+    if(supply==='intra'){
+        document.getElementById('gcCGST').textContent=f(gst/2);
+        document.getElementById('gcSGST').textContent=f(gst/2);
+        document.getElementById('gcCGSTCard').style.display='';document.getElementById('gcSGSTCard').style.display='';document.getElementById('gcIGSTCard').style.display='none';
+    }else{
+        document.getElementById('gcIGST').textContent=f(gst);
+        document.getElementById('gcCGSTCard').style.display='none';document.getElementById('gcSGSTCard').style.display='none';document.getElementById('gcIGSTCard').style.display='';
+    }
+    document.getElementById('gcResults').style.display='block';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}EMI Calculator | Finucity{% endblock %}
+
+{% block content %}
+<section class="em-hero">
+    <div class="container">
+        <div class="em-hero__content reveal-up">
+            <span class="em-hero__badge">EMI Tool</span>
+            <h1 class="em-hero__title">EMI <span class="gradient-text">Calculator</span></h1>
+            <p class="em-hero__subtitle">Calculate monthly EMI for home loans, car loans, and personal loans. See total interest paid and principal-interest breakdown instantly.</p>
+        </div>
+    </div>
+</section>
+
+<section class="em-section">
+    <div class="container">
+        <div class="em-calculator reveal-up">
+            <div class="em-calc__header"><h2>Calculate Your EMI</h2></div>
+            <div class="em-calc__form">
+                <div class="em-calc__row">
+                    <div class="em-calc__group"><label>Loan Amount (₹)</label><input type="number" id="emLoan" value="5000000" step="100000"><small>Total loan principal</small></div>
+                    <div class="em-calc__group"><label>Interest Rate (% per annum)</label><input type="number" id="emRate" value="8.5" step="0.1" min="1" max="30"><small>Annual interest rate</small></div>
+                </div>
+                <div class="em-calc__row">
+                    <div class="em-calc__group"><label>Loan Tenure (Years)</label><input type="number" id="emTenure" value="20" min="1" max="40"></div>
+                    <div class="em-calc__group"><label>Loan Type</label><select id="emType"><option value="home">Home Loan</option><option value="car">Car Loan</option><option value="personal">Personal Loan</option></select></div>
+                </div>
+                <button class="em-calc__btn" onclick="calcEMI()">Calculate EMI</button>
+            </div>
+            <div class="em-calc__results" id="emResults" style="display:none">
+                <div class="em-result-grid">
+                    <div class="em-result-card em-result-card--emi"><span class="em-result-label">Monthly EMI</span><span class="em-result-value" id="emEMI"></span></div>
+                    <div class="em-result-card"><span class="em-result-label">Total Interest</span><span class="em-result-value em-result-value--red" id="emInterest"></span></div>
+                    <div class="em-result-card"><span class="em-result-label">Total Payment</span><span class="em-result-value" id="emTotal"></span></div>
+                    <div class="em-result-card"><span class="em-result-label">Interest : Principal</span><span class="em-result-value" id="emRatio"></span></div>
+                </div>
+                <div class="em-progress-bar">
+                    <div class="em-progress__principal" id="emBar1"><span id="emBarLabel1"></span></div>
+                    <div class="em-progress__interest" id="emBar2"><span id="emBarLabel2"></span></div>
+                </div>
+                <div class="em-tax-note" id="emTaxNote"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="em-section em-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up"><span class="section-tag">Reference</span><h2>Current Interest Rates</h2><div class="section-line"></div></div>
+        <div class="em-rates-grid">
+            <div class="em-rate-card reveal-up" style="--delay:0.1s"><div class="em-rate-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">&#127968;</div><h4>Home Loan</h4><p class="em-rate-range">8.25% – 9.50%</p><p>SBI: 8.25% | HDFC: 8.70% | ICICI: 8.75%</p></div>
+            <div class="em-rate-card reveal-up" style="--delay:0.15s"><div class="em-rate-icon" style="background:linear-gradient(135deg,#fba002,#ff6b35)">&#128663;</div><h4>Car Loan</h4><p class="em-rate-range">8.50% – 12.00%</p><p>New car: 8.5-9.5% | Used car: 11-14%</p></div>
+            <div class="em-rate-card reveal-up" style="--delay:0.2s"><div class="em-rate-icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">&#128179;</div><h4>Personal Loan</h4><p class="em-rate-range">10.50% – 18.00%</p><p>Banks: 10.5-14% | NBFCs: 14-24%</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="em-section">
+    <div class="container">
+        <div class="section-header reveal-up"><span class="section-tag">Tips</span><h2>Smart Loan Strategies</h2><div class="section-line"></div></div>
+        <div class="em-tips-grid">
+            <div class="em-tip reveal-up" style="--delay:0.1s"><h4>&#128161; Prepay Strategically</h4><p>Even 1 extra EMI per year on a ₹50L home loan saves ₹8-10L in interest and cuts tenure by 3-4 years.</p></div>
+            <div class="em-tip reveal-up" style="--delay:0.15s"><h4>&#128200; Step-Up EMI</h4><p>Increase your EMI by 5-10% yearly (matching salary hikes). This dramatically reduces total interest and tenure.</p></div>
+            <div class="em-tip reveal-up" style="--delay:0.2s"><h4>&#128176; Tax Benefits</h4><p>Home loan: Section 24(b) ₹2L interest + Section 80C ₹1.5L principal deduction. That's ₹3.5L tax-free.</p></div>
+            <div class="em-tip reveal-up" style="--delay:0.25s"><h4>&#9878; Compare Rates</h4><p>A 0.5% rate difference on ₹50L loan = ₹5-7L savings over 20 years. Always negotiate and compare.</p></div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
+
+.em-hero { padding:10rem 0 3rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(161,140,209,0.03) 50%,var(--bg-main) 100%); margin-top:80px; text-align:center; }
+.em-hero__content { max-width:700px; margin:0 auto; }
+.em-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(161,140,209,0.1); border:1px solid rgba(161,140,209,0.3); border-radius:50px; color:#a18cd1; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.em-hero__title { font-size:clamp(2.5rem,5vw,3.5rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#a18cd1,#fbc2eb,#a18cd1); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.em-hero__subtitle { color:var(--text-muted); font-size:1rem; line-height:1.7; }
+
+.em-section { padding:4rem 0; } .em-section--dark { background:rgba(0,0,0,0.15); padding:5rem 0; }
+.section-header { text-align:center; margin-bottom:3rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(161,140,209,0.08); border:1px solid rgba(161,140,209,0.15); border-radius:50px; color:#a18cd1; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#a18cd1,#fbc2eb); margin:0 auto; border-radius:2px; }
+
+.em-calculator { max-width:700px; margin:0 auto; background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(161,140,209,0.1); }
+.em-calc__header { text-align:center; margin-bottom:2rem; } .em-calc__header h2 { color:var(--text-light); font-size:1.4rem; }
+.em-calc__form { display:flex; flex-direction:column; gap:1rem; }
+.em-calc__row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.em-calc__group { display:flex; flex-direction:column; gap:0.3rem; }
+.em-calc__group label { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+.em-calc__group input, .em-calc__group select { background:rgba(255,255,255,0.05); border:1px solid rgba(161,140,209,0.15); border-radius:10px; padding:0.7rem 1rem; color:var(--text-light); font-size:1rem; transition:border-color 0.3s; }
+.em-calc__group input:focus, .em-calc__group select:focus { outline:none; border-color:rgba(161,140,209,0.5); }
+.em-calc__group small { color:var(--text-muted); font-size:0.72rem; opacity:0.7; }
+.em-calc__group select option { background:var(--bg-alt); color:var(--text-light); }
+.em-calc__btn { padding:1rem; background:linear-gradient(135deg,#a18cd1,#fbc2eb); color:#000; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; margin-top:0.5rem; }
+.em-calc__btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(161,140,209,0.35); }
+
+.em-result-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-top:2rem; margin-bottom:1.5rem; }
+.em-result-card { background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:12px; border:1px solid rgba(161,140,209,0.08); text-align:center; }
+.em-result-card--emi { border-color:rgba(161,140,209,0.25); background:rgba(161,140,209,0.05); }
+.em-result-label { display:block; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem; }
+.em-result-value { display:block; font-size:1.2rem; font-weight:800; color:var(--text-light); }
+.em-result-value--red { color:#ff6b6b !important; }
+.em-result-card--emi .em-result-value { color:#a18cd1; font-size:1.5rem; }
+
+.em-progress-bar { display:flex; height:32px; border-radius:16px; overflow:hidden; background:rgba(255,255,255,0.03); margin-bottom:1rem; }
+.em-progress__principal { background:linear-gradient(135deg,#43e97b,#38f9d7); display:flex; align-items:center; justify-content:center; transition:width 0.6s; }
+.em-progress__interest { background:linear-gradient(135deg,#ff6b6b,#ffa07a); display:flex; align-items:center; justify-content:center; transition:width 0.6s; }
+.em-progress-bar span { font-size:0.72rem; font-weight:700; color:#000; white-space:nowrap; }
+
+.em-tax-note { background:rgba(67,233,123,0.06); border:1px solid rgba(67,233,123,0.15); border-radius:10px; padding:0.8rem 1.2rem; font-size:0.85rem; color:var(--text-muted); text-align:center; }
+
+.em-rates-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:800px; margin:0 auto; }
+.em-rate-card { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(161,140,209,0.08); text-align:center; transition:all 0.3s; transition-delay:var(--delay,0s); }
+.em-rate-card:hover { border-color:rgba(161,140,209,0.2); transform:translateY(-4px); }
+.em-rate-icon { width:50px; height:50px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 1rem; }
+.em-rate-card h4 { color:var(--text-light); margin-bottom:0.5rem; font-size:1rem; }
+.em-rate-range { color:#a18cd1; font-weight:800; font-size:1.1rem; margin-bottom:0.3rem; }
+.em-rate-card > p:last-child { color:var(--text-muted); font-size:0.78rem; margin:0; }
+
+.em-tips-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; max-width:900px; margin:0 auto; }
+.em-tip { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(161,140,209,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); }
+.em-tip:hover { border-color:rgba(161,140,209,0.2); transform:translateY(-4px); }
+.em-tip h4 { color:var(--text-light); font-size:0.95rem; margin-bottom:0.6rem; }
+.em-tip p { color:var(--text-muted); font-size:0.85rem; line-height:1.5; margin:0; }
+
+@media (max-width:768px) { .em-hero { padding:7rem 1rem 2rem; } .em-calc__row, .em-result-grid, .em-rates-grid { grid-template-columns:1fr; } }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+});
+function calcEMI(){
+    const P=parseFloat(document.getElementById('emLoan').value)||0;
+    const annualRate=parseFloat(document.getElementById('emRate').value)||0;
+    const years=parseInt(document.getElementById('emTenure').value)||0;
+    const type=document.getElementById('emType').value;
+    const r=annualRate/12/100;
+    const n=years*12;
+    const emi=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+    const totalPay=emi*n;
+    const totalInt=totalPay-P;
+    const ratio=(totalInt/P*100).toFixed(0);
+    const f=v=>'₹ '+formatINR(Math.round(v));
+    document.getElementById('emEMI').textContent=f(emi);
+    document.getElementById('emInterest').textContent=f(totalInt);
+    document.getElementById('emTotal').textContent=f(totalPay);
+    document.getElementById('emRatio').textContent=ratio+'% of principal';
+    const pPct=Math.round(P/totalPay*100), iPct=100-pPct;
+    document.getElementById('emBar1').style.width=pPct+'%';
+    document.getElementById('emBar2').style.width=iPct+'%';
+    document.getElementById('emBarLabel1').textContent='Principal '+pPct+'%';
+    document.getElementById('emBarLabel2').textContent='Interest '+iPct+'%';
+    let taxNote='';
+    if(type==='home')taxNote='&#128161; Tax Benefit: Claim up to ₹2L interest (Sec 24b) + ₹1.5L principal (Sec 80C) per year.';
+    else if(type==='car')taxNote='&#128161; No tax benefit on car loans for salaried individuals. Business owners can claim interest as expense.';
+    else taxNote='&#128161; No tax benefit on personal loans unless used for home renovation (Sec 24b) or education.';
+    document.getElementById('emTaxNote').innerHTML=taxNote;
+    document.getElementById('emResults').style.display='block';
+}
+function formatINR(n){if(n>=10000000)return(n/10000000).toFixed(2)+' Cr';if(n>=100000)return(n/100000).toFixed(2)+' L';return n.toLocaleString('en-IN');}
+</script>
+{% endblock %}

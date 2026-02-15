@@ -3,486 +3,665 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Management - Finucity Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0d0a 0%, #1a1f1a 100%);
-            color: #f0f2f0;
-            min-height: 100vh;
-        }
-
-        .admin-header {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .admin-badge {
-            background: linear-gradient(135deg, #FBA002, #e69200);
-            color: #0a0c0a;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .admin-title {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .admin-user {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .admin-nav {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 0 40px;
-            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            display: block;
-            padding: 18px 0;
-            color: #9ca89c;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #FBA002;
-            border-bottom-color: #FBA002;
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .container {
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .page-header {
-            margin-bottom: 32px;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: #9ca89c;
-            font-size: 16px;
-        }
-
-        .users-table-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 24px 32px;
-            background: rgba(251, 160, 2, 0.1);
-            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
-        }
-
-        .table-header h2 {
-            font-size: 18px;
-            color: #f0f2f0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        th {
-            text-align: left;
-            padding: 16px 32px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #9ca89c;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-        }
-
-        td {
-            padding: 20px 32px;
-            border-bottom: 1px solid rgba(251, 160, 2, 0.05);
-        }
-
-        tr:hover {
-            background: rgba(251, 160, 2, 0.05);
-        }
-
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .role-admin {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-        }
-
-        .role-ca {
-            background: rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-        }
-
-        .role-user {
-            background: rgba(34, 197, 94, 0.2);
-            color: #86efac;
-        }
-
-        .role-ca_pending {
-            background: rgba(251, 160, 2, 0.2);
-            color: #FBA002;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-edit {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #93c5fd;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-edit:hover {
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        .empty-state {
-            padding: 60px 32px;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            color: #9ca89c;
-            margin-bottom: 16px;
-        }
-
-        .empty-state p {
-            color: #9ca89c;
-            font-size: 16px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: rgba(26, 31, 26, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(251, 160, 2, 0.3);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .modal-header {
-            margin-bottom: 24px;
-        }
-
-        .modal-header h3 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #9ca89c;
-            margin-bottom: 8px;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-            border-radius: 8px;
-            color: #f0f2f0;
-            font-size: 14px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #9ca89c;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #FBA002, #e69200);
-            border: none;
-            color: #0a0c0a;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-    </style>
+    <title>User Management | Finucity Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
 </head>
-<body>
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="admin-logo">
-            <div class="admin-badge">🔐 ADMIN</div>
-            <h1 class="admin-title">Finucity Admin</h1>
+<body class="admin-shell">
+
+<div class="admin-layout" id="adminLayout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">F</div>
+            <div class="sidebar-brand-text">
+                <h1>Finucity</h1>
+                <span>Admin Panel</span>
+            </div>
         </div>
-        <div class="admin-user">
-            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Overview</div>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-th-large"></i>
+                    <span class="link-text">Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.analytics') }}" class="sidebar-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="link-text">Analytics</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">People</div>
+                <a href="{{ url_for('main.admin_users') }}" class="sidebar-link active">
+                    <i class="fas fa-users"></i>
+                    <span class="link-text">Users</span>
+                </a>
+                <a href="{{ url_for('main.admin_ca_applications') }}" class="sidebar-link">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="link-text">CA Applications</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Operations</div>
+                <a href="{{ url_for('admin_enhanced.manage_services') }}" class="sidebar-link">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span class="link-text">Services</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_bookings') }}" class="sidebar-link">
+                    <i class="fas fa-receipt"></i>
+                    <span class="link-text">Bookings</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_pricing') }}" class="sidebar-link">
+                    <i class="fas fa-tags"></i>
+                    <span class="link-text">Pricing</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Moderation</div>
+                <a href="{{ url_for('admin_enhanced.manage_disputes') }}" class="sidebar-link">
+                    <i class="fas fa-gavel"></i>
+                    <span class="link-text">Disputes</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">System</div>
+                <a href="{{ url_for('admin_enhanced.platform_settings') }}" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="link-text">Settings</span>
+                </a>
+                <a href="{{ url_for('main.home') }}" class="sidebar-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="link-text">View Site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user" onclick="window.location.href='/profile'">
+                <div class="sidebar-user-avatar">{{ user.first_name[0]|upper if user.first_name else 'A' }}{{ user.last_name[0]|upper if user.last_name else 'D' }}</div>
+                <div class="sidebar-user-info">
+                    <h4>{{ user.first_name or 'Admin' }} {{ user.last_name or '' }}</h4>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== HEADER ===== -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-breadcrumb">
+                <span>Admin</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>People</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-current">Users</span>
+            </div>
+            <button class="cmd-palette-trigger" onclick="document.getElementById('cmdPaletteOverlay').classList.add('open'); document.getElementById('cmdPaletteInput').focus();">
+                <i class="fas fa-search"></i>
+                <span>Search commands...</span>
+                <kbd>Ctrl K</kbd>
+            </button>
+        </div>
+        <div class="header-right">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>Live</span>
+            </div>
+            <div class="header-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="header-icon-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
-    </div>
+    </header>
 
-    <!-- Admin Navigation -->
-    <nav class="admin-nav">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('main.admin_dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('main.admin_users') }}" class="active">Users</a></li>
-            <li><a href="{{ url_for('main.admin_ca_applications') }}">CA Applications</a></li>
-        </ul>
-    </nav>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="admin-main">
 
-    <!-- Page Content -->
-    <div class="container">
-        <div class="page-header">
-            <h1>👥 User Management</h1>
-            <p>Manage all registered users and their roles</p>
+        <!-- Page Title -->
+        <div class="page-title-bar">
+            <div class="page-title-group">
+                <h2>User Management</h2>
+                <p>{{ users|length }} registered users &middot; Manage roles and permissions</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-admin secondary" onclick="exportUsers()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="btn-admin primary">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
         </div>
 
-        <div class="users-table-container">
-            <div class="table-header">
-                <h2>All Users ({{ users|length }})</h2>
+        <!-- ===== STATS ROW ===== -->
+        <div class="stats-row">
+            <div class="stat-card" style="--card-accent: #06b6d4;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total Users</span>
+                    <div class="stat-card-icon cyan"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="stat-card-value">{{ users|length }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-database"></i> All registered accounts</div>
             </div>
 
-            {% if users %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Username</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Joined</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user_item in users %}
-                    <tr>
-                        <td>{{ user_item.first_name or 'N/A' }} {{ user_item.last_name or '' }}</td>
-                        <td>{{ user_item.email }}</td>
-                        <td>{{ user_item.username or 'N/A' }}</td>
-                        <td>
-                            <span class="role-badge role-{{ user_item.role or 'user' }}">
-                                {{ user_item.role or 'user' }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if user_item.is_active %}
-                                <span style="color: #86efac;">● Active</span>
-                            {% else %}
-                                <span style="color: #fca5a5;">● Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ user_item.created_at[:10] if user_item.created_at else 'N/A' }}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-edit" onclick="editUser('{{ user_item.id }}', '{{ user_item.email }}', '{{ user_item.role or 'user' }}')">
-                                    <i class="fas fa-edit"></i> Edit Role
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-users"></i>
-                <p>No users found</p>
+            <div class="stat-card" style="--card-accent: #22c55e;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Active Users</span>
+                    <div class="stat-card-icon success"><i class="fas fa-user-check"></i></div>
+                </div>
+                <div class="stat-card-value" id="activeCount">{{ users|selectattr('is_active')|list|length if users else 0 }}</div>
+                <div class="stat-card-change up"><i class="fas fa-circle-check"></i> Currently active</div>
             </div>
-            {% endif %}
+
+            <div class="stat-card" style="--card-accent: #3b82f6;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">CAs</span>
+                    <div class="stat-card-icon info"><i class="fas fa-user-tie"></i></div>
+                </div>
+                <div class="stat-card-value" id="caCount">0</div>
+                <div class="stat-card-change up"><i class="fas fa-briefcase"></i> Chartered Accountants</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #ef4444;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Admins</span>
+                    <div class="stat-card-icon danger"><i class="fas fa-shield-halved"></i></div>
+                </div>
+                <div class="stat-card-value" id="adminCount">0</div>
+                <div class="stat-card-change neutral"><i class="fas fa-crown"></i> System administrators</div>
+            </div>
         </div>
-    </div>
 
-    <!-- Edit User Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit User Role</h3>
-                <p id="userEmail" style="color: #9ca89c; font-size: 14px;"></p>
+        <!-- ===== FILTERS & SEARCH ===== -->
+        <div class="admin-card mb-3">
+            <div class="card-body" style="padding: 14px 22px;">
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <!-- Search -->
+                    <div class="input-with-icon" style="flex: 1; min-width: 240px;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="admin-input" id="searchInput" placeholder="Search by name, email, or username..." oninput="filterUsers()">
+                    </div>
+
+                    <!-- Role Filter Tabs -->
+                    <div class="admin-tabs" id="roleTabs">
+                        <button class="admin-tab active" data-role="all" onclick="filterByRole('all', this)">All</button>
+                        <button class="admin-tab" data-role="user" onclick="filterByRole('user', this)">Users</button>
+                        <button class="admin-tab" data-role="ca" onclick="filterByRole('ca', this)">CAs</button>
+                        <button class="admin-tab" data-role="ca_pending" onclick="filterByRole('ca_pending', this)">Pending</button>
+                        <button class="admin-tab" data-role="admin" onclick="filterByRole('admin', this)">Admins</button>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <select class="admin-select" id="statusFilter" onchange="filterUsers()" style="width: auto; min-width: 140px;">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== USERS TABLE ===== -->
+        <div class="admin-card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-header-icon" style="background: var(--admin-cyan-bg); color: var(--admin-cyan);"><i class="fas fa-users"></i></div>
+                    <h3>All Users</h3>
+                    <span class="text-muted" style="font-size: 12px; margin-left: 8px;" id="filteredCount">({{ users|length }})</span>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-admin ghost sm" onclick="location.reload()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body no-pad">
+                {% if users %}
+                <div class="admin-table-wrapper">
+                    <table class="admin-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user_item in users %}
+                            <tr data-role="{{ user_item.role or 'user' }}" data-status="{{ 'active' if user_item.is_active else 'inactive' }}" data-search="{{ (user_item.first_name or '')|lower }} {{ (user_item.last_name or '')|lower }} {{ (user_item.email or '')|lower }} {{ (user_item.username or '')|lower }}">
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-user-avatar" style="{% if user_item.role == 'admin' %}background: linear-gradient(135deg, var(--admin-danger), #dc2626);{% elif user_item.role == 'ca' %}background: linear-gradient(135deg, var(--admin-info), #2563eb);{% elif user_item.role == 'ca_pending' %}background: linear-gradient(135deg, var(--admin-warning), #d97706);{% else %}background: linear-gradient(135deg, var(--admin-cyan), #0891b2);{% endif %}">
+                                            {{ user_item.first_name[0]|upper if user_item.first_name else 'U' }}{{ user_item.last_name[0]|upper if user_item.last_name else '' }}
+                                        </div>
+                                        <div class="table-user-info">
+                                            <h5>{{ user_item.first_name or 'N/A' }} {{ user_item.last_name or '' }}</h5>
+                                            <span>{{ user_item.email }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="color: var(--admin-text-tertiary); font-family: monospace; font-size: 12px;">
+                                        {{ user_item.username or '—' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {{ user_item.role or 'user' }}">
+                                        <span class="status-dot"></span>
+                                        {{ user_item.role or 'user' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if user_item.is_active %}
+                                        <span style="color: var(--admin-success); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--admin-success);"></span> Active
+                                        </span>
+                                    {% else %}
+                                        <span style="color: var(--admin-text-muted); font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--admin-text-muted);"></span> Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span style="font-size: 12.5px; color: var(--admin-text-tertiary);">
+                                        {{ user_item.created_at[:10] if user_item.created_at else 'N/A' }}
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <div class="d-flex gap-sm" style="justify-content: flex-end;">
+                                        <button class="btn-admin secondary sm" onclick="viewUser('{{ user_item.id }}', '{{ user_item.first_name or '' }}', '{{ user_item.last_name or '' }}', '{{ user_item.email }}', '{{ user_item.username or '' }}', '{{ user_item.role or 'user' }}', {{ 'true' if user_item.is_active else 'false' }}, '{{ user_item.created_at or '' }}')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn-admin primary sm" onclick="editUser('{{ user_item.id }}', '{{ user_item.email }}', '{{ user_item.role or 'user' }}')" title="Edit Role">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h4>No Users Found</h4>
+                    <p>No registered users in the system yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ===== EDIT ROLE MODAL ===== -->
+<div class="admin-modal-overlay" id="editModal">
+    <div class="admin-modal">
+        <div class="admin-modal-header">
+            <h3><i class="fas fa-user-edit" style="color: var(--admin-accent); margin-right: 8px;"></i> Edit User Role</h3>
+            <button class="btn-admin ghost sm" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="admin-modal-body">
+            <div class="user-detail-card">
+                <div class="user-detail-avatar" id="modalAvatar">AD</div>
+                <div class="user-detail-info">
+                    <h3 id="modalUserEmail">user@example.com</h3>
+                    <p>Change role assignment</p>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Select Role</label>
-                <select id="userRole" class="form-select">
-                    <option value="user">User</option>
-                    <option value="ca">CA (Chartered Accountant)</option>
-                    <option value="ca_pending">CA Pending Verification</option>
-                    <option value="admin">Admin</option>
+                <label>Select New Role</label>
+                <select id="userRole" class="admin-select">
+                    <option value="user">User — Regular platform user</option>
+                    <option value="ca">CA — Chartered Accountant (Verified)</option>
+                    <option value="ca_pending">CA Pending — Awaiting Verification</option>
+                    <option value="admin">Admin — Full System Access</option>
                 </select>
             </div>
 
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-save" onclick="saveUserRole()">Save Changes</button>
+            <div style="background: var(--admin-warning-bg); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: var(--admin-radius-md); padding: 14px; margin-top: 12px;">
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--admin-warning); margin-top: 2px;"></i>
+                    <div>
+                        <p style="font-size: 13px; font-weight: 600; color: var(--admin-warning); margin-bottom: 4px;">Role Change Warning</p>
+                        <p style="font-size: 12px; color: var(--admin-text-tertiary); line-height: 1.5;">Changing a user's role will immediately affect their access level and permissions across the platform. This action is logged.</p>
+                    </div>
+                </div>
             </div>
         </div>
+        <div class="admin-modal-footer">
+            <button class="btn-admin secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn-admin primary" onclick="saveUserRole()">
+                <i class="fas fa-check"></i> Save Changes
+            </button>
+        </div>
     </div>
+</div>
 
-    <script>
-        let currentUserId = null;
+<!-- ===== USER DETAIL SLIDE-OVER ===== -->
+<div class="detail-panel" id="userDetailPanel">
+    <div class="detail-panel-header">
+        <h3>User Details</h3>
+        <button class="btn-admin ghost sm" onclick="closeDetailPanel()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="detail-panel-body" id="userDetailBody">
+        <!-- Populated dynamically -->
+    </div>
+    <div class="detail-panel-footer">
+        <button class="btn-admin secondary" onclick="closeDetailPanel()">Close</button>
+        <button class="btn-admin primary" id="detailEditBtn">
+            <i class="fas fa-pen"></i> Edit Role
+        </button>
+    </div>
+</div>
+<div class="notification-panel-overlay" id="detailOverlay" onclick="closeDetailPanel()"></div>
 
-        function editUser(userId, email, role) {
-            currentUserId = userId;
-            document.getElementById('userEmail').textContent = email;
-            document.getElementById('userRole').value = role;
-            document.getElementById('editModal').classList.add('show');
-        }
+<!-- ===== COMMAND PALETTE ===== -->
+<div class="cmd-palette-overlay" id="cmdPaletteOverlay">
+    <div class="cmd-palette">
+        <input type="text" class="cmd-palette-input" id="cmdPaletteInput" placeholder="Type a command or search..." autocomplete="off" spellcheck="false">
+        <div class="cmd-palette-results" id="cmdPaletteResults"></div>
+    </div>
+</div>
 
-        function closeModal() {
-            document.getElementById('editModal').classList.remove('show');
-            currentUserId = null;
-        }
+<script>
+(function() {
+    'use strict';
 
-        async function saveUserRole() {
-            if (!currentUserId) return;
+    let currentUserId = null;
+    let currentRole = 'all';
 
-            const newRole = document.getElementById('userRole').value;
+    // ===== SIDEBAR =====
+    const layout = document.getElementById('adminLayout');
+    const toggle = document.getElementById('sidebarToggle');
+    if (localStorage.getItem('admin_sidebar_collapsed') === 'true') layout?.classList.add('sidebar-collapsed');
+    toggle?.addEventListener('click', () => {
+        const collapsed = layout.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('admin_sidebar_collapsed', collapsed);
+    });
+    document.getElementById('mobileSidebarToggle')?.addEventListener('click', () => {
+        document.querySelector('.admin-sidebar')?.classList.toggle('mobile-open');
+    });
 
-            try {
-                const response = await fetch(`/api/admin/users/${currentUserId}/role`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ role: newRole })
-                });
+    // ===== STATS COUNTS =====
+    const rows = document.querySelectorAll('#usersTable tbody tr');
+    let caCount = 0, adminCount = 0;
+    rows.forEach(row => {
+        const role = row.dataset.role;
+        if (role === 'ca') caCount++;
+        if (role === 'admin') adminCount++;
+    });
+    document.getElementById('caCount').textContent = caCount;
+    document.getElementById('adminCount').textContent = adminCount;
 
-                const data = await response.json();
+    // ===== FILTER =====
+    window.filterByRole = function(role, btn) {
+        currentRole = role;
+        document.querySelectorAll('#roleTabs .admin-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        filterUsers();
+    };
 
-                if (response.ok && data.success) {
-                    alert('User role updated successfully!');
-                    window.location.reload();
-                } else {
-                    alert('Failed to update role: ' + (data.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error updating role:', error);
-                alert('Error updating user role');
+    window.filterUsers = function() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        let visible = 0;
+
+        rows.forEach(row => {
+            const matchRole = currentRole === 'all' || row.dataset.role === currentRole;
+            const matchSearch = !search || row.dataset.search.includes(search);
+            const matchStatus = statusFilter === 'all' || row.dataset.status === statusFilter;
+            const show = matchRole && matchSearch && matchStatus;
+            row.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+
+        document.getElementById('filteredCount').textContent = `(${visible})`;
+    };
+
+    // ===== EDIT MODAL =====
+    window.editUser = function(userId, email, role) {
+        currentUserId = userId;
+        document.getElementById('modalUserEmail').textContent = email;
+        document.getElementById('modalAvatar').textContent = email[0].toUpperCase();
+        document.getElementById('userRole').value = role;
+        document.getElementById('editModal').classList.add('open');
+    };
+
+    window.closeModal = function() {
+        document.getElementById('editModal').classList.remove('open');
+        currentUserId = null;
+    };
+
+    window.saveUserRole = async function() {
+        if (!currentUserId) return;
+        const newRole = document.getElementById('userRole').value;
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+            const response = await fetch(`/api/admin/users/${currentUserId}/role`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: newRole })
+            });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showToast('Role updated successfully', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
             }
+        } catch (error) {
+            showToast('Network error', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Save Changes';
         }
+    };
 
-        // Close modal on outside click
-        document.getElementById('editModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+    // Close modal on backdrop click
+    document.getElementById('editModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // ===== USER DETAIL PANEL =====
+    window.viewUser = function(id, firstName, lastName, email, username, role, isActive, createdAt) {
+        const body = document.getElementById('userDetailBody');
+        const fullName = (firstName + ' ' + lastName).trim() || 'Unknown';
+        const initials = ((firstName?.[0] || '') + (lastName?.[0] || '')).toUpperCase() || 'U';
+        const roleColors = {
+            admin: 'var(--admin-danger)',
+            ca: 'var(--admin-info)',
+            ca_pending: 'var(--admin-warning)',
+            user: 'var(--admin-cyan)'
+        };
+
+        body.innerHTML = `
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, ${roleColors[role] || roleColors.user}, rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #fff; margin: 0 auto 14px;">
+                    ${initials}
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--admin-text-primary); margin-bottom: 4px;">${fullName}</h3>
+                <p style="font-size: 13px; color: var(--admin-text-tertiary);">${email}</p>
+                <span class="status-badge ${role}" style="margin-top: 10px; display: inline-flex;">
+                    <span class="status-dot"></span> ${role}
+                </span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="metric-row">
+                    <div class="metric-pill">
+                        <span class="metric-label">Status</span>
+                        <span class="metric-value" style="font-size: 14px; color: ${isActive ? 'var(--admin-success)' : 'var(--admin-danger)'};">
+                            ${isActive ? '● Active' : '● Inactive'}
+                        </span>
+                    </div>
+                    <div class="metric-pill">
+                        <span class="metric-label">Joined</span>
+                        <span class="metric-value" style="font-size: 14px;">
+                            ${createdAt ? new Date(createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="background: var(--admin-bg-tertiary); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 12px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">User ID</span>
+                            <span style="font-size: 12px; color: var(--admin-text-tertiary); font-family: monospace;">${id.substring(0, 16)}...</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 12px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Username</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${username || '—'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 12px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Email</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${email}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 12px; color: var(--admin-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Role</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500; text-transform: capitalize;">${role.replace('_', ' ')}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('detailEditBtn').onclick = () => {
+            closeDetailPanel();
+            editUser(id, email, role);
+        };
+
+        document.getElementById('userDetailPanel').classList.add('open');
+        document.getElementById('detailOverlay').classList.add('open');
+    };
+
+    window.closeDetailPanel = function() {
+        document.getElementById('userDetailPanel').classList.remove('open');
+        document.getElementById('detailOverlay').classList.remove('open');
+    };
+
+    // ===== EXPORT =====
+    window.exportUsers = function() {
+        const headers = ['Name', 'Email', 'Username', 'Role', 'Status', 'Joined'];
+        const csvRows = [headers.join(',')];
+
+        document.querySelectorAll('#usersTable tbody tr').forEach(row => {
+            if (row.style.display !== 'none') {
+                const cells = row.querySelectorAll('td');
+                const name = cells[0]?.querySelector('h5')?.textContent?.trim() || '';
+                const email = cells[0]?.querySelector('span')?.textContent?.trim() || '';
+                const username = cells[1]?.textContent?.trim() || '';
+                const role = cells[2]?.textContent?.trim() || '';
+                const status = cells[3]?.textContent?.trim() || '';
+                const joined = cells[4]?.textContent?.trim() || '';
+                csvRows.push([name, email, username, role, status, joined].map(v => `"${v}"`).join(','));
             }
         });
-    </script>
+
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `finucity-users-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        showToast('Users exported successfully', 'success');
+    };
+
+    // ===== TOAST =====
+    function showToast(message, type = 'info', duration = 4000) {
+        let container = document.getElementById('admin-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'admin-toast-container';
+            container.className = 'admin-toast-container';
+            document.body.appendChild(container);
+        }
+        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `admin-toast ${type}`;
+        toast.style.setProperty('--toast-duration', `${duration}ms`);
+        toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, duration);
+    }
+    window.showToast = showToast;
+
+    // ===== COMMAND PALETTE =====
+    const cmdOverlay = document.getElementById('cmdPaletteOverlay');
+    const cmdInput = document.getElementById('cmdPaletteInput');
+    const cmdResults = document.getElementById('cmdPaletteResults');
+    const commands = [
+        { icon: 'fa-th-large', label: 'Dashboard', action: () => window.location.href = '/admin/dashboard' },
+        { icon: 'fa-users', label: 'User Management', action: () => window.location.href = '/admin/users' },
+        { icon: 'fa-user-tie', label: 'CA Applications', action: () => window.location.href = '/admin/ca-applications' },
+        { icon: 'fa-chart-line', label: 'Analytics', action: () => window.location.href = '/admin/analytics' },
+        { icon: 'fa-concierge-bell', label: 'Services', action: () => window.location.href = '/admin/services' },
+        { icon: 'fa-cog', label: 'Settings', action: () => window.location.href = '/admin/settings' },
+        { icon: 'fa-home', label: 'Main Site', action: () => window.location.href = '/' },
+        { icon: 'fa-sign-out-alt', label: 'Logout', action: () => window.location.href = '/auth/logout' },
+    ];
+
+    function renderCmds(cmds) {
+        if (!cmdResults) return;
+        cmdResults.innerHTML = cmds.map((c, i) => `
+            <div class="cmd-palette-item ${i === 0 ? 'selected' : ''}" data-index="${i}">
+                <i class="fas ${c.icon}"></i><span>${c.label}</span>
+            </div>`).join('');
+        cmdResults.querySelectorAll('.cmd-palette-item').forEach((item, idx) => {
+            item.addEventListener('click', () => { cmds[idx].action(); cmdOverlay.classList.remove('open'); });
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); cmdOverlay?.classList.toggle('open'); cmdInput?.focus(); renderCmds(commands); }
+        if (e.key === 'Escape') { cmdOverlay?.classList.remove('open'); closeDetailPanel(); closeModal(); }
+    });
+
+    cmdOverlay?.addEventListener('click', (e) => { if (e.target === cmdOverlay) cmdOverlay.classList.remove('open'); });
+    cmdInput?.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        renderCmds(commands.filter(c => c.label.toLowerCase().includes(q)));
+    });
+
+    cmdInput?.addEventListener('keydown', (e) => {
+        const items = cmdResults?.querySelectorAll('.cmd-palette-item');
+        if (!items?.length) return;
+        const current = cmdResults.querySelector('.selected');
+        let idx = current ? parseInt(current.dataset.index) : 0;
+        if (e.key === 'ArrowDown') { e.preventDefault(); current?.classList.remove('selected'); idx = (idx + 1) % items.length; items[idx].classList.add('selected'); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); current?.classList.remove('selected'); idx = (idx - 1 + items.length) % items.length; items[idx].classList.add('selected'); }
+        else if (e.key === 'Enter') { e.preventDefault(); current?.click(); }
+    });
+
+})();
+</script>
+
 </body>
 </html>

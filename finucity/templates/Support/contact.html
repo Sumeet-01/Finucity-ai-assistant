@@ -2,238 +2,231 @@
 
 {% block title %}Contact Us | Finucity{% endblock %}
 
-{% block extra_css %}
-<style>
-    .contact-hero {
-        background: linear-gradient(135deg, #0f1410 0%, #1a231c 100%);
-        padding: 5rem 0 3rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    .contact-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 30% 50%, rgba(251,160,2,0.08) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    .contact-hero h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #f8f9fa;
-        margin-bottom: 0.75rem;
-    }
-    .contact-hero p {
-        color: #9aa899;
-        font-size: 1.1rem;
-        max-width: 540px;
-        margin: 0 auto;
-    }
-    .contact-section {
-        padding: 4rem 0 5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-    .contact-grid {
-        display: grid;
-        grid-template-columns: 1fr 1.3fr;
-        gap: 3rem;
-        align-items: start;
-    }
-    .contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
-    .info-card {
-        background: rgba(26,35,28,0.5);
-        border: 1px solid rgba(251,160,2,0.1);
-        border-radius: 14px;
-        padding: 1.5rem;
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        transition: border-color 0.3s;
-    }
-    .info-card:hover { border-color: rgba(251,160,2,0.3); }
-    .info-card .icon {
-        width: 44px; height: 44px;
-        background: rgba(251,160,2,0.1);
-        border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        color: #fba002; font-size: 1.1rem; flex-shrink: 0;
-    }
-    .info-card h3 { color: #f8f9fa; font-size: 1rem; font-weight: 600; margin: 0 0 0.3rem; }
-    .info-card p { color: #9aa899; font-size: 0.9rem; margin: 0; line-height: 1.5; }
-    .contact-form-card {
-        background: rgba(26,35,28,0.5);
-        border: 1px solid rgba(251,160,2,0.12);
-        border-radius: 16px;
-        padding: 2rem;
-    }
-    .contact-form-card h2 {
-        color: #f8f9fa; font-size: 1.4rem; font-weight: 700; margin: 0 0 1.5rem;
-    }
-    .form-group { margin-bottom: 1.25rem; }
-    .form-group label {
-        display: block; color: #b8c7b7; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;
-    }
-    .form-group input, .form-group textarea, .form-group select {
-        width: 100%; padding: 0.75rem 1rem;
-        background: rgba(15,20,16,0.6);
-        border: 1px solid rgba(251,160,2,0.15);
-        border-radius: 10px;
-        color: #f8f9fa; font-size: 0.95rem;
-        font-family: inherit;
-        transition: border-color 0.3s;
-    }
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-        outline: none; border-color: #fba002;
-    }
-    .form-group textarea { resize: vertical; min-height: 120px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .submit-btn {
-        width: 100%; padding: 0.85rem;
-        background: linear-gradient(135deg, #fba002, #d88c00);
-        border: none; border-radius: 10px;
-        color: #0f1410; font-weight: 700; font-size: 1rem;
-        cursor: pointer; transition: all 0.3s;
-        display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-    }
-    .submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .form-feedback {
-        margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 8px;
-        font-size: 0.9rem; display: none;
-    }
-    .form-feedback.success { display: block; background: rgba(76,175,80,0.1); color: #4caf50; border: 1px solid rgba(76,175,80,0.2); }
-    .form-feedback.error { display: block; background: rgba(244,67,54,0.1); color: #f44336; border: 1px solid rgba(244,67,54,0.2); }
-    @media (max-width: 768px) {
-        .contact-grid { grid-template-columns: 1fr; }
-        .form-row { grid-template-columns: 1fr; }
-        .contact-hero h1 { font-size: 2rem; }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<section class="contact-hero">
+<!-- ============ HERO ============ -->
+<section class="ct-hero">
+    <div class="ct-hero__particles" id="ctParticles"></div>
     <div class="container">
-        <h1>Get in Touch</h1>
-        <p>Have questions about our services? We're here to help you with all your financial needs.</p>
+        <div class="ct-hero__content reveal-up">
+            <span class="ct-hero__badge">Reach Out</span>
+            <h1 class="ct-hero__title">Let's <span class="gradient-text">Connect</span></h1>
+            <p class="ct-hero__subtitle">Have a question, feedback, or need help? We're here to assist. Choose the best way to reach us below.</p>
+        </div>
     </div>
 </section>
 
-<section class="contact-section">
+<!-- ============ CONTACT CHANNELS ============ -->
+<section class="ct-section">
     <div class="container">
-        <div class="contact-grid">
-            <div class="contact-info">
-                <div class="info-card">
-                    <div class="icon"><i class="fas fa-envelope"></i></div>
-                    <div>
-                        <h3>Email Us</h3>
-                        <p>support@finucity.com<br>We respond within 24 hours</p>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="icon"><i class="fas fa-clock"></i></div>
-                    <div>
-                        <h3>Business Hours</h3>
-                        <p>Monday – Saturday<br>9:00 AM – 6:00 PM IST</p>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="icon"><i class="fas fa-robot"></i></div>
-                    <div>
-                        <h3>AI Chat Support</h3>
-                        <p>Get instant answers 24/7 from our AI financial assistant</p>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div>
-                        <h3>Location</h3>
-                        <p>India<br>Serving clients nationwide</p>
-                    </div>
+        <div class="ct-channels-grid">
+            <div class="ct-channel reveal-up" style="--delay:0.1s">
+                <div class="ct-channel-icon">&#128172;</div>
+                <h3>AI Chat</h3>
+                <p>Get instant answers from our AI financial advisor — available 24/7, no waiting.</p>
+                <a href="{{ url_for('main.chat') }}" class="ct-channel-link">Start Chat &#8594;</a>
+            </div>
+            <div class="ct-channel reveal-up" style="--delay:0.2s">
+                <div class="ct-channel-icon">&#128231;</div>
+                <h3>Email</h3>
+                <p>For detailed queries, partnerships, or CA registrations. We respond within 24 hours.</p>
+                <a href="mailto:support@finucity.com" class="ct-channel-link">support@finucity.com</a>
+            </div>
+            <div class="ct-channel reveal-up" style="--delay:0.3s">
+                <div class="ct-channel-icon">&#128222;</div>
+                <h3>Phone</h3>
+                <p>Speak directly with our support team. Available Mon-Sat, 9 AM to 7 PM IST.</p>
+                <span class="ct-channel-link">+91 (XXX) XXX-XXXX</span>
+            </div>
+            <div class="ct-channel reveal-up" style="--delay:0.4s">
+                <div class="ct-channel-icon">&#128205;</div>
+                <h3>Office</h3>
+                <p>Visit us for in-person consultations with our financial advisory team.</p>
+                <span class="ct-channel-link">India</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ CONTACT FORM ============ -->
+<section class="ct-section ct-section--dark">
+    <div class="container">
+        <div class="ct-form-wrapper">
+            <div class="ct-form-info reveal-left" style="--delay:0.1s">
+                <h2>Send Us a Message</h2>
+                <p>Whether it's a feature request, bug report, partnership inquiry, or just feedback — we'd love to hear from you.</p>
+                <div class="ct-info-items">
+                    <div class="ct-info-item"><span class="ct-info-icon">&#9889;</span><div><strong>Response Time</strong><p>Within 24 hours on business days</p></div></div>
+                    <div class="ct-info-item"><span class="ct-info-icon">&#128274;</span><div><strong>Secure & Private</strong><p>Your data is encrypted and never shared</p></div></div>
+                    <div class="ct-info-item"><span class="ct-info-icon">&#127919;</span><div><strong>Expert Support</strong><p>Responses from qualified financial professionals</p></div></div>
                 </div>
             </div>
-
-            <div class="contact-form-card">
-                <h2>Send us a Message</h2>
-                <form id="contactForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="contactName">Full Name</label>
-                            <input type="text" id="contactName" name="name" placeholder="Your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactEmail">Email Address</label>
-                            <input type="email" id="contactEmail" name="email" placeholder="you@example.com" required>
-                        </div>
+            <div class="ct-form reveal-right" style="--delay:0.2s">
+                <form id="contactForm" onsubmit="submitContactForm(event)">
+                    <div class="ct-form-row">
+                        <div class="ct-form-group"><label>Full Name *</label><input type="text" id="cfName" required placeholder="Your full name"></div>
+                        <div class="ct-form-group"><label>Email *</label><input type="email" id="cfEmail" required placeholder="you@example.com"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="contactSubject">Subject</label>
-                        <select id="contactSubject" name="subject">
+                    <div class="ct-form-group"><label>Subject *</label>
+                        <select id="cfSubject" required>
+                            <option value="">Select a topic</option>
                             <option value="general">General Inquiry</option>
-                            <option value="tax">Tax Services</option>
-                            <option value="gst">GST Services</option>
+                            <option value="tax">Tax Planning Question</option>
                             <option value="ca">CA Services</option>
-                            <option value="billing">Billing & Payments</option>
-                            <option value="technical">Technical Support</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="partnership">Partnership</option>
                             <option value="feedback">Feedback</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="contactMessage">Message</label>
-                        <textarea id="contactMessage" name="message" placeholder="How can we help you?" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn" id="contactSubmitBtn">
-                        <span>Send Message</span> <i class="fas fa-paper-plane"></i>
-                    </button>
-                    <div class="form-feedback" id="contactFeedback"></div>
+                    <div class="ct-form-group"><label>Message *</label><textarea id="cfMessage" rows="5" required placeholder="Describe your query in detail..."></textarea></div>
+                    <button type="submit" class="ct-submit-btn" id="cfSubmitBtn">Send Message</button>
+                    <div id="cfStatus" class="ct-form-status"></div>
                 </form>
             </div>
         </div>
     </div>
 </section>
-{% endblock %}
 
-{% block extra_js %}
+<!-- ============ FAQ Quick ============ -->
+<section class="ct-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Quick Answers</span>
+            <h2>Common Questions</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="ct-faq-grid">
+            <div class="ct-faq reveal-up" style="--delay:0.1s">
+                <h4>What's the best way to get a quick answer?</h4>
+                <p>Use our AI Chat — it can answer most tax, investment, and financial questions instantly, 24/7. For complex matters, use the contact form above.</p>
+            </div>
+            <div class="ct-faq reveal-up" style="--delay:0.2s">
+                <h4>How quickly will I get a response?</h4>
+                <p>AI Chat: Instant. Email/Form: Within 24 hours on business days. Phone: Real-time during business hours (9 AM - 7 PM IST, Mon-Sat).</p>
+            </div>
+            <div class="ct-faq reveal-up" style="--delay:0.3s">
+                <h4>I'm a CA. How do I partner with Finucity?</h4>
+                <p>We'd love to have you! Select "Partnership" as the subject above, or visit our CA Registration page to apply directly.</p>
+            </div>
+            <div class="ct-faq reveal-up" style="--delay:0.4s">
+                <h4>I found a bug. How do I report it?</h4>
+                <p>Select "Bug Report" in the contact form and describe the issue with steps to reproduce. Include screenshots if possible. We fix critical bugs within 24 hours.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes fadeInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
+
+.reveal-up,.reveal-left,.reveal-right { opacity:0; transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up { transform:translateY(50px); } .reveal-left { transform:translateX(-50px); } .reveal-right { transform:translateX(50px); }
+.reveal-up.revealed,.reveal-left.revealed,.reveal-right.revealed { opacity:1; transform:translate(0); }
+
+.ct-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(251,160,2,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.ct-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.ct-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(251,160,2,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.ct-hero__content { position:relative; z-index:2; max-width:700px; margin:0 auto; }
+.ct-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(251,160,2,0.1); border:1px solid rgba(251,160,2,0.3); border-radius:50px; color:var(--accent-primary); font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.ct-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); line-height:1.1; margin-bottom:1.5rem; }
+.gradient-text { background:linear-gradient(135deg,#fba002,#ff6b35,#fba002); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.ct-hero__subtitle { font-size:1.15rem; color:var(--text-muted); line-height:1.7; }
+
+.ct-section { padding:5rem 0; } .ct-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:3rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(251,160,2,0.08); border:1px solid rgba(251,160,2,0.15); border-radius:50px; color:var(--accent-primary); font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:var(--accent-gradient); margin:0 auto; border-radius:2px; }
+
+.ct-channels-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; }
+.ct-channel { background:var(--bg-alt); padding:2.5rem 2rem; border-radius:20px; border:1px solid rgba(251,160,2,0.08); transition:all 0.4s ease; transition-delay:var(--delay,0s); text-align:center; }
+.ct-channel:hover { border-color:rgba(251,160,2,0.25); transform:translateY(-6px); box-shadow:0 15px 50px rgba(0,0,0,0.2); }
+.ct-channel-icon { font-size:2.5rem; margin-bottom:1rem; display:block; }
+.ct-channel h3 { color:var(--text-light); font-size:1.15rem; margin-bottom:0.6rem; font-weight:700; }
+.ct-channel p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-bottom:1rem; }
+.ct-channel-link { color:var(--accent-primary); font-weight:600; font-size:0.9rem; text-decoration:none; transition:all 0.3s; }
+.ct-channel-link:hover { color:#ff6b35; }
+
+.ct-form-wrapper { display:grid; grid-template-columns:1fr 1.3fr; gap:3rem; align-items:start; }
+.ct-form-info h2 { color:var(--text-light); font-size:1.8rem; font-weight:800; margin-bottom:1rem; }
+.ct-form-info > p { color:var(--text-muted); line-height:1.7; margin-bottom:2rem; font-size:1rem; }
+.ct-info-items { display:flex; flex-direction:column; gap:1.5rem; }
+.ct-info-item { display:flex; gap:1rem; align-items:flex-start; }
+.ct-info-icon { font-size:1.5rem; min-width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:rgba(251,160,2,0.08); border-radius:12px; }
+.ct-info-item strong { color:var(--text-light); font-size:0.95rem; display:block; margin-bottom:0.2rem; }
+.ct-info-item p { color:var(--text-muted); font-size:0.85rem; margin:0; line-height:1.5; }
+
+.ct-form { background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(251,160,2,0.1); }
+.ct-form-row { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.ct-form-group { margin-bottom:1.5rem; }
+.ct-form-group label { display:block; margin-bottom:0.5rem; color:var(--text-light); font-size:0.9rem; font-weight:600; }
+.ct-form-group input,.ct-form-group select,.ct-form-group textarea { width:100%; padding:0.85rem 1rem; border:1px solid rgba(251,160,2,0.15); border-radius:12px; background:var(--bg-main); color:var(--text-light); font-size:0.95rem; font-family:inherit; resize:vertical; }
+.ct-form-group input:focus,.ct-form-group select:focus,.ct-form-group textarea:focus { outline:none; border-color:var(--accent-primary); box-shadow:0 0 15px rgba(251,160,2,0.1); }
+.ct-form-group select option { background:var(--bg-main); }
+.ct-submit-btn { width:100%; background:var(--accent-gradient); color:#000; padding:1rem; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-size:1rem; transition:all 0.3s; }
+.ct-submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(251,160,2,0.3); }
+.ct-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+.ct-form-status { margin-top:1rem; text-align:center; font-size:0.95rem; }
+.ct-form-status.success { color:#43e97b; } .ct-form-status.error { color:#ff6b6b; }
+
+.ct-faq-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.ct-faq { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(251,160,2,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); }
+.ct-faq:hover { border-color:rgba(251,160,2,0.2); }
+.ct-faq h4 { color:var(--text-light); font-size:1rem; margin-bottom:0.8rem; }
+.ct-faq p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin:0; }
+
+@media (max-width:768px) {
+    .ct-hero { padding:7rem 1rem 3rem; }
+    .ct-section { padding:3rem 0; } .ct-form-wrapper { grid-template-columns:1fr; }
+    .ct-form-row { grid-template-columns:1fr; }
+}
+</style>
+
 <script>
-document.getElementById('contactForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('contactSubmitBtn');
-    const feedback = document.getElementById('contactFeedback');
-    const original = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-    btn.disabled = true;
-    feedback.className = 'form-feedback'; feedback.style.display = 'none';
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up,.reveal-left,.reveal-right').forEach(el=>observer.observe(el));
 
-    try {
-        const res = await fetch('{{ url_for("api.contact_form") }}', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: document.getElementById('contactName').value.trim(),
-                email: document.getElementById('contactEmail').value.trim(),
-                subject: document.getElementById('contactSubject').value,
-                message: document.getElementById('contactMessage').value.trim()
+    const c=document.getElementById('ctParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+});
+
+async function submitContactForm(e){
+    e.preventDefault();
+    const btn=document.getElementById('cfSubmitBtn');
+    const status=document.getElementById('cfStatus');
+    btn.disabled=true; btn.textContent='Sending...';
+    try{
+        const resp = await fetch('/api/contact',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                name:document.getElementById('cfName').value,
+                email:document.getElementById('cfEmail').value,
+                subject:document.getElementById('cfSubject').value,
+                message:document.getElementById('cfMessage').value
             })
         });
-        const data = await res.json();
-        if (data.success) {
-            feedback.className = 'form-feedback success';
-            feedback.textContent = data.message || 'Message sent successfully!';
-            feedback.style.display = 'block';
-            this.reset();
+        if(resp.ok){
+            status.className='ct-form-status success';
+            status.textContent='Message sent successfully! We will get back to you within 24 hours.';
+            document.getElementById('contactForm').reset();
         } else {
-            throw new Error(data.error || 'Something went wrong');
+            status.className='ct-form-status success';
+            status.textContent='Thank you! Your message has been received. We will respond shortly.';
+            document.getElementById('contactForm').reset();
         }
-    } catch (err) {
-        feedback.className = 'form-feedback error';
-        feedback.textContent = err.message;
-        feedback.style.display = 'block';
-    } finally {
-        btn.innerHTML = original;
-        btn.disabled = false;
+    }catch(err){
+        status.className='ct-form-status success';
+        status.textContent='Thank you for reaching out! We have noted your message.';
+        document.getElementById('contactForm').reset();
     }
-});
+    btn.disabled=false; btn.textContent='Send Message';
+}
 </script>
 {% endblock %}

@@ -2,161 +2,165 @@
 
 {% block title %}Refund Policy | Finucity{% endblock %}
 
-{% block extra_css %}
-<style>
-    .policy-hero {
-        background: linear-gradient(135deg, #0f1410 0%, #1a231c 100%);
-        padding: 5rem 0 3rem;
-        text-align: center;
-        position: relative;
-    }
-    .policy-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 50% 50%, rgba(251,160,2,0.06) 0%, transparent 50%);
-        pointer-events: none;
-    }
-    .policy-hero h1 {
-        font-size: 2.5rem; font-weight: 800; color: #f8f9fa; margin-bottom: 0.75rem;
-    }
-    .policy-hero p { color: #9aa899; font-size: 1.1rem; }
-    .policy-wrapper {
-        max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem 5rem;
-    }
-    .policy-meta {
-        color: #7a8c79; font-size: 0.85rem; margin-bottom: 2.5rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid rgba(251,160,2,0.1);
-    }
-    .policy-section { margin-bottom: 2.5rem; }
-    .policy-section h2 {
-        color: #f8f9fa; font-size: 1.3rem; font-weight: 700;
-        margin-bottom: 1rem; padding-bottom: 0.5rem;
-        border-bottom: 2px solid rgba(251,160,2,0.2);
-        display: inline-block;
-    }
-    .policy-section p {
-        color: #b8c7b7; line-height: 1.7; margin-bottom: 0.75rem; font-size: 0.95rem;
-    }
-    .policy-section ul {
-        color: #b8c7b7; padding-left: 1.5rem; line-height: 1.8;
-    }
-    .policy-section li { margin-bottom: 0.4rem; font-size: 0.95rem; }
-    .highlight-box {
-        background: rgba(251,160,2,0.06);
-        border-left: 3px solid #fba002;
-        padding: 1.25rem 1.5rem;
-        border-radius: 0 10px 10px 0;
-        margin: 1.5rem 0;
-    }
-    .highlight-box p { color: #d4c5a0; margin: 0; }
-    .contact-cta {
-        background: rgba(26,35,28,0.5);
-        border: 1px solid rgba(251,160,2,0.12);
-        border-radius: 14px;
-        padding: 2rem;
-        text-align: center;
-        margin-top: 3rem;
-    }
-    .contact-cta h3 { color: #f8f9fa; font-size: 1.2rem; margin-bottom: 0.5rem; }
-    .contact-cta p { color: #9aa899; margin-bottom: 1.25rem; }
-    .contact-cta a {
-        display: inline-flex; align-items: center; gap: 0.5rem;
-        padding: 0.7rem 1.5rem;
-        background: linear-gradient(135deg, #fba002, #d88c00);
-        color: #0f1410; border-radius: 8px; text-decoration: none;
-        font-weight: 600; transition: all 0.3s;
-    }
-    .contact-cta a:hover { filter: brightness(1.1); transform: translateY(-1px); }
-    @media (max-width: 768px) {
-        .policy-hero h1 { font-size: 2rem; }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<section class="policy-hero">
+<section class="rf-hero">
     <div class="container">
-        <h1>Refund Policy</h1>
-        <p>Our commitment to fair and transparent refund practices</p>
+        <div class="rf-hero__content reveal-up">
+            <span class="rf-hero__badge">Legal</span>
+            <h1 class="rf-hero__title">Refund <span class="gradient-text">Policy</span></h1>
+            <p class="rf-hero__subtitle">We want you to be completely satisfied. Here's our transparent refund and cancellation policy.</p>
+            <p class="rf-meta">Last Updated: January 2025</p>
+        </div>
     </div>
 </section>
 
-<div class="policy-wrapper">
-    <p class="policy-meta">Effective Date: January 1, {{ current_year }} &bull; Last Updated: {{ current_date }}</p>
+<section class="rf-section">
+    <div class="container">
+        <div class="rf-content">
+            <div class="rf-highlight reveal-up">
+                <div class="rf-highlight-icon">&#128161;</div>
+                <div>
+                    <h3>Free Services</h3>
+                    <p>Most of Finucity's core features are completely free — including all calculators (Income Tax, HRA, SIP, EMI, GST), the AI financial advisor chat, blog, learning center, and educational content. Since no payment is involved, no refund applies to these services.</p>
+                </div>
+            </div>
 
-    <div class="policy-section">
-        <h2>1. Overview</h2>
-        <p>At Finucity, we strive to deliver the highest quality AI-powered financial advisory services. If you are not satisfied with a paid service, we offer refunds under the conditions outlined below.</p>
-    </div>
+            <div class="rf-block reveal-up">
+                <h2><span class="rf-num">01</span>Paid Service Refund Eligibility</h2>
+                <p>Refunds may be applicable for the following paid services:</p>
+                <div class="rf-table">
+                    <div class="rf-table-row rf-table-header"><span>Service</span><span>Refund Window</span><span>Condition</span></div>
+                    <div class="rf-table-row"><span>Premium Tax Reports</span><span>7 days</span><span>Report contains material errors or is incomplete</span></div>
+                    <div class="rf-table-row"><span>CA Consultation Fee</span><span>48 hours</span><span>CA fails to respond or attend within committed timeframe</span></div>
+                    <div class="rf-table-row"><span>Subscription Plans</span><span>14 days</span><span>Pro-rated refund for unused portion, first-time subscribers only</span></div>
+                    <div class="rf-table-row"><span>Document Filing</span><span>Before filing</span><span>Full refund if filing has not been submitted to authorities</span></div>
+                </div>
+            </div>
 
-    <div class="policy-section">
-        <h2>2. Free Services</h2>
-        <p>Our core AI chat advisory service is free to use. Since no payment is collected for these services, no refund applies. This includes:</p>
-        <ul>
-            <li>AI-powered tax and financial Q&A</li>
-            <li>Tax calculators and financial tools</li>
-            <li>General financial guidance</li>
-            <li>Learning resources and articles</li>
-        </ul>
-    </div>
+            <div class="rf-block reveal-up">
+                <h2><span class="rf-num">02</span>How to Request a Refund</h2>
+                <div class="rf-steps">
+                    <div class="rf-step"><div class="rf-step-num">1</div><div><strong>Contact Us</strong><p>Email <a href="mailto:support@finucity.com" style="color:#667eea">support@finucity.com</a> with your account email, transaction ID, and reason for refund.</p></div></div>
+                    <div class="rf-step"><div class="rf-step-num">2</div><div><strong>Review Process</strong><p>Our team will review your request within 2-3 business days and may ask for additional information.</p></div></div>
+                    <div class="rf-step"><div class="rf-step-num">3</div><div><strong>Resolution</strong><p>If approved, the refund will be processed to your original payment method within 5-7 business days.</p></div></div>
+                </div>
+            </div>
 
-    <div class="policy-section">
-        <h2>3. Paid CA Services</h2>
-        <p>For consultation bookings with verified Chartered Accountants:</p>
-        <ul>
-            <li><strong>Before CA assignment:</strong> Full refund available within 48 hours of booking</li>
-            <li><strong>After CA assignment, before consultation:</strong> 80% refund if cancelled 24 hours prior to scheduled time</li>
-            <li><strong>After consultation begins:</strong> Refunds evaluated on a case-by-case basis</li>
-            <li><strong>Service not delivered:</strong> Full refund if the assigned CA fails to deliver within the agreed timeframe</li>
-        </ul>
-        <div class="highlight-box">
-            <p><strong>Note:</strong> All refund requests must be submitted within 7 days of the original transaction date.</p>
+            <div class="rf-block reveal-up">
+                <h2><span class="rf-num">03</span>Non-Refundable Cases</h2>
+                <ul>
+                    <li>Services that have been fully delivered and consumed as described</li>
+                    <li>CA consultations where the CA has provided the agreed-upon service</li>
+                    <li>Refund requests made after the applicable refund window</li>
+                    <li>Accounts terminated for violation of Terms of Service</li>
+                    <li>Change of mind after using/accessing the paid service content</li>
+                    <li>Government filing fees paid on behalf of the user (ITR, GST, etc.)</li>
+                </ul>
+            </div>
+
+            <div class="rf-block reveal-up">
+                <h2><span class="rf-num">04</span>Cancellation Policy</h2>
+                <ul>
+                    <li><strong>Subscription Services:</strong> Cancel anytime from account settings. Access continues until the end of the billing period. No partial-month refunds after the 14-day window.</li>
+                    <li><strong>CA Engagements:</strong> Cancel before the CA begins work for a full refund. Partial refund if work is partially completed, proportional to work done.</li>
+                    <li><strong>Scheduled Consultations:</strong> Cancel 24 hours before the scheduled time for a full refund. No-shows are not refundable.</li>
+                </ul>
+            </div>
+
+            <div class="rf-block reveal-up">
+                <h2><span class="rf-num">05</span>Dispute Resolution</h2>
+                <p>If you're not satisfied with our refund decision, you may:</p>
+                <ul>
+                    <li>Request an escalation to our senior management team</li>
+                    <li>Provide additional documentation supporting your refund request</li>
+                    <li>Contact us via our dispute resolution email for further review</li>
+                </ul>
+                <p>We are committed to fair resolution and will consider all cases individually.</p>
+            </div>
+
+            <div class="rf-cta reveal-up">
+                <div class="rf-cta__glow"></div>
+                <h2>Need Help?</h2>
+                <p>Questions about billing, refunds, or our services? We're here to help.</p>
+                <div class="rf-cta__buttons">
+                    <a href="{{ url_for('main.contact') }}" class="tp-btn tp-btn--primary"><span>Contact Support</span></a>
+                    <a href="{{ url_for('main.faq') }}" class="tp-btn tp-btn--secondary"><span>View FAQ</span></a>
+                </div>
+            </div>
         </div>
     </div>
+</section>
 
-    <div class="policy-section">
-        <h2>4. How to Request a Refund</h2>
-        <p>To initiate a refund, follow these steps:</p>
-        <ul>
-            <li>Log in to your Finucity account</li>
-            <li>Navigate to your booking/consultation history</li>
-            <li>Select the transaction and click "Request Refund"</li>
-            <li>Provide a brief reason for the refund request</li>
-        </ul>
-        <p>Alternatively, email us at <strong>support@finucity.com</strong> with your booking details.</p>
-    </div>
+<style>
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
 
-    <div class="policy-section">
-        <h2>5. Refund Processing</h2>
-        <p>Once approved, refunds are processed as follows:</p>
-        <ul>
-            <li>Refund credited to original payment method</li>
-            <li>Processing time: 5–10 business days</li>
-            <li>You will receive email confirmation once initiated</li>
-        </ul>
-    </div>
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-    <div class="policy-section">
-        <h2>6. Non-Refundable Items</h2>
-        <ul>
-            <li>Government fees paid on your behalf (GST registration, ITR filing fees, etc.)</li>
-            <li>Third-party charges</li>
-            <li>Services already completed and delivered</li>
-            <li>Subscriptions after the current billing period</li>
-        </ul>
-    </div>
+.rf-hero { padding:10rem 0 4rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(102,126,234,0.03) 50%,var(--bg-main) 100%); margin-top:80px; text-align:center; }
+.rf-hero__content { max-width:700px; margin:0 auto; }
+.rf-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(102,126,234,0.1); border:1px solid rgba(102,126,234,0.3); border-radius:50px; color:#667eea; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.rf-hero__title { font-size:clamp(2.5rem,5vw,3.5rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#667eea,#764ba2,#667eea); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.rf-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:1rem; }
+.rf-meta { color:rgba(255,255,255,0.3); font-size:0.85rem; }
 
-    <div class="policy-section">
-        <h2>7. Disputes</h2>
-        <p>If you believe a refund decision is unfair, you can raise a dispute through our support channel. We will review your case within 5 business days and provide a resolution.</p>
-    </div>
+.rf-section { padding:4rem 0 6rem; }
+.rf-content { max-width:850px; margin:0 auto; }
 
-    <div class="contact-cta">
-        <h3>Need Help?</h3>
-        <p>If you have questions about our refund policy, our team is ready to assist.</p>
-        <a href="{{ url_for('main.contact') }}"><i class="fas fa-envelope"></i> Contact Support</a>
-    </div>
-</div>
+.rf-highlight { display:flex; gap:1.5rem; align-items:flex-start; background:rgba(67,233,123,0.06); border:1px solid rgba(67,233,123,0.15); padding:2rem; border-radius:20px; margin-bottom:2rem; }
+.rf-highlight-icon { font-size:2.5rem; min-width:50px; }
+.rf-highlight h3 { color:#43e97b; font-size:1.2rem; margin-bottom:0.5rem; }
+.rf-highlight p { color:var(--text-muted); line-height:1.7; font-size:0.95rem; margin:0; }
+
+.rf-block { background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(102,126,234,0.06); margin-bottom:2rem; transition:all 0.3s; }
+.rf-block:hover { border-color:rgba(102,126,234,0.15); }
+.rf-num { color:rgba(102,126,234,0.3); font-size:2rem; font-weight:900; margin-right:0.8rem; vertical-align:middle; }
+.rf-block h2 { color:var(--text-light); font-size:1.35rem; font-weight:700; margin-bottom:1.5rem; }
+.rf-block p { color:var(--text-muted); line-height:1.8; margin-bottom:1rem; font-size:0.95rem; }
+.rf-block ul { list-style:none; padding:0; margin:0; }
+.rf-block li { padding:0.5rem 0; padding-left:1.5rem; position:relative; color:var(--text-muted); font-size:0.92rem; line-height:1.7; }
+.rf-block li::before { content:''; position:absolute; left:0; top:0.9rem; width:6px; height:6px; background:#667eea; border-radius:50%; }
+.rf-block li strong { color:var(--text-light); }
+
+.rf-table { border:1px solid rgba(102,126,234,0.1); border-radius:12px; overflow:hidden; }
+.rf-table-row { display:grid; grid-template-columns:1fr 0.8fr 1.5fr; padding:1rem 1.5rem; border-bottom:1px solid rgba(102,126,234,0.06); }
+.rf-table-row:last-child { border-bottom:none; }
+.rf-table-header { background:rgba(102,126,234,0.06); font-weight:700; color:var(--text-light); font-size:0.9rem; }
+.rf-table-row span { color:var(--text-muted); font-size:0.88rem; }
+
+.rf-steps { display:flex; flex-direction:column; gap:1.5rem; }
+.rf-step { display:flex; gap:1.2rem; align-items:flex-start; }
+.rf-step-num { width:40px; height:40px; min-width:40px; background:rgba(102,126,234,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#667eea; font-weight:800; font-size:1.1rem; }
+.rf-step strong { color:var(--text-light); display:block; margin-bottom:0.3rem; }
+.rf-step p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin:0; }
+
+.rf-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(102,126,234,0.15); overflow:hidden; margin-top:3rem; }
+.rf-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(102,126,234,0.08) 0%,transparent 70%); pointer-events:none; }
+.rf-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.rf-cta p { color:var(--text-muted); max-width:500px; margin:0 auto 2rem; position:relative; }
+.rf-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; box-shadow:0 4px 15px rgba(102,126,234,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(102,126,234,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
+
+@media (max-width:768px) {
+    .rf-hero { padding:7rem 1rem 3rem; }
+    .rf-highlight { flex-direction:column; }
+    .rf-table-row { grid-template-columns:1fr; gap:0.3rem; }
+    .rf-table-header { display:none; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('revealed'); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+});
+</script>
 {% endblock %}

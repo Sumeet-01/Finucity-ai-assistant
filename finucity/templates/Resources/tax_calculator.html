@@ -1,542 +1,187 @@
 {% extends "base.html" %}
 
-{% block title %}Tax Calculator | Finucity{% endblock %}
+{% block title %}Income Tax Calculator | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="tc-hero">
     <div class="container">
-        <h1>🧮 Income Tax Calculator</h1>
-        <p>Calculate your tax liability under both old and new tax regimes</p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="calculator-section">
-        <div class="calculator-container">
-            <div class="tax-regime-toggle">
-                <button class="regime-btn active" data-regime="old" onclick="selectRegime('old')">Old Regime</button>
-                <button class="regime-btn" data-regime="new" onclick="selectRegime('new')">New Regime</button>
-            </div>
-
-            <div class="calculator-form">
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Annual Income (₹)</label>
-                        <input type="number" id="annualIncome" value="1000000" min="0">
-                    </div>
-                    <div class="input-group old-regime-input">
-                        <label>80C Deductions (₹)</label>
-                        <input type="number" id="deductions80C" value="150000" min="0" max="150000">
-                    </div>
-                    <div class="input-group old-regime-input">
-                        <label>80D Health Insurance (₹)</label>
-                        <input type="number" id="deductions80D" value="25000" min="0" max="100000">
-                    </div>
-                    <div class="input-group old-regime-input">
-                        <label>HRA Exemption (₹)</label>
-                        <input type="number" id="hraExemption" value="120000" min="0">
-                    </div>
-                    <div class="input-group old-regime-input">
-                        <label>Standard Deduction (₹)</label>
-                        <input type="number" id="standardDeduction" value="50000" min="0" max="50000" readonly>
-                    </div>
-                    <div class="input-group">
-                        <label>Other Deductions (₹)</label>
-                        <input type="number" id="otherDeductions" value="50000" min="0">
-                    </div>
-                    <button class="calculate-btn" onclick="calculateTax()">Calculate Tax Liability</button>
-                </div>
-                
-                <div class="calculator-result">
-                    <h3>Tax Calculation</h3>
-                    <div class="result-item">
-                        <span>Total Income:</span>
-                        <span id="totalIncome">₹10,00,000</span>
-                    </div>
-                    <div class="result-item old-regime-result">
-                        <span>Total Deductions:</span>
-                        <span id="totalDeductions">₹3,75,000</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Taxable Income:</span>
-                        <span id="taxableIncome">₹6,25,000</span>
-                    </div>
-                    <div class="result-item highlight">
-                        <span>Tax Liability:</span>
-                        <span id="taxLiability">₹45,500</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Effective Tax Rate:</span>
-                        <span id="effectiveTaxRate">4.55%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tax-info">
-            <h2>Tax Slabs for FY 2025-26</h2>
-            <div class="tax-slab-container">
-                <div class="tax-slab-section">
-                    <h3>Old Regime</h3>
-                    <table class="tax-slab-table">
-                        <thead>
-                            <tr>
-                                <th>Income Slab</th>
-                                <th>Tax Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Up to ₹2,50,000</td>
-                                <td>Nil</td>
-                            </tr>
-                            <tr>
-                                <td>₹2,50,001 to ₹5,00,000</td>
-                                <td>5%</td>
-                            </tr>
-                            <tr>
-                                <td>₹5,00,001 to ₹10,00,000</td>
-                                <td>20%</td>
-                            </tr>
-                            <tr>
-                                <td>Above ₹10,00,000</td>
-                                <td>30%</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><strong>Note:</strong> 4% Health & Education Cess applicable on tax amount</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="tax-slab-section">
-                    <h3>New Regime</h3>
-                    <table class="tax-slab-table">
-                        <thead>
-                            <tr>
-                                <th>Income Slab</th>
-                                <th>Tax Rate</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Up to ₹3,00,000</td>
-                                <td>Nil</td>
-                            </tr>
-                            <tr>
-                                <td>₹3,00,001 to ₹6,00,000</td>
-                                <td>5%</td>
-                            </tr>
-                            <tr>
-                                <td>₹6,00,001 to ₹9,00,000</td>
-                                <td>10%</td>
-                            </tr>
-                            <tr>
-                                <td>₹9,00,001 to ₹12,00,000</td>
-                                <td>15%</td>
-                            </tr>
-                            <tr>
-                                <td>₹12,00,001 to ₹15,00,000</td>
-                                <td>20%</td>
-                            </tr>
-                            <tr>
-                                <td>Above ₹15,00,000</td>
-                                <td>30%</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><strong>Note:</strong> 4% Health & Education Cess applicable on tax amount</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tax-tips">
-            <h2>Tax Saving Tips</h2>
-            <div class="tips-container">
-                <div class="tip-card">
-                    <div class="tip-icon">
-                        <i class="fas fa-piggy-bank"></i>
-                    </div>
-                    <h3>Maximize 80C Investments</h3>
-                    <p>Utilize the full ₹1.5 lakh limit under Section 80C with investments like PPF, ELSS, NPS, and life insurance premiums.</p>
-                </div>
-                <div class="tip-card">
-                    <div class="tip-icon">
-                        <i class="fas fa-medkit"></i>
-                    </div>
-                    <h3>Health Insurance</h3>
-                    <p>Get tax benefits under Section 80D by purchasing health insurance for yourself, family, and parents.</p>
-                </div>
-                <div class="tip-card">
-                    <div class="tip-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <h3>Home Loan Benefits</h3>
-                    <p>Claim deductions on home loan interest (up to ₹2 lakhs) under Section 24 and principal repayment under Section 80C.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="calc-cta">
-            <h2>Need Personalized Tax Planning?</h2>
-            <p>Get expert guidance from our AI financial advisor</p>
-            <a href="{{ url_for('main.tax_planning') }}" class="cta-button">Explore Tax Planning</a>
+        <div class="tc-hero__content reveal-up">
+            <span class="tc-hero__badge">Tax Tool</span>
+            <h1 class="tc-hero__title">Income Tax <span class="gradient-text">Calculator</span></h1>
+            <p class="tc-hero__subtitle">Calculate your exact tax liability for FY 2024-25 under both Old and New regimes. Includes all deductions, surcharge, and cess.</p>
         </div>
     </div>
-</div>
+</section>
+
+<section class="tc-section">
+    <div class="container">
+        <div class="tc-calculator reveal-up">
+            <div class="tc-calc__header"><h2>Enter Your Income Details</h2><p>All amounts in ₹ (Indian Rupees)</p></div>
+            <div class="tc-calc__form">
+                <div class="tc-calc__row">
+                    <div class="tc-calc__group"><label>Gross Annual Income</label><input type="number" id="tcIncome" value="1200000" step="10000"><small>Total CTC or gross salary</small></div>
+                    <div class="tc-calc__group"><label>Age Group</label><select id="tcAge"><option value="general">Below 60</option><option value="senior">60-80 (Senior)</option><option value="supersenior">80+ (Super Senior)</option></select></div>
+                </div>
+                <div class="tc-calc__divider"><span>Deductions (Old Regime)</span></div>
+                <div class="tc-calc__row">
+                    <div class="tc-calc__group"><label>80C (PPF, ELSS, LIC etc.)</label><input type="number" id="tc80C" value="150000" max="150000"><small>Max ₹1,50,000</small></div>
+                    <div class="tc-calc__group"><label>80D (Health Insurance)</label><input type="number" id="tc80D" value="25000" max="100000"><small>Self: ₹25K / Senior: ₹50K</small></div>
+                </div>
+                <div class="tc-calc__row">
+                    <div class="tc-calc__group"><label>HRA Exemption</label><input type="number" id="tcHRA" value="120000"><small>Use HRA Calculator for exact amount</small></div>
+                    <div class="tc-calc__group"><label>80CCD(1B) — NPS</label><input type="number" id="tcNPS" value="50000" max="50000"><small>Max ₹50,000</small></div>
+                </div>
+                <div class="tc-calc__row">
+                    <div class="tc-calc__group"><label>Standard Deduction</label><input type="number" id="tcSD" value="50000" max="75000"><small>₹50K (Old) / ₹75K (New)</small></div>
+                    <div class="tc-calc__group"><label>Other Deductions (80G, 80E etc.)</label><input type="number" id="tcOther" value="0"></div>
+                </div>
+                <button class="tc-calc__btn" onclick="calculateTax()">Calculate Tax</button>
+            </div>
+            <div class="tc-calc__results" id="tcResults" style="display:none">
+                <div class="tc-result-compare">
+                    <div class="tc-result-box tc-result-box--old">
+                        <h3>Old Regime</h3>
+                        <div class="tc-result-item"><span>Taxable Income</span><span id="tcOldTaxable"></span></div>
+                        <div class="tc-result-item"><span>Tax</span><span id="tcOldTax"></span></div>
+                        <div class="tc-result-item"><span>Cess (4%)</span><span id="tcOldCess"></span></div>
+                        <div class="tc-result-item tc-result-item--total"><span>Total Tax</span><span id="tcOldTotal"></span></div>
+                    </div>
+                    <div class="tc-result-box tc-result-box--new">
+                        <h3>New Regime</h3>
+                        <div class="tc-result-item"><span>Taxable Income</span><span id="tcNewTaxable"></span></div>
+                        <div class="tc-result-item"><span>Tax</span><span id="tcNewTax"></span></div>
+                        <div class="tc-result-item"><span>Cess (4%)</span><span id="tcNewCess"></span></div>
+                        <div class="tc-result-item tc-result-item--total"><span>Total Tax</span><span id="tcNewTotal"></span></div>
+                    </div>
+                </div>
+                <div class="tc-recommendation" id="tcRecommendation"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="tc-section tc-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up"><span class="section-tag">Reference</span><h2>FY 2024-25 Tax Slabs</h2><div class="section-line"></div></div>
+        <div class="tc-slabs-grid">
+            <div class="tc-slab-table reveal-up" style="--delay:0.1s">
+                <h3>Old Regime (Below 60)</h3>
+                <table><tr><th>Income Range</th><th>Rate</th></tr><tr><td>Up to ₹2.5L</td><td>Nil</td></tr><tr><td>₹2.5L – ₹5L</td><td>5%</td></tr><tr><td>₹5L – ₹10L</td><td>20%</td></tr><tr><td>Above ₹10L</td><td>30%</td></tr></table>
+            </div>
+            <div class="tc-slab-table reveal-up" style="--delay:0.2s">
+                <h3>New Regime (FY 2024-25)</h3>
+                <table><tr><th>Income Range</th><th>Rate</th></tr><tr><td>Up to ₹3L</td><td>Nil</td></tr><tr><td>₹3L – ₹7L</td><td>5%</td></tr><tr><td>₹7L – ₹10L</td><td>10%</td></tr><tr><td>₹10L – ₹12L</td><td>15%</td></tr><tr><td>₹12L – ₹15L</td><td>20%</td></tr><tr><td>Above ₹15L</td><td>30%</td></tr></table>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-.calculator-section {
-    margin: 3rem 0;
-}
+.tc-hero { padding:10rem 0 3rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(102,126,234,0.03) 50%,var(--bg-main) 100%); margin-top:80px; text-align:center; }
+.tc-hero__content { max-width:700px; margin:0 auto; }
+.tc-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(102,126,234,0.1); border:1px solid rgba(102,126,234,0.3); border-radius:50px; color:#667eea; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.tc-hero__title { font-size:clamp(2.5rem,5vw,3.5rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#667eea,#764ba2,#667eea); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.tc-hero__subtitle { color:var(--text-muted); font-size:1rem; line-height:1.7; }
 
-.calculator-container {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    margin-bottom: 3rem;
-}
+.tc-section { padding:4rem 0; } .tc-section--dark { background:rgba(0,0,0,0.15); padding:5rem 0; }
+.section-header { text-align:center; margin-bottom:3rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(102,126,234,0.08); border:1px solid rgba(102,126,234,0.15); border-radius:50px; color:#667eea; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#667eea,#764ba2); margin:0 auto; border-radius:2px; }
 
-.tax-regime-toggle {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    background: var(--bg-main);
-    padding: 0.5rem;
-    border-radius: var(--border-radius-full);
-    width: fit-content;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
+.tc-calculator { max-width:800px; margin:0 auto; background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(102,126,234,0.1); }
+.tc-calc__header { text-align:center; margin-bottom:2rem; }
+.tc-calc__header h2 { color:var(--text-light); font-size:1.5rem; margin-bottom:0.3rem; }
+.tc-calc__header p { color:var(--text-muted); font-size:0.85rem; }
+.tc-calc__form { display:flex; flex-direction:column; gap:1rem; }
+.tc-calc__row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.tc-calc__divider { text-align:center; padding:1rem 0 0.5rem; } .tc-calc__divider span { color:#667eea; font-size:0.82rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+.tc-calc__group { display:flex; flex-direction:column; gap:0.3rem; }
+.tc-calc__group label { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+.tc-calc__group input, .tc-calc__group select { background:rgba(255,255,255,0.05); border:1px solid rgba(102,126,234,0.15); border-radius:10px; padding:0.7rem 1rem; color:var(--text-light); font-size:1rem; transition:border-color 0.3s; }
+.tc-calc__group input:focus, .tc-calc__group select:focus { outline:none; border-color:rgba(102,126,234,0.5); }
+.tc-calc__group small { color:var(--text-muted); font-size:0.72rem; opacity:0.7; }
+.tc-calc__group select option { background:var(--bg-alt); color:var(--text-light); }
+.tc-calc__btn { padding:1rem; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; margin-top:0.5rem; }
+.tc-calc__btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,0.35); }
 
-.regime-btn {
-    padding: 0.75rem 1.5rem;
-    background: transparent;
-    border: none;
-    border-radius: var(--border-radius-full);
-    cursor: pointer;
-    color: var(--text-light);
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
+.tc-calc__results { margin-top:2rem; }
+.tc-result-compare { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+.tc-result-box { padding:1.5rem; border-radius:16px; border:1px solid rgba(102,126,234,0.1); }
+.tc-result-box--old { background:rgba(102,126,234,0.04); }
+.tc-result-box--new { background:rgba(67,233,123,0.04); border-color:rgba(67,233,123,0.1); }
+.tc-result-box h3 { color:var(--text-light); font-size:1.1rem; margin-bottom:1rem; text-align:center; }
+.tc-result-item { display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; }
+.tc-result-item span:first-child { color:var(--text-muted); } .tc-result-item span:last-child { color:var(--text-light); font-weight:600; }
+.tc-result-item--total { border-bottom:none; padding-top:0.8rem; margin-top:0.3rem; border-top:2px solid rgba(102,126,234,0.15); }
+.tc-result-item--total span:last-child { font-size:1.15rem; color:#667eea; font-weight:800; }
+.tc-result-box--new .tc-result-item--total span:last-child { color:#43e97b; }
+.tc-recommendation { background:rgba(67,233,123,0.06); border:1px solid rgba(67,233,123,0.15); border-radius:12px; padding:1.2rem 1.5rem; text-align:center; color:var(--text-light); font-weight:600; font-size:0.95rem; }
 
-.regime-btn.active {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    box-shadow: var(--shadow-sm);
-}
+.tc-slabs-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; max-width:800px; margin:0 auto; }
+.tc-slab-table { background:var(--bg-alt); padding:1.5rem; border-radius:16px; border:1px solid rgba(102,126,234,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); }
+.tc-slab-table:hover { border-color:rgba(102,126,234,0.2); }
+.tc-slab-table h3 { color:var(--text-light); font-size:1rem; margin-bottom:1rem; text-align:center; }
+.tc-slab-table table { width:100%; border-collapse:collapse; }
+.tc-slab-table th { text-align:left; padding:0.5rem; color:#667eea; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid rgba(102,126,234,0.1); }
+.tc-slab-table td { padding:0.5rem; color:var(--text-muted); font-size:0.85rem; border-bottom:1px solid rgba(255,255,255,0.03); }
 
-.calculator-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
-
-.input-group {
-    margin-bottom: 1rem;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid rgba(251, 160, 2, 0.2);
-    border-radius: var(--border-radius-md);
-    background: var(--bg-main);
-    color: var(--text-light);
-}
-
-.calculate-btn {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform var(--transition-normal);
-    margin-top: 1rem;
-}
-
-.calculate-btn:hover {
-    transform: translateY(-2px);
-}
-
-.calculator-result {
-    background: var(--bg-main);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-}
-
-.calculator-result h3 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: var(--accent-primary);
-    text-align: center;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-    padding-bottom: 1rem;
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.result-item.highlight {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    font-size: 1.1rem;
-    border: none;
-    margin: 1rem 0;
-}
-
-.tax-info {
-    margin-bottom: 3rem;
-}
-
-.tax-info h2, .tax-tips h2, .calc-cta h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: var(--text-light);
-}
-
-.tax-slab-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-}
-
-.tax-slab-section {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.tax-slab-section h3 {
-    color: var(--accent-primary);
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.tax-slab-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tax-slab-table th, .tax-slab-table td {
-    padding: 0.75rem;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: left;
-}
-
-.tax-slab-table th {
-    color: var(--text-light);
-    font-weight: 600;
-}
-
-.tax-slab-table td {
-    color: var(--text-muted);
-}
-
-.tax-slab-table tr:last-child td {
-    border-bottom: none;
-    padding-top: 1rem;
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-
-.tips-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
-.tip-card {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.tip-card:hover {
-    transform: translateY(-5px);
-}
-
-.tip-icon {
-    width: 70px;
-    height: 70px;
-    background: rgba(251, 160, 2, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-}
-
-.tip-icon i {
-    font-size: 2rem;
-    color: var(--accent-primary);
-}
-
-.tip-card h3 {
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-}
-
-.tip-card p {
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-.calc-cta {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 3rem;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-    margin-top: 3rem;
-}
-
-.calc-cta p {
-    color: var(--text-muted);
-    max-width: 600px;
-    margin: 0 auto 2rem;
-}
-
-.calc-cta .cta-button {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-    transition: transform 0.3s ease;
-}
-
-.calc-cta .cta-button:hover {
-    transform: translateY(-3px);
-}
-
-@media (max-width: 768px) {
-    .calculator-form {
-        grid-template-columns: 1fr;
-    }
-}
+@media (max-width:768px) { .tc-hero { padding:7rem 1rem 2rem; } .tc-calc__row, .tc-result-compare, .tc-slabs-grid { grid-template-columns:1fr; } }
 </style>
 
 <script>
-let currentRegime = 'old';
-
-function selectRegime(regime) {
-    currentRegime = regime;
-    document.querySelectorAll('.regime-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`[data-regime="${regime}"]`).classList.add('active');
-    
-    const oldRegimeInputs = document.querySelectorAll('.old-regime-input');
-    const oldRegimeResults = document.querySelectorAll('.old-regime-result');
-    
-    if (regime === 'old') {
-        oldRegimeInputs.forEach(el => el.style.display = 'block');
-        oldRegimeResults.forEach(el => el.style.display = 'flex');
-    } else {
-        oldRegimeInputs.forEach(el => el.style.display = 'none');
-        oldRegimeResults.forEach(el => el.style.display = 'none');
-    }
-    
-    calculateTax();
-}
-
-function calculateTax() {
-    const annualIncome = parseFloat(document.getElementById('annualIncome').value) || 0;
-    const deductions80C = parseFloat(document.getElementById('deductions80C').value) || 0;
-    const deductions80D = parseFloat(document.getElementById('deductions80D').value) || 0;
-    const hraExemption = parseFloat(document.getElementById('hraExemption').value) || 0;
-    const standardDeduction = parseFloat(document.getElementById('standardDeduction').value) || 0;
-    const otherDeductions = parseFloat(document.getElementById('otherDeductions').value) || 0;
-    
-    const totalDeductions = deductions80C + deductions80D + hraExemption + standardDeduction + otherDeductions;
-    let taxableIncome = annualIncome;
-    
-    if (currentRegime === 'old') {
-        taxableIncome = Math.max(0, annualIncome - totalDeductions);
-    } else {
-        // New regime only allows standard deduction and specific other deductions
-        taxableIncome = Math.max(0, annualIncome - otherDeductions - standardDeduction);
-    }
-    
-    let taxLiability = 0;
-    
-    if (currentRegime === 'old') {
-        // Old regime calculation
-        if (taxableIncome <= 250000) {
-            taxLiability = 0;
-        } else if (taxableIncome <= 500000) {
-            taxLiability = (taxableIncome - 250000) * 0.05;
-        } else if (taxableIncome <= 1000000) {
-            taxLiability = 12500 + (taxableIncome - 500000) * 0.2;
-        } else {
-            taxLiability = 112500 + (taxableIncome - 1000000) * 0.3;
-        }
-    } else {
-        // New regime calculation
-        if (taxableIncome <= 300000) {
-            taxLiability = 0;
-        } else if (taxableIncome <= 600000) {
-            taxLiability = (taxableIncome - 300000) * 0.05;
-        } else if (taxableIncome <= 900000) {
-            taxLiability = 15000 + (taxableIncome - 600000) * 0.1;
-        } else if (taxableIncome <= 1200000) {
-            taxLiability = 45000 + (taxableIncome - 900000) * 0.15;
-        } else if (taxableIncome <= 1500000) {
-            taxLiability = 90000 + (taxableIncome - 1200000) * 0.2;
-        } else {
-            taxLiability = 150000 + (taxableIncome - 1500000) * 0.3;
-        }
-    }
-    
-    // Add 4% cess
-    taxLiability += taxLiability * 0.04;
-    
-    const effectiveTaxRate = annualIncome > 0 ? (taxLiability / annualIncome) * 100 : 0;
-    
-    document.getElementById('totalIncome').textContent = '₹' + annualIncome.toLocaleString('en-IN');
-    document.getElementById('totalDeductions').textContent = '₹' + totalDeductions.toLocaleString('en-IN');
-    document.getElementById('taxableIncome').textContent = '₹' + taxableIncome.toLocaleString('en-IN');
-    document.getElementById('taxLiability').textContent = '₹' + Math.round(taxLiability).toLocaleString('en-IN');
-    document.getElementById('effectiveTaxRate').textContent = effectiveTaxRate.toFixed(2) + '%';
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', function() {
-    selectRegime('old');
-    calculateTax();
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
 });
+function calculateTax(){
+    const income=parseInt(document.getElementById('tcIncome').value)||0;
+    const d80c=Math.min(parseInt(document.getElementById('tc80C').value)||0,150000);
+    const d80d=parseInt(document.getElementById('tc80D').value)||0;
+    const hra=parseInt(document.getElementById('tcHRA').value)||0;
+    const nps=Math.min(parseInt(document.getElementById('tcNPS').value)||0,50000);
+    const sd=parseInt(document.getElementById('tcSD').value)||0;
+    const other=parseInt(document.getElementById('tcOther').value)||0;
+    const oldTaxable=Math.max(income-sd-hra-d80c-d80d-nps-other,0);
+    let oldTax=0;
+    if(oldTaxable>1000000)oldTax=(oldTaxable-1000000)*0.30+500000*0.20+250000*0.05;
+    else if(oldTaxable>500000)oldTax=(oldTaxable-500000)*0.20+250000*0.05;
+    else if(oldTaxable>250000)oldTax=(oldTaxable-250000)*0.05;
+    if(oldTaxable<=500000)oldTax=0;
+    const oldCess=oldTax*0.04;
+    const oldTotal=oldTax+oldCess;
+    const newSD=75000;
+    const newTaxable=Math.max(income-newSD,0);
+    let newTax=0;
+    if(newTaxable>1500000)newTax=(newTaxable-1500000)*0.30+300000*0.20+200000*0.15+300000*0.10+400000*0.05;
+    else if(newTaxable>1200000)newTax=(newTaxable-1200000)*0.20+200000*0.15+300000*0.10+400000*0.05;
+    else if(newTaxable>1000000)newTax=(newTaxable-1000000)*0.15+300000*0.10+400000*0.05;
+    else if(newTaxable>700000)newTax=(newTaxable-700000)*0.10+400000*0.05;
+    else if(newTaxable>300000)newTax=(newTaxable-300000)*0.05;
+    if(newTaxable<=700000)newTax=0;
+    const newCess=newTax*0.04;
+    const newTotal=newTax+newCess;
+    const f=n=>'₹ '+n.toLocaleString('en-IN');
+    document.getElementById('tcOldTaxable').textContent=f(oldTaxable);
+    document.getElementById('tcOldTax').textContent=f(Math.round(oldTax));
+    document.getElementById('tcOldCess').textContent=f(Math.round(oldCess));
+    document.getElementById('tcOldTotal').textContent=f(Math.round(oldTotal));
+    document.getElementById('tcNewTaxable').textContent=f(newTaxable);
+    document.getElementById('tcNewTax').textContent=f(Math.round(newTax));
+    document.getElementById('tcNewCess').textContent=f(Math.round(newCess));
+    document.getElementById('tcNewTotal').textContent=f(Math.round(newTotal));
+    const diff=Math.abs(oldTotal-newTotal);
+    const better=oldTotal<=newTotal?'Old':'New';
+    document.getElementById('tcRecommendation').innerHTML='&#9989; <strong>'+better+' Regime</strong> saves you <strong>'+f(Math.round(diff))+'</strong> more per year!';
+    document.getElementById('tcResults').style.display='block';
+}
 </script>
 {% endblock %}

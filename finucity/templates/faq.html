@@ -3,234 +3,240 @@
 {% block title %}Frequently Asked Questions | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<!-- ============ HERO ============ -->
+<section class="fq-hero">
+    <div class="fq-hero__particles" id="fqParticles"></div>
     <div class="container">
-        <h1>❓ Frequently Asked Questions</h1>
-        <p>Get answers to common questions about Finucity AI and our financial services</p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="faq-content">
-        <section class="faq-section">
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How accurate is Finucity AI's financial advice?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Finucity AI maintains a 98.5% accuracy rate for financial information. Our AI is continuously trained on the latest tax laws, financial regulations, and best practices in India. However, for legally binding decisions, we always recommend consulting with a human professional.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Is my financial information secure with Finucity?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Absolutely. We employ bank-level encryption for all conversations and never store sensitive financial details. Your privacy is our priority, and we adhere to the strictest data protection standards to ensure your information remains confidential.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>What types of financial questions can I ask?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>You can ask about virtually any financial topic relevant to India, including income tax planning, GST compliance, investment strategies, retirement planning, business structuring, and more. Our AI is designed to handle both simple queries and complex financial scenarios.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How is Finucity different from just searching online?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Unlike general web searches that return multiple sources with potentially conflicting information, Finucity AI provides a single, clear answer tailored to your specific situation. Our AI synthesizes information from authoritative sources and applies it to your unique context, saving you hours of research and interpretation.</p>
-                    </div>
-                </div>
-                
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Can Finucity AI help with my business finances?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes! Finucity AI is equipped to handle a wide range of business financial queries, from GST compliance and input tax credit optimization to business structure recommendations and tax-efficient profit distribution strategies. Whether you're a freelancer, small business owner, or startup founder, our AI can provide valuable guidance.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Is Finucity suitable for complex financial planning?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>While Finucity AI can handle many complex financial questions, we always recommend consulting with professional financial advisors for major financial decisions. Our AI serves as an excellent starting point and educational resource, but human expertise is still valuable for complex personalized planning.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How often is the financial information updated?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Our AI is regularly updated with the latest financial regulations, tax codes, and market information. We make sure to incorporate new budget announcements, tax amendments, and regulatory changes as soon as they are officially released.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Can I save and refer back to my conversations?</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Yes, registered users can access their complete conversation history. This feature allows you to refer back to previous advice and continue conversations where you left off, making it easier to build on earlier discussions about your financial situation.</p>
-                    </div>
-                </div>
+        <div class="fq-hero__content reveal-up">
+            <span class="fq-hero__badge">Help Center</span>
+            <h1 class="fq-hero__title">Frequently Asked <span class="gradient-text">Questions</span></h1>
+            <p class="fq-hero__subtitle">Find instant answers to the most common questions about Finucity, our AI tools, calculators, CA services, tax planning, and more.</p>
+            <div class="fq-search-box">
+                <input type="text" id="faqSearch" placeholder="Search questions..." oninput="filterFAQ()">
+                <span class="fq-search-icon">&#128269;</span>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
-        <section class="contact-cta">
+<!-- ============ FAQ SECTIONS ============ -->
+<section class="fq-section">
+    <div class="container">
+        <!-- Category Tabs -->
+        <div class="fq-tabs reveal-up">
+            <button class="fq-tab fq-tab--active" onclick="filterCategory('all',this)">All</button>
+            <button class="fq-tab" onclick="filterCategory('general',this)">General</button>
+            <button class="fq-tab" onclick="filterCategory('tax',this)">Tax & Filing</button>
+            <button class="fq-tab" onclick="filterCategory('tools',this)">Tools & Calculators</button>
+            <button class="fq-tab" onclick="filterCategory('ca',this)">CA Services</button>
+            <button class="fq-tab" onclick="filterCategory('account',this)">Account & Billing</button>
+        </div>
+
+        <div class="fq-grid">
+            <!-- GENERAL -->
+            <div class="fq-item reveal-up" data-category="general" style="--delay:0.05s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What is Finucity and how does it help me?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Finucity is India's AI-powered financial intelligence platform. It combines artificial intelligence with deep knowledge of Indian tax laws, investment products, and compliance requirements to provide you personalized financial guidance. Whether you need to compare Old vs New tax regime, calculate HRA exemption, plan your investments, or connect with a Chartered Accountant — Finucity handles it all from one platform. Our AI advisor is available 24/7 and can answer questions in multiple languages including Hindi and English.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="general" style="--delay:0.1s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>Is Finucity free to use?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Yes! Our core features are completely free — this includes all calculators (Income Tax, HRA, SIP, EMI, GST), the AI tax advisor chat, educational content, blog, and learning center. Premium features like detailed personalized tax reports, priority CA connections, and advanced portfolio analysis may have associated fees. We believe every Indian should have access to quality financial guidance regardless of their ability to pay.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="general" style="--delay:0.15s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How accurate is the AI financial advisor?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Our AI is trained on the latest Finance Act provisions, CBDT circulars, RBI guidelines, and SEBI regulations. All tax calculations are validated against chartered accountant computations. However, please note that AI provides informational guidance — not certified financial advice. For complex matters involving litigation, compliance notices, or multi-entity structures, we recommend consulting with our verified CAs. Our accuracy rate on standard tax queries exceeds 95%.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="general" style="--delay:0.2s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What languages does Finucity support?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Currently, Finucity's AI advisor supports conversations in English and Hindi. Our calculators and tools work with numerical inputs so they're language-agnostic. We're actively working on adding support for Tamil, Telugu, Marathi, Bengali, Gujarati, and Kannada to truly make financial literacy accessible across India.</p></div>
+            </div>
+
+            <!-- TAX -->
+            <div class="fq-item reveal-up" data-category="tax" style="--delay:0.05s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>Which tax regime should I choose — Old or New?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>The answer depends on your deductions. <strong>Old Regime is better</strong> if your total deductions (80C + 80D + HRA + Home Loan Interest + NPS) exceed ₹3.75-4L for income up to ₹15L. <strong>New Regime is better</strong> if you have minimal deductions. As a rule of thumb: salaried individuals with HRA + home loan usually benefit from Old Regime. Those without HRA, renting, or in early career often benefit from New Regime. Use our <a href="/tools/old-vs-new-regime" style="color:#4facfe">Old vs New Regime Comparator</a> for a precise answer based on your specific numbers.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tax" style="--delay:0.1s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What deductions can I claim under Section 80C?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Section 80C allows deductions up to ₹1,50,000 per year for: EPF/VPF contributions, PPF deposits (up to ₹1.5L/year), ELSS mutual funds (3-year lock-in), NSC (5-year post office scheme), 5-year Fixed Deposits, Life insurance premiums, Sukanya Samriddhi (for girl child), Home loan principal repayment, tuition fees for up to 2 children. Additionally, Section 80CCD(1B) allows an extra ₹50,000 deduction for NPS contributions — beyond the 80C limit. So your total deduction potential under 80C + 80CCD(1B) is ₹2,00,000.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tax" style="--delay:0.15s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How is HRA exemption calculated?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>HRA exemption is the minimum of three values: (1) Actual HRA received from employer, (2) 50% of basic salary if you live in a metro city (Delhi, Mumbai, Chennai, Kolkata) or 40% for non-metro, (3) Actual rent paid minus 10% of basic salary. For example: if your basic is ₹50,000/month, HRA is ₹20,000, and rent is ₹25,000 in Delhi — your HRA exemption would be min(₹20,000, ₹25,000, ₹20,000) = ₹20,000/month. Use our <a href="/tools/hra-calculator" style="color:#4facfe">HRA Calculator</a> for instant computation.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tax" style="--delay:0.2s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What are the income tax slabs for FY 2024-25?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p><strong>New Regime (Default):</strong> Up to ₹3L: Nil | ₹3-7L: 5% | ₹7-10L: 10% | ₹10-12L: 15% | ₹12-15L: 20% | Above ₹15L: 30%. Standard deduction: ₹75,000. Rebate u/s 87A: Tax-free up to ₹7L income.<br><br><strong>Old Regime:</strong> Up to ₹2.5L: Nil | ₹2.5-5L: 5% | ₹5-10L: 20% | Above ₹10L: 30%. Standard deduction: ₹50,000. Allows all deductions (80C, 80D, HRA, 24b, etc.). Rebate u/s 87A: Tax-free up to ₹5L income. Use our <a href="/tools/tax-calculator" style="color:#4facfe">Tax Calculator</a> to see your exact liability.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tax" style="--delay:0.25s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>When is the ITR filing deadline?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>For individuals and salaried employees: <strong>July 31 of the assessment year</strong> (e.g., July 31, 2025 for FY 2024-25). For businesses requiring audit: September 30. For transfer pricing cases: November 30. Late filing is allowed until December 31 with a penalty of ₹5,000 (₹1,000 if income is under ₹5L). Filing after the deadline also means you cannot carry forward certain losses and may face interest under Sections 234A, 234B, and 234C.</p></div>
+            </div>
+
+            <!-- TOOLS -->
+            <div class="fq-item reveal-up" data-category="tools" style="--delay:0.05s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How do I use the Income Tax Calculator?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Navigate to our Income Tax Calculator from the Tools menu. Enter your annual income (CTC or gross salary), select your age group, choose Old or New regime, and input your deductions (80C, 80D, HRA, home loan interest). The calculator instantly shows your tax liability under both regimes so you can compare and choose the beneficial one. All calculations follow the latest Finance Act provisions including surcharge and cess.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tools" style="--delay:0.1s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What is an SIP and how does the SIP Calculator work?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>SIP (Systematic Investment Plan) is a method of investing a fixed amount every month in mutual funds. The power lies in compounding — ₹10,000/month at 12% for 20 years creates ₹1 Crore (invested only ₹24L). Our SIP Calculator takes your monthly investment amount, expected annual return, and duration to project the total corpus. It also shows the wealth gained (corpus minus investment) so you can visualize the compounding effect. Advanced features include step-up SIP (increasing investment by a percentage annually) and inflation adjustment.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="tools" style="--delay:0.15s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>Are the calculator results certified or official?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Our calculators are designed for planning and estimation purposes. While we ensure accuracy by following the latest tax laws and financial formulas, the results should be used as indicative guides — not as certified tax computations. For ITR filing and official documentation, we recommend using the calculations as a starting point and verifying with a CA. Our CA ecosystem can help you file accurately based on the estimates our calculators provide.</p></div>
+            </div>
+
+            <!-- CA -->
+            <div class="fq-item reveal-up" data-category="ca" style="--delay:0.05s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How does the CA Ecosystem work?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Finucity's CA Ecosystem connects you with verified, ICAI-registered Chartered Accountants. CAs can register on our platform, complete verification (ICAI membership validation, document check), and get listed for clients. As a user, you can browse CAs by specialization (Tax Filing, GST, Company Formation, Audit), location, ratings, and fees. You can request consultations, share documents securely, and track your engagement — all within the platform.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="ca" style="--delay:0.1s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How are CAs verified on the platform?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Every CA undergoes a multi-step verification process: (1) ICAI Membership Number validation against the official ICAI database, (2) Identity document verification (PAN, Aadhaar), (3) Professional qualification check (CA certificate), (4) Practice certificate verification for practicing CAs, (5) Experience and specialization documentation, (6) Background reference checks. Only CAs who pass all steps receive the "Verified" badge. We also maintain ongoing quality monitoring through client feedback and periodic re-verification.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="ca" style="--delay:0.15s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>Can I become a CA partner on Finucity?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Absolutely! If you're a qualified Chartered Accountant with an active ICAI membership, you can apply through our CA Registration page. The process involves: (1) Fill the online application, (2) Upload your ICAI membership certificate and ID proofs, (3) Select your areas of specialization, (4) Set your consultation fees and availability, (5) Complete verification (usually within 48-72 hours). Once approved, you'll appear in client searches and can start receiving consultation requests.</p></div>
+            </div>
+
+            <!-- ACCOUNT -->
+            <div class="fq-item reveal-up" data-category="account" style="--delay:0.05s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>Is my financial data secure on Finucity?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Absolutely. We take data security extremely seriously: (1) All data is encrypted in transit (TLS 1.3) and at rest (AES-256), (2) We use Supabase with Row Level Security (RLS) ensuring users can only access their own data, (3) No financial data is shared with third parties — ever, (4) AI conversations are processed through secure API channels and are not stored for training purposes, (5) We follow GDPR-compliant data handling practices. See our <a href="/support/security" style="color:#4facfe">Security page</a> for detailed information.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="account" style="--delay:0.1s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>How do I create an account?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>Creating an account is simple and free: (1) Click "Sign Up" or "Get Started", (2) Enter your email and create a password, or sign in with Google, (3) Verify your email through the confirmation link, (4) Complete your profile with basic details (name, age, income range) for personalized recommendations. You can use most features without an account, but signing up unlocks chat history, saved calculations, CA consultations, and personalized tax planning.</p></div>
+            </div>
+
+            <div class="fq-item reveal-up" data-category="account" style="--delay:0.15s">
+                <button class="fq-question" onclick="toggleFAQ(this)"><span>What is your refund policy?</span><span class="fq-icon">+</span></button>
+                <div class="fq-answer"><p>For our free services, no refund is applicable as there's no charge. For paid services (premium reports, CA consultations), we offer a satisfaction guarantee: (1) Report-based services: Full refund within 7 days if the report contains material errors, (2) CA consultations: Refund if the CA doesn't respond within the committed timeframe, (3) Subscription services: Pro-rated refund for unused months. See our <a href="/support/refund-policy" style="color:#4facfe">Refund Policy</a> for complete details.</p></div>
+            </div>
+        </div>
+
+        <!-- Still Have Questions -->
+        <div class="fq-contact reveal-up">
+            <div class="fq-contact__glow"></div>
             <h2>Still Have Questions?</h2>
-            <p>Reach out to us for more information or visit our GitHub repository for technical details.</p>
-            <div class="contact-buttons">
-                <a href="https://github.com/Sumeet-01" target="_blank" class="cta-button">
-                    <i class="fab fa-github"></i> Visit GitHub
-                </a>
-                <a href="https://linkedin.com/in/sumeet-sangwan" target="_blank" class="outline-button">
-                    <i class="fab fa-linkedin"></i> Connect on LinkedIn
-                </a>
+            <p>Can't find what you're looking for? Our AI advisor can answer most questions instantly, or reach out to our support team.</p>
+            <div class="fq-contact__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Ask AI Advisor</span></a>
+                <a href="{{ url_for('main.contact') }}" class="tp-btn tp-btn--secondary"><span>Contact Support</span></a>
             </div>
-        </section>
+        </div>
     </div>
-</div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.faq-content {
-    margin: 3rem 0;
-}
+.reveal-up,.reveal-left,.reveal-right { opacity:0; transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up { transform:translateY(50px); } .reveal-left { transform:translateX(-50px); } .reveal-right { transform:translateX(50px); }
+.reveal-up.revealed,.reveal-left.revealed,.reveal-right.revealed { opacity:1; transform:translate(0); }
 
-.faq-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
+.fq-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(102,126,234,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.fq-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.fq-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(102,126,234,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.fq-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.fq-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(102,126,234,0.1); border:1px solid rgba(102,126,234,0.3); border-radius:50px; color:#667eea; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.fq-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); line-height:1.1; margin-bottom:1.5rem; }
+.gradient-text { background:linear-gradient(135deg,#667eea,#764ba2,#667eea); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.fq-hero__subtitle { font-size:1.15rem; color:var(--text-muted); max-width:600px; margin:0 auto 2.5rem; line-height:1.7; }
 
-.faq-item {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    margin-bottom: 1rem;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    overflow: hidden;
-}
+.fq-search-box { position:relative; max-width:500px; margin:0 auto; }
+.fq-search-box input { width:100%; padding:1rem 1.5rem 1rem 3rem; border-radius:50px; border:1px solid rgba(102,126,234,0.2); background:var(--bg-alt); color:var(--text-light); font-size:1rem; }
+.fq-search-box input:focus { outline:none; border-color:#667eea; box-shadow:0 0 20px rgba(102,126,234,0.15); }
+.fq-search-box input::placeholder { color:var(--text-muted); }
+.fq-search-icon { position:absolute; left:1.2rem; top:50%; transform:translateY(-50%); font-size:1rem; color:var(--text-muted); pointer-events:none; }
 
-.faq-question {
-    padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    color: var(--text-light);
-    font-weight: 600;
-    font-size: 1.1rem;
-}
+.fq-section { padding:4rem 0 6rem; }
+.fq-tabs { display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-bottom:3rem; }
+.fq-tab { padding:0.6rem 1.5rem; border-radius:50px; border:1px solid rgba(102,126,234,0.15); background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.88rem; font-weight:600; transition:all 0.3s; }
+.fq-tab:hover { border-color:rgba(102,126,234,0.3); color:var(--text-light); }
+.fq-tab--active { background:rgba(102,126,234,0.15); border-color:#667eea; color:#667eea; }
 
-.faq-question i {
-    color: var(--accent-primary);
-    transition: transform 0.3s ease;
-}
+.fq-grid { max-width:850px; margin:0 auto; }
+.fq-item { background:var(--bg-alt); border-radius:16px; margin-bottom:0.8rem; border:1px solid rgba(102,126,234,0.06); overflow:hidden; transition:all 0.3s ease; transition-delay:var(--delay,0s); }
+.fq-item:hover { border-color:rgba(102,126,234,0.15); }
+.fq-item.fq-item--hidden { display:none; }
+.fq-question { width:100%; display:flex; justify-content:space-between; align-items:center; padding:1.3rem 1.5rem; background:none; border:none; cursor:pointer; text-align:left; color:var(--text-light); font-size:1rem; font-weight:600; transition:all 0.3s; gap:1rem; }
+.fq-question:hover { color:#667eea; }
+.fq-icon { font-size:1.5rem; font-weight:300; color:#667eea; min-width:24px; text-align:center; transition:transform 0.3s ease; }
+.fq-item--open .fq-icon { transform:rotate(45deg); }
+.fq-answer { max-height:0; overflow:hidden; transition:max-height 0.5s cubic-bezier(0.16,1,0.3,1),padding 0.3s; }
+.fq-item--open .fq-answer { max-height:500px; }
+.fq-answer p { padding:0 1.5rem 1.5rem; color:var(--text-muted); line-height:1.8; font-size:0.95rem; margin:0; }
+.fq-answer strong { color:var(--text-light); }
 
-.faq-answer {
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-}
+.fq-contact { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(102,126,234,0.15); overflow:hidden; margin-top:4rem; }
+.fq-contact__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(102,126,234,0.08) 0%,transparent 70%); pointer-events:none; }
+.fq-contact h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.fq-contact p { color:var(--text-muted); max-width:600px; margin:0 auto 2.5rem; line-height:1.7; font-size:1.05rem; position:relative; }
+.fq-contact__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; box-shadow:0 4px 15px rgba(102,126,234,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(102,126,234,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
 
-.faq-item.open .faq-question i {
-    transform: rotate(180deg);
-}
-
-.faq-item.open .faq-answer {
-    padding: 0 1.5rem 1.5rem;
-    max-height: 1000px;
-}
-
-.faq-answer p {
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin: 0;
-}
-
-.contact-cta {
-    text-align: center;
-    margin-top: 4rem;
-    background: var(--bg-alt);
-    padding: 3rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.contact-cta h2 {
-    color: var(--text-light);
-    margin-bottom: 1rem;
-}
-
-.contact-buttons {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-@media (max-width: 768px) {
-    .contact-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
+@media (max-width:768px) {
+    .fq-hero { padding:7rem 1rem 3rem; } .fq-tabs { gap:0.3rem; }
+    .fq-tab { padding:0.5rem 1rem; font-size:0.8rem; }
+    .fq-question { font-size:0.92rem; padding:1rem 1.2rem; }
 }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // FAQ toggle functionality
-    const faqItems = document.querySelectorAll('.faq-item');
-    
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
-        
-        question.addEventListener('click', () => {
-            const isOpen = item.classList.contains('open');
-            
-            // Close all FAQs
-            faqItems.forEach(faq => {
-                faq.classList.remove('open');
-            });
-            
-            // Toggle current FAQ
-            if (!isOpen) {
-                item.classList.add('open');
-            }
-        });
-    });
-    
-    // Open first FAQ item by default
-    if (faqItems.length > 0) {
-        faqItems[0].classList.add('open');
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up,.reveal-left,.reveal-right').forEach(el=>observer.observe(el));
+
+    const c=document.getElementById('fqParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
 });
+
+function toggleFAQ(btn){
+    const item=btn.parentElement;
+    const wasOpen=item.classList.contains('fq-item--open');
+    document.querySelectorAll('.fq-item--open').forEach(el=>el.classList.remove('fq-item--open'));
+    if(!wasOpen) item.classList.add('fq-item--open');
+}
+
+function filterCategory(cat,btn){
+    document.querySelectorAll('.fq-tab').forEach(t=>t.classList.remove('fq-tab--active'));
+    btn.classList.add('fq-tab--active');
+    document.querySelectorAll('.fq-item').forEach(item=>{
+        if(cat==='all'||item.dataset.category===cat){item.classList.remove('fq-item--hidden');}
+        else{item.classList.add('fq-item--hidden');}
+    });
+}
+
+function filterFAQ(){
+    const q=document.getElementById('faqSearch').value.toLowerCase();
+    document.querySelectorAll('.fq-item').forEach(item=>{
+        const text=item.textContent.toLowerCase();
+        if(text.includes(q)){item.classList.remove('fq-item--hidden');}
+        else{item.classList.add('fq-item--hidden');}
+    });
+}
 </script>
 {% endblock %}

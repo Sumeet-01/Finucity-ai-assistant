@@ -1,159 +1,476 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Analytics | Finucity Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+</head>
+<body class="admin-shell">
 
-{% block title %}Platform Analytics - Admin{% endblock %}
+<div class="admin-layout" id="adminLayout">
 
-{% block content %}
-<div class="min-h-screen bg-gray-50 p-6">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Platform Analytics</h1>
-                <p class="text-gray-600 mt-1">Last {{ days }} days performance</p>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">F</div>
+            <div class="sidebar-brand-text">
+                <h1>Finucity</h1>
+                <span>Admin Panel</span>
             </div>
-            <div class="flex gap-3">
-                <select onchange="window.location.href='?days='+this.value" 
-                        class="border border-gray-300 rounded-lg px-4 py-2">
-                    <option value="7" {% if days == 7 %}selected{% endif %}>7 Days</option>
-                    <option value="30" {% if days == 30 %}selected{% endif %}>30 Days</option>
-                    <option value="90" {% if days == 90 %}selected{% endif %}>90 Days</option>
-                </select>
-                <a href="{{ url_for('admin_enhanced.export_analytics') }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-                    Export Data
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Overview</div>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-th-large"></i>
+                    <span class="link-text">Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.analytics') }}" class="sidebar-link active">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="link-text">Analytics</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">People</div>
+                <a href="{{ url_for('main.admin_users') }}" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    <span class="link-text">Users</span>
+                </a>
+                <a href="{{ url_for('main.admin_ca_applications') }}" class="sidebar-link">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="link-text">CA Applications</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Operations</div>
+                <a href="{{ url_for('admin_enhanced.manage_services') }}" class="sidebar-link">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span class="link-text">Services</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_bookings') }}" class="sidebar-link">
+                    <i class="fas fa-receipt"></i>
+                    <span class="link-text">Bookings</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_pricing') }}" class="sidebar-link">
+                    <i class="fas fa-tags"></i>
+                    <span class="link-text">Pricing</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Moderation</div>
+                <a href="{{ url_for('admin_enhanced.manage_disputes') }}" class="sidebar-link">
+                    <i class="fas fa-gavel"></i>
+                    <span class="link-text">Disputes</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">System</div>
+                <a href="{{ url_for('admin_enhanced.platform_settings') }}" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="link-text">Settings</span>
+                </a>
+                <a href="{{ url_for('main.home') }}" class="sidebar-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="link-text">View Site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user" onclick="window.location.href='/profile'">
+                <div class="sidebar-user-avatar">AD</div>
+                <div class="sidebar-user-info">
+                    <h4>Administrator</h4>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== HEADER ===== -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-breadcrumb">
+                <span>Admin</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>Overview</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-current">Analytics</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>Live</span>
+            </div>
+            <div class="header-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="header-icon-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="admin-main">
+
+        <!-- Page Title -->
+        <div class="page-title-bar">
+            <div class="page-title-group">
+                <h2>Platform Analytics</h2>
+                <p>Last {{ days }} days performance overview</p>
+            </div>
+            <div class="page-actions">
+                <!-- Date Range Selector -->
+                <div class="admin-tabs">
+                    <a href="?days=7" class="admin-tab {% if days == 7 %}active{% endif %}">7D</a>
+                    <a href="?days=30" class="admin-tab {% if days == 30 %}active{% endif %}">30D</a>
+                    <a href="?days=90" class="admin-tab {% if days == 90 %}active{% endif %}">90D</a>
+                </div>
+                <a href="{{ url_for('admin_enhanced.export_analytics') }}" class="btn-admin primary">
+                    <i class="fas fa-download"></i> Export
                 </a>
             </div>
         </div>
 
-        <!-- Revenue Metrics -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-white/80 text-sm font-medium mb-2">Total Revenue</h3>
-                <p class="text-4xl font-bold">₹{{ "{:,}".format(analytics.revenue.total) }}</p>
-                <p class="text-white/80 text-sm mt-2">
-                    Avg per booking: ₹{{ "{:,.0f}".format(analytics.revenue.average_booking) }}
-                </p>
+        <!-- ===== REVENUE STATS ROW ===== -->
+        <div class="stats-row">
+            <div class="stat-card" style="--card-accent: #3b82f6;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total Revenue</span>
+                    <div class="stat-card-icon info"><i class="fas fa-indian-rupee-sign"></i></div>
+                </div>
+                <div class="stat-card-value">{{ "₹{:,}".format(analytics.revenue.total|int) }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-chart-line"></i> Avg/booking: ₹{{ "{:,.0f}".format(analytics.revenue.average_booking) }}</div>
             </div>
 
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-white/80 text-sm font-medium mb-2">Pending Revenue</h3>
-                <p class="text-4xl font-bold">₹{{ "{:,}".format(analytics.revenue.pending) }}</p>
-                <p class="text-white/80 text-sm mt-2">From ongoing bookings</p>
+            <div class="stat-card" style="--card-accent: #22c55e;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Pending Revenue</span>
+                    <div class="stat-card-icon success"><i class="fas fa-hourglass-half"></i></div>
+                </div>
+                <div class="stat-card-value">{{ "₹{:,}".format(analytics.revenue.pending|int) }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-clock"></i> From ongoing bookings</div>
             </div>
 
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-white/80 text-sm font-medium mb-2">New Users</h3>
-                <p class="text-4xl font-bold">{{ analytics.users.new }}</p>
-                <p class="text-white/80 text-sm mt-2">
-                    Growth: {{ "%.1f"|format(analytics.users.growth_rate) }}/month
-                </p>
+            <div class="stat-card" style="--card-accent: #a855f7;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">New Users</span>
+                    <div class="stat-card-icon purple"><i class="fas fa-user-plus"></i></div>
+                </div>
+                <div class="stat-card-value">{{ analytics.users.new }}</div>
+                <div class="stat-card-change up"><i class="fas fa-arrow-up"></i> {{ "%.1f"|format(analytics.users.growth_rate) }}/month growth</div>
             </div>
-        </div>
 
-        <!-- Booking Status -->
-        <div class="bg-white rounded-lg shadow mb-8 p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Booking Status</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="border-l-4 border-blue-500 pl-4">
-                    <p class="text-gray-600 text-sm">Total Bookings</p>
-                    <p class="text-3xl font-bold text-gray-900">{{ analytics.bookings.total }}</p>
+            <div class="stat-card" style="--card-accent: #06b6d4;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total Bookings</span>
+                    <div class="stat-card-icon cyan"><i class="fas fa-receipt"></i></div>
                 </div>
-                <div class="border-l-4 border-green-500 pl-4">
-                    <p class="text-gray-600 text-sm">Completed</p>
-                    <p class="text-3xl font-bold text-green-600">{{ analytics.bookings.completed }}</p>
-                    <p class="text-sm text-gray-500">
-                        {{ "%.1f"|format((analytics.bookings.completed / analytics.bookings.total * 100) if analytics.bookings.total > 0 else 0) }}%
-                    </p>
-                </div>
-                <div class="border-l-4 border-yellow-500 pl-4">
-                    <p class="text-gray-600 text-sm">In Progress</p>
-                    <p class="text-3xl font-bold text-yellow-600">{{ analytics.bookings.in_progress }}</p>
-                </div>
-                <div class="border-l-4 border-red-500 pl-4">
-                    <p class="text-gray-600 text-sm">Cancelled</p>
-                    <p class="text-3xl font-bold text-red-600">{{ analytics.bookings.cancelled }}</p>
-                </div>
+                <div class="stat-card-value">{{ analytics.bookings.total }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-calendar-check"></i> In {{ days }} days</div>
             </div>
         </div>
 
-        <!-- Service Popularity -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Popular Services</h2>
-                <div class="space-y-3">
-                    {% for service_id, count in (analytics.services.items()|sort(attribute='1', reverse=true))[:10] %}
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center">
-                                <div class="font-medium text-gray-900 flex-1">Service {{ service_id }}</div>
-                                <span class="text-sm text-gray-600 ml-2">{{ count }} bookings</span>
+        <!-- ===== BOOKING STATUS BREAKDOWN ===== -->
+        <div class="content-grid" style="grid-template-columns: 1fr 340px;">
+            <!-- Booking Status -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-header-icon" style="background: var(--admin-info-bg); color: var(--admin-info);"><i class="fas fa-chart-bar"></i></div>
+                        <h3>Booking Status Breakdown</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-row" style="margin-bottom: 20px;">
+                        <div class="metric-pill">
+                            <span class="metric-label">Total</span>
+                            <span class="metric-value">{{ analytics.bookings.total }}</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="metric-label" style="color: var(--admin-success);">Completed</span>
+                            <span class="metric-value" style="color: var(--admin-success);">{{ analytics.bookings.completed }}</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="metric-label" style="color: var(--admin-warning);">In Progress</span>
+                            <span class="metric-value" style="color: var(--admin-warning);">{{ analytics.bookings.in_progress }}</span>
+                        </div>
+                        <div class="metric-pill">
+                            <span class="metric-label" style="color: var(--admin-danger);">Cancelled</span>
+                            <span class="metric-value" style="color: var(--admin-danger);">{{ analytics.bookings.cancelled }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bars -->
+                    {% set total = analytics.bookings.total if analytics.bookings.total > 0 else 1 %}
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--admin-success);">Completed</span>
+                                <span style="font-size: 12px; color: var(--admin-text-tertiary);">{{ "%.1f"|format(analytics.bookings.completed / total * 100) }}%</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                <div class="bg-blue-600 h-2 rounded-full" 
-                                     style="width: {{ (count / analytics.bookings.total * 100) if analytics.bookings.total > 0 else 0 }}%"></div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: {{ analytics.bookings.completed / total * 100 }}%; background: linear-gradient(90deg, var(--admin-success), #16a34a);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--admin-warning);">In Progress</span>
+                                <span style="font-size: 12px; color: var(--admin-text-tertiary);">{{ "%.1f"|format(analytics.bookings.in_progress / total * 100) }}%</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: {{ analytics.bookings.in_progress / total * 100 }}%; background: linear-gradient(90deg, var(--admin-warning), #d97706);"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 12.5px; font-weight: 600; color: var(--admin-danger);">Cancelled</span>
+                                <span style="font-size: 12px; color: var(--admin-text-tertiary);">{{ "%.1f"|format(analytics.bookings.cancelled / total * 100) }}%</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: {{ analytics.bookings.cancelled / total * 100 }}%; background: linear-gradient(90deg, var(--admin-danger), #dc2626);"></div>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Calculator Usage</h2>
-                <div class="space-y-3">
-                    {% for calc_type, count in (analytics.calculators.items()|sort(attribute='1', reverse=true))[:10] %}
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center">
-                                <div class="font-medium text-gray-900 capitalize flex-1">
-                                    {{ calc_type.replace('_', ' ') }}
-                                </div>
-                                <span class="text-sm text-gray-600 ml-2">{{ count }} uses</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
-                                <div class="bg-green-600 h-2 rounded-full" 
-                                     style="width: {{ (count / (analytics.calculators.values()|sum)) * 100 }}%"></div>
-                            </div>
-                        </div>
+            <!-- Doughnut Chart -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-header-icon" style="background: var(--admin-purple-bg); color: var(--admin-purple);"><i class="fas fa-chart-pie"></i></div>
+                        <h3>Distribution</h3>
                     </div>
-                    {% endfor %}
+                </div>
+                <div class="card-body" style="display: flex; align-items: center; justify-content: center; min-height: 240px;">
+                    <div style="width: 180px; height: 180px;">
+                        <canvas id="bookingDistChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- CA Performance -->
-        <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">CA Performance</h2>
-            {% if analytics.ca_ratings %}
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">CA ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reviews</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        {% for rating in analytics.ca_ratings[:10] %}
-                        <tr>
-                            <td class="px-4 py-3 text-sm">{{ rating.ca_id }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <div class="flex items-center">
-                                    <span class="text-yellow-500 mr-1">★</span>
-                                    {{ "%.1f"|format(rating.overall_rating) }}
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm">{{ rating.total_reviews or 1 }}</td>
-                        </tr>
+        <!-- ===== SERVICES & CALCULATORS ===== -->
+        <div class="content-grid equal">
+            <!-- Popular Services -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-header-icon" style="background: var(--admin-accent-muted); color: var(--admin-accent);"><i class="fas fa-fire"></i></div>
+                        <h3>Popular Services</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if analytics.services %}
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% for service_id, count in (analytics.services.items()|sort(attribute='1', reverse=true))[:8] %}
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 13px; font-weight: 600; color: var(--admin-text-secondary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Service {{ service_id[:8] if service_id|length > 8 else service_id }}</span>
+                                <span style="font-size: 12px; color: var(--admin-text-tertiary);">{{ count }} bookings</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: {{ (count / analytics.bookings.total * 100) if analytics.bookings.total > 0 else 0 }}%;"></div>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state" style="padding: 32px;">
+                        <i class="fas fa-concierge-bell"></i>
+                        <h4>No Service Data</h4>
+                        <p>No bookings in this period</p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
-            {% else %}
-            <p class="text-gray-500 text-center py-8">No CA ratings available</p>
-            {% endif %}
+
+            <!-- Calculator Usage -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-header-icon" style="background: var(--admin-success-bg); color: var(--admin-success);"><i class="fas fa-calculator"></i></div>
+                        <h3>Calculator Usage</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if analytics.calculators %}
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        {% set calc_total = analytics.calculators.values()|sum %}
+                        {% for calc_type, count in (analytics.calculators.items()|sort(attribute='1', reverse=true))[:8] %}
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                <span style="font-size: 13px; font-weight: 600; color: var(--admin-text-secondary); text-transform: capitalize;">{{ calc_type.replace('_', ' ') }}</span>
+                                <span style="font-size: 12px; color: var(--admin-text-tertiary);">{{ count }} uses</span>
+                            </div>
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: {{ (count / calc_total * 100) if calc_total > 0 else 0 }}%; background: linear-gradient(90deg, var(--admin-success), #16a34a);"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state" style="padding: 32px;">
+                        <i class="fas fa-calculator"></i>
+                        <h4>No Calculator Data</h4>
+                        <p>No calculator usage in this period</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- ===== CA PERFORMANCE ===== -->
+        <div class="admin-card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-header-icon" style="background: var(--admin-warning-bg); color: var(--admin-warning);"><i class="fas fa-star"></i></div>
+                    <h3>CA Performance Ratings</h3>
+                </div>
+                <div class="card-actions">
+                    <span class="text-muted" style="font-size: 12px;">Last {{ days }} days</span>
+                </div>
+            </div>
+            <div class="card-body no-pad">
+                {% if analytics.ca_ratings %}
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>CA ID</th>
+                                <th>Rating</th>
+                                <th>Reviews</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rating in analytics.ca_ratings[:10] %}
+                            <tr>
+                                <td>
+                                    <span style="font-family: monospace; font-size: 12px; color: var(--admin-text-tertiary);">
+                                        {{ rating.ca_id[:16] if rating.ca_id|length > 16 else rating.ca_id }}...
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: var(--admin-warning); font-size: 14px;">★</span>
+                                        <span style="font-weight: 600; color: var(--admin-text-primary);">{{ "%.1f"|format(rating.overall_rating) }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="color: var(--admin-text-secondary);">{{ rating.total_reviews or 1 }}</span>
+                                </td>
+                                <td>
+                                    <div style="width: 100px;">
+                                        <div class="progress-bar-wrapper">
+                                            <div class="progress-bar-fill" style="width: {{ (rating.overall_rating / 5 * 100) }}%; background: {% if rating.overall_rating >= 4 %}var(--admin-success){% elif rating.overall_rating >= 3 %}var(--admin-warning){% else %}var(--admin-danger){% endif %};"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state" style="padding: 48px;">
+                    <i class="fas fa-star-half-alt"></i>
+                    <h4>No CA Ratings Yet</h4>
+                    <p>CA performance data will appear here once reviews are submitted</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
 </div>
-{% endblock %}
+
+<script>
+(function() {
+    'use strict';
+
+    // ===== SIDEBAR =====
+    const layout = document.getElementById('adminLayout');
+    const toggle = document.getElementById('sidebarToggle');
+    if (localStorage.getItem('admin_sidebar_collapsed') === 'true') layout?.classList.add('sidebar-collapsed');
+    toggle?.addEventListener('click', () => {
+        const collapsed = layout.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('admin_sidebar_collapsed', collapsed);
+    });
+    document.getElementById('mobileSidebarToggle')?.addEventListener('click', () => {
+        document.querySelector('.admin-sidebar')?.classList.toggle('mobile-open');
+    });
+
+    // ===== CHART: BOOKING DISTRIBUTION =====
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.color = '#71717a';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Inter", sans-serif';
+        Chart.defaults.font.size = 12;
+
+        const ctx = document.getElementById('bookingDistChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'In Progress', 'Cancelled'],
+                    datasets: [{
+                        data: [
+                            {{ analytics.bookings.completed }},
+                            {{ analytics.bookings.in_progress }},
+                            {{ analytics.bookings.cancelled }}
+                        ],
+                        backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { size: 11, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1c1c22',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    }
+                }
+            });
+        }
+    }
+})();
+</script>
+
+</body>
+</html>

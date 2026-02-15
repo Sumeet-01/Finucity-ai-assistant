@@ -3,271 +3,196 @@
 {% block title %}Investment Tools | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="it-hero">
+    <div class="it-hero__particles" id="itParticles"></div>
     <div class="container">
-        <h1>📈 Investment Tools</h1>
-        <p>Calculate, plan, and optimize your investments</p>
+        <div class="it-hero__content reveal-up">
+            <span class="it-hero__badge">Tools</span>
+            <h1 class="it-hero__title">Financial <span class="gradient-text">Calculator Suite</span></h1>
+            <p class="it-hero__subtitle">Precision tools to plan taxes, estimate returns, compare regimes, and make data-driven financial decisions — all free, all instant.</p>
+            <div class="it-hero__stats">
+                <div class="it-stat"><span class="it-stat__number" data-count="6">0</span><span class="it-stat__unit">+</span><span class="it-stat__label">Calculators</span></div>
+                <div class="it-stat"><span class="it-stat__number" data-count="100">0</span><span class="it-stat__unit">%</span><span class="it-stat__label">Free</span></div>
+                <div class="it-stat"><span class="it-stat__number" data-count="0">0</span><span class="it-stat__unit"></span><span class="it-stat__label">Sign-up Required</span></div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="container">
-    <div class="tools-content">
-        <section class="tools-overview">
-            <h2>Financial Calculators</h2>
-            <p>Use our collection of financial calculators to plan your investments effectively.</p>
-            
-            <div class="tools-grid">
-                <div class="tool-card">
-                    <div class="tool-icon">💰</div>
+<section class="it-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">All Tools</span>
+            <h2>Choose Your Calculator</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="it-tools-grid">
+            <a href="{{ url_for('main.tax_calculator') }}" class="it-tool reveal-up" style="--delay:0.1s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#667eea,#764ba2)">&#128202;</div>
+                <div class="it-tool__body">
+                    <h3>Income Tax Calculator</h3>
+                    <p>Calculate your total tax liability under both Old and New regimes. Includes 80C, 80D, HRA, NPS deductions, surcharge, and cess computation.</p>
+                    <div class="it-tool__tags"><span>{{ current_fy|default('FY 2025-26') }}</span><span>Both Regimes</span><span>All Deductions</span></div>
+                </div>
+                <div class="it-tool__arrow">→</div>
+            </a>
+
+            <a href="{{ url_for('main.hra_calculator') }}" class="it-tool reveal-up" style="--delay:0.15s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)">&#127968;</div>
+                <div class="it-tool__body">
+                    <h3>HRA Calculator</h3>
+                    <p>Find the exact HRA exemption you can claim. Compares basic salary rule, rent paid rule, and metro/non-metro rule to give you the minimum (maximum benefit).</p>
+                    <div class="it-tool__tags"><span>Section 10(13A)</span><span>Metro/Non-Metro</span><span>Instant</span></div>
+                </div>
+                <div class="it-tool__arrow">→</div>
+            </a>
+
+            <a href="{{ url_for('main.gst_calculator') }}" class="it-tool reveal-up" style="--delay:0.2s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#fba002,#ff6b35)">&#128176;</div>
+                <div class="it-tool__body">
+                    <h3>GST Calculator</h3>
+                    <p>Add or remove GST at 5%, 12%, 18%, or 28%. Calculate CGST, SGST, IGST breakdowns for invoicing, pricing, and compliance.</p>
+                    <div class="it-tool__tags"><span>All Rates</span><span>CGST/SGST/IGST</span><span>Add/Remove</span></div>
+                </div>
+                <div class="it-tool__arrow">→</div>
+            </a>
+
+            <a href="{{ url_for('main.sip_calculator') }}" class="it-tool reveal-up" style="--delay:0.25s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">&#128200;</div>
+                <div class="it-tool__body">
                     <h3>SIP Calculator</h3>
-                    <p>Calculate returns on your systematic investment plans.</p>
-                    <a href="#sip-calculator" class="tool-link">Use Calculator</a>
+                    <p>See how your monthly SIP grows over time with compounding. Visualize wealth accumulation, total invested vs returns, and target-based SIP amount.</p>
+                    <div class="it-tool__tags"><span>Mutual Funds</span><span>Compounding</span><span>Goal-Based</span></div>
                 </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">🏦</div>
-                    <h3>FD Calculator</h3>
-                    <p>Calculate returns on your fixed deposits and interest earned.</p>
-                    <a href="#fd-calculator" class="tool-link">Use Calculator</a>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">🏡</div>
-                    <h3>EMI Calculator</h3>
-                    <p>Calculate your loan EMIs and total interest paid.</p>
-                    <a href="#emi-calculator" class="tool-link">Use Calculator</a>
-                </div>
-                
-                <div class="tool-card">
-                    <div class="tool-icon">🎯</div>
-                    <h3>Goal Calculator</h3>
-                    <p>Plan your investments to reach specific financial goals.</p>
-                    <a href="#goal-calculator" class="tool-link">Use Calculator</a>
-                </div>
-            </div>
-        </section>
+                <div class="it-tool__arrow">→</div>
+            </a>
 
-        <section class="calculator-section" id="sip-calculator">
-            <h2>SIP Calculator</h2>
-            <div class="calculator-container">
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Monthly Investment (₹)</label>
-                        <input type="number" id="sipAmount" value="5000" min="500">
-                    </div>
-                    <div class="input-group">
-                        <label>Expected Returns (% p.a.)</label>
-                        <input type="number" id="sipReturns" value="12" min="1" max="30" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Time Period (Years)</label>
-                        <input type="number" id="sipPeriod" value="10" min="1" max="40">
-                    </div>
-                    <button class="calculate-btn" onclick="calculateSIP()">Calculate</button>
+            <a href="{{ url_for('main.regime_comparator') }}" class="it-tool reveal-up" style="--delay:0.3s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#ff6b6b,#ffa07a)">&#9878;</div>
+                <div class="it-tool__body">
+                    <h3>Old vs New Regime</h3>
+                    <p>Side-by-side comparison of tax under both regimes based on your income and deductions. Get a clear recommendation on which regime saves you more.</p>
+                    <div class="it-tool__tags"><span>Regime Comparison</span><span>Personalized</span><span>{{ current_fy|default('FY 2025-26') }}</span></div>
                 </div>
-                
-                <div class="calculator-result">
-                    <h3>Your SIP Results</h3>
-                    <div class="result-item">
-                        <span>Total Investment:</span>
-                        <span id="sipTotalInvestment">₹6,00,000</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Expected Returns:</span>
-                        <span id="sipTotalReturns">₹5,40,000</span>
-                    </div>
-                    <div class="result-item highlight">
-                        <span>Future Value:</span>
-                        <span id="sipFutureValue">₹11,40,000</span>
-                    </div>
+                <div class="it-tool__arrow">→</div>
+            </a>
+
+            <a href="{{ url_for('main.emi_calculator') }}" class="it-tool reveal-up" style="--delay:0.35s">
+                <div class="it-tool__icon" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">&#127974;</div>
+                <div class="it-tool__body">
+                    <h3>EMI Calculator</h3>
+                    <p>Calculate monthly EMI for home loans, car loans, personal loans. See total interest paid, amortization schedule, and prepayment impact analysis.</p>
+                    <div class="it-tool__tags"><span>Home/Car/Personal</span><span>Amortization</span><span>Prepayment</span></div>
                 </div>
-            </div>
-        </section>
+                <div class="it-tool__arrow">→</div>
+            </a>
+        </div>
     </div>
-</div>
+</section>
+
+<section class="it-section it-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Why Use Our Tools</span>
+            <h2>Built for Accuracy &amp; Speed</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="it-features-grid">
+            <div class="it-feature reveal-up" style="--delay:0.1s"><h4>&#9889; Instant Results</h4><p>No page reloads, no delays. Real-time computation as you type.</p></div>
+            <div class="it-feature reveal-up" style="--delay:0.15s"><h4>&#128274; No Sign-Up</h4><p>Use all tools immediately. No email, no login, no data stored.</p></div>
+            <div class="it-feature reveal-up" style="--delay:0.2s"><h4>&#127758; Updated Rates</h4><p>Tax slabs, GST rates, and exemption limits updated for {{ current_fy|default('FY 2025-26') }}.</p></div>
+            <div class="it-feature reveal-up" style="--delay:0.25s"><h4>&#128241; Mobile-Ready</h4><p>Fully responsive. Works perfectly on phones, tablets, and desktops.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="it-section it-cta-section">
+    <div class="container">
+        <div class="it-cta reveal-up">
+            <div class="it-cta__glow"></div>
+            <h2>Need Expert Help?</h2>
+            <p>Our AI assistant can explain calculations, suggest optimizations, and connect you with verified CAs for complex queries.</p>
+            <div class="it-cta__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Ask AI Assistant</span></a>
+                <a href="{{ url_for('main.learning_centre') }}" class="tp-btn tp-btn--secondary"><span>Learn Finance</span></a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.tools-content {
-    margin: 3rem 0;
-}
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-.tools-overview h2,
-.calculator-section h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-}
+.it-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(79,172,254,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.it-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.it-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(79,172,254,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.it-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.it-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(79,172,254,0.1); border:1px solid rgba(79,172,254,0.3); border-radius:50px; color:#4facfe; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.it-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#4facfe,#00f2fe,#4facfe); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.it-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:2.5rem; }
+.it-hero__stats { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.it-stat { text-align:center; padding:1.2rem 1.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(79,172,254,0.1); border-radius:16px; transition:all 0.3s; }
+.it-stat:hover { border-color:rgba(79,172,254,0.3); transform:translateY(-3px); }
+.it-stat__number { font-size:2rem; font-weight:800; color:#4facfe; }
+.it-stat__unit { font-size:1rem; font-weight:700; color:#4facfe; }
+.it-stat__label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem; display:block; }
 
-.tools-overview > p {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 3rem;
-    color: var(--text-muted);
-}
+.it-section { padding:6rem 0; } .it-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(79,172,254,0.08); border:1px solid rgba(79,172,254,0.15); border-radius:50px; color:#4facfe; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#4facfe,#00f2fe); margin:0 auto; border-radius:2px; }
 
-.tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-bottom: 4rem;
-}
+.it-tools-grid { display:grid; grid-template-columns:1fr; gap:1.2rem; max-width:800px; margin:0 auto; }
+.it-tool { display:flex; align-items:center; gap:1.5rem; background:var(--bg-alt); padding:1.8rem 2rem; border-radius:16px; border:1px solid rgba(79,172,254,0.08); text-decoration:none; transition:all 0.4s; transition-delay:var(--delay,0s); cursor:pointer; }
+.it-tool:hover { border-color:rgba(79,172,254,0.25); transform:translateX(6px); box-shadow:0 10px 40px rgba(0,0,0,0.2); }
+.it-tool__icon { width:56px; height:56px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; }
+.it-tool__body { flex:1; }
+.it-tool h3 { color:var(--text-light); font-size:1.1rem; margin-bottom:0.4rem; }
+.it-tool p { color:var(--text-muted); font-size:0.85rem; line-height:1.5; margin-bottom:0.8rem; }
+.it-tool__tags { display:flex; flex-wrap:wrap; gap:0.4rem; }
+.it-tool__tags span { padding:0.2rem 0.6rem; background:rgba(79,172,254,0.06); border:1px solid rgba(79,172,254,0.1); border-radius:50px; font-size:0.7rem; color:var(--text-muted); }
+.it-tool__arrow { font-size:1.5rem; color:rgba(79,172,254,0.3); transition:all 0.3s; flex-shrink:0; }
+.it-tool:hover .it-tool__arrow { color:#4facfe; transform:translateX(4px); }
 
-.tool-card {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
+.it-features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; max-width:900px; margin:0 auto; }
+.it-feature { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(79,172,254,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); text-align:center; }
+.it-feature:hover { border-color:rgba(79,172,254,0.2); transform:translateY(-4px); }
+.it-feature h4 { color:var(--text-light); font-size:1rem; margin-bottom:0.6rem; }
+.it-feature p { color:var(--text-muted); font-size:0.85rem; line-height:1.5; margin:0; }
 
-.tool-card:hover {
-    transform: translateY(-5px);
-}
+.it-cta-section { padding:4rem 0 6rem; }
+.it-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(79,172,254,0.15); overflow:hidden; }
+.it-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(79,172,254,0.08) 0%,transparent 70%); pointer-events:none; }
+.it-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.it-cta p { color:var(--text-muted); max-width:550px; margin:0 auto 2rem; position:relative; }
+.it-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#4facfe,#00f2fe); color:#000; box-shadow:0 4px 15px rgba(79,172,254,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(79,172,254,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
 
-.tool-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.tool-card h3 {
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-}
-
-.tool-card p {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.tool-link {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    text-decoration: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    transition: transform 0.3s ease;
-}
-
-.tool-link:hover {
-    transform: translateY(-3px);
-}
-
-.calculator-section {
-    margin: 4rem 0;
-}
-
-.calculator-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.input-group {
-    margin-bottom: 1.5rem;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid rgba(251, 160, 2, 0.2);
-    border-radius: var(--border-radius-md);
-    background: var(--bg-main);
-    color: var(--text-light);
-}
-
-.calculate-btn {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.calculate-btn:hover {
-    transform: translateY(-3px);
-}
-
-.calculator-result {
-    background: var(--bg-main);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-}
-
-.calculator-result h3 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: var(--accent-primary);
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.result-item.highlight {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    font-size: 1.1rem;
-    border: none;
-    margin: 1rem 0;
-}
-
-@media (max-width: 768px) {
-    .calculator-container {
-        grid-template-columns: 1fr;
-    }
-}
+@media (max-width:768px) { .it-hero { padding:7rem 1rem 3rem; } .it-hero__stats { flex-direction:column; align-items:center; } .it-tool { flex-direction:column; text-align:center; } .it-tool__arrow { display:none; } }
 </style>
 
 <script>
-function calculateSIP() {
-    const monthlyAmount = parseFloat(document.getElementById('sipAmount').value) || 5000;
-    const annualReturn = parseFloat(document.getElementById('sipReturns').value) || 12;
-    const years = parseFloat(document.getElementById('sipPeriod').value) || 10;
-    
-    const monthlyRate = annualReturn / 12 / 100;
-    const months = years * 12;
-    
-    const futureValue = monthlyAmount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
-    const totalInvestment = monthlyAmount * months;
-    const totalReturns = futureValue - totalInvestment;
-    
-    document.getElementById('sipTotalInvestment').textContent = '₹' + totalInvestment.toLocaleString('en-IN');
-    document.getElementById('sipTotalReturns').textContent = '₹' + Math.round(totalReturns).toLocaleString('en-IN');
-    document.getElementById('sipFutureValue').textContent = '₹' + Math.round(futureValue).toLocaleString('en-IN');
-}
-
-// Calculate on page load
-document.addEventListener('DOMContentLoaded', function() {
-    calculateSIP();
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+    const c=document.getElementById('itParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
 });
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
 </script>
 {% endblock %}

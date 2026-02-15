@@ -3,95 +3,229 @@
 {% block title %}NRI Taxation Services | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="nr-hero">
+    <div class="nr-hero__particles" id="nrParticles"></div>
     <div class="container">
-        <h1>🌍 NRI Taxation Services</h1>
-        <p>Comprehensive tax solutions for Non-Resident Indians</p>
+        <div class="nr-hero__content reveal-up">
+            <span class="nr-hero__badge">NRI Services</span>
+            <h1 class="nr-hero__title">NRI <span class="gradient-text">Taxation</span></h1>
+            <p class="nr-hero__subtitle">Navigate India's complex tax landscape as an NRI — from DTAA benefits and TDS refunds to capital gains on property sales and FEMA compliance.</p>
+            <div class="nr-hero__stats">
+                <div class="nr-stat"><span class="nr-stat__number" data-count="90">0</span><span class="nr-stat__unit">+</span><span class="nr-stat__label">DTAA Countries</span></div>
+                <div class="nr-stat"><span class="nr-stat__number" data-count="30">0</span><span class="nr-stat__unit">%</span><span class="nr-stat__label">Max TDS on Property</span></div>
+                <div class="nr-stat"><span class="nr-stat__number" data-count="15">0</span><span class="nr-stat__unit">L</span><span class="nr-stat__label">Avg Refund Claimed</span></div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="container">
-    <div class="feature-content">
-        <section class="feature-overview">
-            <h2>Tax Solutions for NRIs</h2>
-            <p>Navigate the complexities of Indian taxation as a Non-Resident Indian. Our expert guidance covers income earned in India, capital gains on Indian assets, DTAA benefits, and tax filing obligations for NRIs.</p>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <h3>🏦 Income from India</h3>
-                    <p>Manage tax on rental income, interest, dividends, and other India-sourced earnings efficiently.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>📈 Capital Gains</h3>
-                    <p>Expert handling of taxes on sale of property, mutual funds, and shares in India.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>🌐 DTAA Benefits</h3>
-                    <p>Leverage Double Taxation Avoidance Agreements to prevent paying tax twice on the same income.</p>
+<section class="nr-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Foundation</span>
+            <h2>Understanding NRI Tax Residency</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="nr-residency reveal-up">
+            <div class="nr-residency__content">
+                <h3>Who is an NRI for Tax Purposes?</h3>
+                <p>Under Section 6 of the Income Tax Act, your <strong>residential status</strong> — not citizenship — determines your tax liability. If you've spent <strong>less than 182 days</strong> in India during the financial year (or less than 60 days if you left India for employment), you're considered a Non-Resident.</p>
+                <div class="nr-status-grid">
+                    <div class="nr-status-card"><span class="nr-status-icon" style="color:#43e97b">&#10003;</span><strong>Resident (ROR)</strong><p>182+ days in India. Taxed on <strong>worldwide income</strong>.</p></div>
+                    <div class="nr-status-card"><span class="nr-status-icon" style="color:#fba002">&#9888;</span><strong>RNOR</strong><p>Resident but Not Ordinarily Resident. Taxed on India income + income from business controlled in India.</p></div>
+                    <div class="nr-status-card"><span class="nr-status-icon" style="color:#4facfe">&#9992;</span><strong>Non-Resident (NRI)</strong><p>Less than 182 days. Taxed <strong>only on Indian income</strong> — salary received in India, rental income, capital gains on Indian assets.</p></div>
                 </div>
             </div>
-        </section>
-
-        <section class="tax-saving-section">
-            <h2>🛡️ NRI Tax Obligations</h2>
-            <div class="tax-instruments-grid">
-                <div class="instrument-card">
-                    <div class="instrument-header">
-                        <h3>Residential Status</h3>
-                        <span class="deduction-badge">Critical Factor</span>
-                    </div>
-                    <div class="instrument-content">
-                        <ul class="instrument-list">
-                            <li>Determine NRI / RNOR / Resident status</li>
-                            <li>182-day / 60-day stay rules</li>
-                            <li>Impact on taxable income in India</li>
-                            <li>Deemed resident provisions</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="instrument-card">
-                    <div class="instrument-header">
-                        <h3>TDS for NRIs</h3>
-                        <span class="deduction-badge">Higher Rates Apply</span>
-                    </div>
-                    <div class="instrument-content">
-                        <ul class="instrument-list">
-                            <li>TDS on property sale — 20% + surcharge</li>
-                            <li>TDS on rental income — 30%</li>
-                            <li>TDS on FD interest — 30%</li>
-                            <li>Lower TDS certificate (Section 197)</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="instrument-card">
-                    <div class="instrument-header">
-                        <h3>Repatriation</h3>
-                        <span class="deduction-badge">RBI Rules</span>
-                    </div>
-                    <div class="instrument-content">
-                        <ul class="instrument-list">
-                            <li>NRO to NRE account transfers</li>
-                            <li>$1 million annual repatriation limit</li>
-                            <li>Form 15CA / 15CB requirements</li>
-                            <li>Tax clearance certificates</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="cta-section">
-            <div class="cta-box">
-                <h2>Need NRI Tax Assistance?</h2>
-                <p>Our AI assistant can answer your NRI taxation questions instantly, or connect with a verified CA specializing in NRI tax matters.</p>
-                <div class="cta-buttons">
-                    <a href="{{ url_for('chat.chat_interface') }}" class="cta-primary">Ask AI Assistant</a>
-                    <a href="{{ url_for('main.contact') }}" class="cta-secondary">Connect with CA</a>
-                </div>
-            </div>
-        </section>
+        </div>
     </div>
-</div>
+</section>
+
+<section class="nr-section nr-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Key Areas</span>
+            <h2>NRI Tax Service Areas</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="nr-services-grid">
+            <div class="nr-service reveal-up" style="--delay:0.1s">
+                <div class="nr-service__accent" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+                <div class="nr-service__body">
+                    <h3>&#127968; Property Sale &amp; Capital Gains</h3>
+                    <p>Selling property in India? Buyer deducts <strong>20% TDS</strong> (+ surcharge & cess) on long-term capital gains. Proper computation, indexation benefits, and Section 54/54EC reinvestment exemptions can significantly reduce your tax outgo.</p>
+                    <div class="nr-features">
+                        <div class="nr-feature"><span class="tick">&#10003;</span> LTCG indexation benefit (Cost Inflation Index adjustment)</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Section 54: Reinvest in new house within 2 years</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Section 54EC: Invest in NHAI/REC bonds (₹50L cap)</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Lower TDS certificate (Form 13) to reduce withholding</div>
+                    </div>
+                    <div class="nr-service__highlight"><strong>Common Issue:</strong> Buyers often deduct TDS on full sale value instead of capital gains. We help file for correct refund.</div>
+                </div>
+            </div>
+
+            <div class="nr-service reveal-up" style="--delay:0.2s">
+                <div class="nr-service__accent" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></div>
+                <div class="nr-service__body">
+                    <h3>&#127760; DTAA &amp; Double Taxation Relief</h3>
+                    <p>India has <strong>Double Taxation Avoidance Agreements</strong> with 90+ countries. These prevent you from being taxed twice on the same income. Proper treaty application can reduce your effective tax rate significantly.</p>
+                    <div class="nr-features">
+                        <div class="nr-feature"><span class="tick">&#10003;</span> US: India-US DTAA (Article 10 Dividends, Article 12 Royalties)</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> UK: India-UK DTAA (Capital Gains, Employment Income)</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> UAE/Singapore/Canada: Specific treaty benefits for each</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Tax Credit: Claim foreign tax paid against Indian tax liability</div>
+                    </div>
+                    <div class="nr-service__highlight"><strong>Key Requirement:</strong> You need a Tax Residency Certificate (TRC) from your country of residence to claim DTAA benefits.</div>
+                </div>
+            </div>
+
+            <div class="nr-service reveal-up" style="--delay:0.3s">
+                <div class="nr-service__accent" style="background:linear-gradient(135deg,#fba002,#ff6b35)"></div>
+                <div class="nr-service__body">
+                    <h3>&#128176; Rental Income &amp; TDS</h3>
+                    <p>NRI rental income is taxed at slab rates (not flat 30%). Tenants/property managers must deduct <strong>30% TDS</strong> under Section 195 before paying rent to NRIs. We help optimize and claim refunds.</p>
+                    <div class="nr-features">
+                        <div class="nr-feature"><span class="tick">&#10003;</span> 30% standard deduction on rental income</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Home loan interest deduction (Section 24b)</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Municipal tax deduction</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> TDS refund if actual tax &lt; TDS deducted</div>
+                    </div>
+                    <div class="nr-service__highlight"><strong>Pro Tip:</strong> If your total Indian income is below ₹10L, effective tax is much less than 30%. File ITR to claim the substantial refund.</div>
+                </div>
+            </div>
+
+            <div class="nr-service reveal-up" style="--delay:0.4s">
+                <div class="nr-service__accent" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></div>
+                <div class="nr-service__body">
+                    <h3>&#128179; FEMA, Repatriation &amp; NRO/NRE</h3>
+                    <p>Money movement between India and abroad is governed by <strong>FEMA (Foreign Exchange Management Act)</strong>. The rules around NRO vs NRE accounts, repatriation limits, and LRS are critical for compliance.</p>
+                    <div class="nr-features">
+                        <div class="nr-feature"><span class="tick">&#10003;</span> NRE Account: Freely repatriable, tax-free interest</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> NRO Account: ₹1 Cr/year repatriation limit, interest taxable</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> Form 15CA/15CB: Mandatory for foreign remittances</div>
+                        <div class="nr-feature"><span class="tick">&#10003;</span> LRS: ,000/year liberalized remittance scheme</div>
+                    </div>
+                    <div class="nr-service__highlight"><strong>Important:</strong> Repatriation of property sale proceeds requires CA certificate (Form 15CB) and RBI compliance.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="nr-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Compliance</span>
+            <h2>NRI Tax Filing Checklist</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="nr-checklist-grid">
+            <div class="nr-check reveal-up" style="--delay:0.1s"><span class="nr-check__num">01</span><h4>Determine Residential Status</h4><p>Count days in India. Below 182 (or 60 for seafarers/employment abroad) = NRI status for that FY.</p></div>
+            <div class="nr-check reveal-up" style="--delay:0.15s"><span class="nr-check__num">02</span><h4>Identify Indian Income Sources</h4><p>Rental income, capital gains, FD interest (NRO), dividend income, business income from India operations.</p></div>
+            <div class="nr-check reveal-up" style="--delay:0.2s"><span class="nr-check__num">03</span><h4>Collect TDS Certificates</h4><p>Form 16A from tenants, banks (NRO interest), equity brokers, property buyers. Cross-check with Form 26AS/AIS.</p></div>
+            <div class="nr-check reveal-up" style="--delay:0.25s"><span class="nr-check__num">04</span><h4>Apply DTAA Benefits</h4><p>Get Tax Residency Certificate from country of residence. Apply lower treaty rates where applicable.</p></div>
+            <div class="nr-check reveal-up" style="--delay:0.3s"><span class="nr-check__num">05</span><h4>File ITR &amp; Claim Refunds</h4><p>Use ITR-2 (most NRIs). Due date: July 31. Claim refund if TDS deducted exceeds actual tax liability.</p></div>
+            <div class="nr-check reveal-up" style="--delay:0.35s"><span class="nr-check__num">06</span><h4>Repatriation Compliance</h4><p>File Form 15CA/15CB for remittances. Ensure NRO-to-NRE transfers comply with RBI guidelines (₹1Cr/year).</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="nr-section nr-section--dark nr-cta-section">
+    <div class="container">
+        <div class="nr-cta reveal-up">
+            <div class="nr-cta__glow"></div>
+            <h2>Get Expert NRI Tax Assistance</h2>
+            <p>NRI taxation is complex with cross-border implications. Our AI can answer basic questions instantly, or connect you with CA experts specializing in NRI taxation.</p>
+            <div class="nr-cta__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Ask AI About NRI Tax</span></a>
+                <a href="{{ url_for('main.tax_calculator') }}" class="tp-btn tp-btn--secondary"><span>Tax Calculator</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
+
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
+
+.nr-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(102,126,234,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.nr-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.nr-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(102,126,234,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.nr-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.nr-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(102,126,234,0.1); border:1px solid rgba(102,126,234,0.3); border-radius:50px; color:#667eea; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.nr-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#667eea,#764ba2,#667eea); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.nr-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:2.5rem; max-width:650px; margin-left:auto; margin-right:auto; }
+.nr-hero__stats { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.nr-stat { text-align:center; padding:1.2rem 1.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(102,126,234,0.1); border-radius:16px; transition:all 0.3s; }
+.nr-stat:hover { border-color:rgba(102,126,234,0.3); transform:translateY(-3px); }
+.nr-stat__number { font-size:2rem; font-weight:800; color:#667eea; }
+.nr-stat__unit { font-size:1rem; font-weight:700; color:#667eea; }
+.nr-stat__label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem; display:block; }
+
+.nr-section { padding:6rem 0; } .nr-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(102,126,234,0.08); border:1px solid rgba(102,126,234,0.15); border-radius:50px; color:#667eea; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#667eea,#764ba2); margin:0 auto; border-radius:2px; }
+
+.nr-residency { background:var(--bg-alt); padding:3rem; border-radius:20px; border:1px solid rgba(102,126,234,0.1); }
+.nr-residency h3 { color:var(--text-light); font-size:1.4rem; margin-bottom:1rem; }
+.nr-residency__content > p { color:var(--text-muted); line-height:1.7; margin-bottom:2rem; }
+.nr-status-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; }
+.nr-status-card { background:rgba(102,126,234,0.04); padding:1.5rem; border-radius:12px; border:1px solid rgba(102,126,234,0.08); }
+.nr-status-icon { font-size:1.5rem; }
+.nr-status-card strong { color:var(--text-light); display:block; margin:0.5rem 0; }
+.nr-status-card p { color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin:0; }
+
+.nr-services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(460px,1fr)); gap:1.5rem; }
+.nr-service { background:var(--bg-alt); border-radius:20px; overflow:hidden; border:1px solid rgba(102,126,234,0.08); transition:all 0.4s; transition-delay:var(--delay,0s); }
+.nr-service:hover { border-color:rgba(102,126,234,0.2); transform:translateY(-6px); box-shadow:0 15px 50px rgba(0,0,0,0.2); }
+.nr-service__accent { height:4px; }
+.nr-service__body { padding:2rem; }
+.nr-service h3 { color:var(--text-light); font-size:1.15rem; margin-bottom:0.8rem; }
+.nr-service__body > p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-bottom:1rem; }
+.nr-features { margin:1rem 0; }
+.nr-feature { display:flex; align-items:flex-start; gap:0.6rem; padding:0.4rem 0; color:var(--text-muted); font-size:0.88rem; }
+.tick { color:#43e97b; font-weight:700; flex-shrink:0; }
+.nr-service__highlight { margin-top:1rem; padding:0.8rem 1rem; background:rgba(102,126,234,0.05); border-left:3px solid #667eea; border-radius:0 8px 8px 0; font-size:0.85rem; color:var(--text-muted); }
+
+.nr-checklist-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.nr-check { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(102,126,234,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); position:relative; }
+.nr-check:hover { border-color:rgba(102,126,234,0.2); transform:translateY(-4px); }
+.nr-check__num { position:absolute; top:1rem; right:1.2rem; font-size:2.5rem; font-weight:900; color:rgba(102,126,234,0.08); line-height:1; }
+.nr-check h4 { color:var(--text-light); font-size:1rem; margin-bottom:0.6rem; }
+.nr-check p { color:var(--text-muted); font-size:0.85rem; line-height:1.6; margin:0; }
+
+.nr-cta-section { padding:4rem 0 6rem; }
+.nr-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(102,126,234,0.15); overflow:hidden; }
+.nr-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(102,126,234,0.08) 0%,transparent 70%); pointer-events:none; }
+.nr-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.nr-cta p { color:var(--text-muted); max-width:550px; margin:0 auto 2rem; position:relative; }
+.nr-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; box-shadow:0 4px 15px rgba(102,126,234,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(102,126,234,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
+
+@media (max-width:768px) { .nr-hero { padding:7rem 1rem 3rem; } .nr-hero__stats { flex-direction:column; align-items:center; } .nr-services-grid { grid-template-columns:1fr; } }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+    const c=document.getElementById('nrParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+});
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
+</script>
 {% endblock %}

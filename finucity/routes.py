@@ -13,7 +13,7 @@ import jwt
 import html
 
 from .models import User
-from .database import UserService, ChatService, FeedbackService, get_supabase
+from .database import UserService, ChatService, FeedbackService, get_supabase, PlatformStatsService, BlogService, DEFAULT_BLOG_POSTS
 
 # Rate limiting is handled at app level via flask-limiter
 # Individual route limits can be applied via the app's limiter instance
@@ -239,9 +239,10 @@ def profile():
 
 @main_bp.route('/about', endpoint='about')
 def about():
-    """Renders the about page."""
+    """Renders the about page with real-time platform stats."""
     try:
-        return render_template('about.html')
+        stats = PlatformStatsService.get_stats()
+        return render_template('about.html', stats=stats)
     except Exception:
         return render_template('Errors/404.html'), 404
 
@@ -414,22 +415,46 @@ def company_registration():
 
 @main_bp. route('/financial-blog', endpoint='financial_blog')
 def financial_blog():
-    """Renders the financial blog page."""
+    """Renders the financial blog page with dynamic posts."""
     try:
-        return render_template('Resources/financial_blog.html')
+        # Try fetching from DB first
+        posts = BlogService.get_published()
+        featured = BlogService.get_featured()
+
+        # Fallback to default content if DB table doesn't exist yet
+        if not posts:
+            posts = DEFAULT_BLOG_POSTS
+            featured = next((p for p in posts if p.get('is_featured')), posts[0] if posts else None)
+            posts = [p for p in posts if not p.get('is_featured')]
+        else:
+            if not featured and posts:
+                featured = posts[0]
+                posts = posts[1:]
+
+        # Build category list from posts
+        categories = sorted(set(p.get('category', 'general') for p in posts))
+
+        return render_template('Resources/financial_blog.html',
+                               posts=posts, featured=featured, categories=categories,
+                               current_year=datetime.now().year)
     except Exception as e:
         print(f"Error loading financial blog: {e}")
         try:
-            return render_template('financial_blog.html')
-        except Exception: 
+            return render_template('Resources/financial_blog.html',
+                                   posts=DEFAULT_BLOG_POSTS,
+                                   featured=DEFAULT_BLOG_POSTS[0],
+                                   categories=['tax', 'invest', 'gst', 'savings', 'budget'],
+                                   current_year=datetime.now().year)
+        except Exception:
             return render_template('Errors/404.html'), 404
 
 
 @main_bp.route('/learning-centre', endpoint='learning_centre')
 def learning_centre():
-    """Renders the learning center page."""
+    """Renders the learning center page with real-time stats."""
     try:
-        return render_template('Resources/learning_center.html')
+        stats = PlatformStatsService.get_stats()
+        return render_template('Resources/learning_center.html', stats=stats)
     except Exception as e: 
         print(f"Error loading learning center: {e}")
         try:
@@ -453,9 +478,13 @@ def tax_calculator():
 
 @main_bp.route('/investment-tools', endpoint='investment_tools')
 def investment_tools():
-    """Renders the investment tools page."""
+    """Renders the investment tools page with current fiscal year."""
     try:
-        return render_template('Resources/investment_tools.html')
+        from datetime import date
+        today = date.today()
+        fy_start = today.year if today.month >= 4 else today.year - 1
+        current_fy = f"FY {fy_start}-{str(fy_start + 1)[-2:]}"
+        return render_template('Resources/investment_tools.html', current_fy=current_fy)
     except Exception as e: 
         print(f"Error loading investment tools:  {e}")
         try:
@@ -509,6 +538,30 @@ def sip_calculator():
     except Exception:
         try:
             return render_template('sip_calculator.html')
+        except Exception: 
+            return render_template('Errors/404.html'), 404
+
+
+@main_bp.route('/hra-calculator', endpoint='hra_calculator')
+def hra_calculator():
+    """Renders the HRA calculator page."""
+    try:
+        return render_template('Resources/hra_calculator.html')
+    except Exception:
+        try:
+            return render_template('hra_calculator.html')
+        except Exception: 
+            return render_template('Errors/404.html'), 404
+
+
+@main_bp.route('/tax-regime-comparator', endpoint='regime_comparator')
+def regime_comparator():
+    """Renders the Old vs New Tax Regime Comparator page."""
+    try:
+        return render_template('Resources/old_vs_new_regime.html')
+    except Exception:
+        try:
+            return render_template('old_vs_new_regime.html')
         except Exception: 
             return render_template('Errors/404.html'), 404
 

@@ -1,565 +1,292 @@
 {% extends "base.html" %}
 
-{% block title %}Retirement Planning Services | Finucity{% endblock %}
+{% block title %}Retirement Planning | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="rp-hero">
+    <div class="rp-hero__particles" id="rpParticles"></div>
     <div class="container">
-        <h1>🏖️ Retirement Planning Services</h1>
-        <p>Secure your golden years with smart retirement planning</p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="feature-content">
-        <section class="feature-overview">
-            <h2>Plan Your Perfect Retirement</h2>
-            <p>Start planning for your retirement today with our comprehensive retirement solutions. Our AI-powered platform helps you calculate retirement needs, choose the right investment vehicles, and create a sustainable income stream for your golden years.</p>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <h3>🎯 Goal Calculation</h3>
-                    <p>Accurate calculation of retirement corpus based on inflation and lifestyle needs.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>📈 Investment Strategy</h3>
-                    <p>Tailored investment plans to build your retirement fund systematically.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>💰 Income Planning</h3>
-                    <p>Create multiple income streams for a financially secure retirement.</p>
-                </div>
+        <div class="rp-hero__content reveal-up">
+            <span class="rp-hero__badge">Retirement</span>
+            <h1 class="rp-hero__title">Plan Your <span class="gradient-text">Financial Freedom</span></h1>
+            <p class="rp-hero__subtitle">Build a retirement corpus that lets you live life on your terms — with NPS, PPF, equity, and smart withdrawal strategies tailored for India.</p>
+            <div class="rp-hero__stats">
+                <div class="rp-stat"><span class="rp-stat__number" data-count="5">0</span><span class="rp-stat__unit"> Cr</span><span class="rp-stat__label">Avg Corpus Goal</span></div>
+                <div class="rp-stat"><span class="rp-stat__number" data-count="15">0</span><span class="rp-stat__unit">%</span><span class="rp-stat__label">Equity CAGR</span></div>
+                <div class="rp-stat"><span class="rp-stat__number" data-count="50">0</span><span class="rp-stat__unit">K</span><span class="rp-stat__label">NPS 80CCD(1B)</span></div>
             </div>
-        </section>
-
-        <section class="retirement-calculator-section">
-            <h2>🧮 Retirement Calculator</h2>
-            <div class="calculator-container">
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Current Age</label>
-                        <input type="number" id="currentAge" value="30" min="18" max="60">
-                    </div>
-                    <div class="input-group">
-                        <label>Retirement Age</label>
-                        <input type="number" id="retirementAge" value="60" min="50" max="75">
-                    </div>
-                    <div class="input-group">
-                        <label>Current Monthly Expenses (₹)</label>
-                        <input type="number" id="monthlyExpenses" value="50000" min="10000">
-                    </div>
-                    <div class="input-group">
-                        <label>Expected Inflation (%)</label>
-                        <input type="number" id="inflationRate" value="6" min="3" max="10" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Expected Returns (%)</label>
-                        <input type="number" id="expectedReturns" value="12" min="6" max="18" step="0.1">
-                    </div>
-                    <button class="calculate-btn" onclick="calculateRetirement()">Calculate Retirement Needs</button>
-                </div>
-                
-                <div class="calculator-result">
-                    <h3>Your Retirement Plan</h3>
-                    <div class="result-item">
-                        <span>Years to Retirement:</span>
-                        <span id="yearsToRetirement">30 years</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Future Monthly Expenses:</span>
-                        <span id="futureExpenses">₹2,87,175</span>
-                    </div>
-                    <div class="result-item highlight">
-                        <span>Required Retirement Corpus:</span>
-                        <span id="retirementCorpus">₹1.15 Crore</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Monthly SIP Required:</span>
-                        <span id="monthlySIP">₹12,749</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="retirement-products">
-            <h2>🛡️ Retirement Investment Products</h2>
-            <div class="products-grid">
-                <div class="product-card nps">
-                    <div class="product-header">
-                        <h3>National Pension System (NPS)</h3>
-                        <span class="tax-benefit">Section 80CCD</span>
-                    </div>
-                    <div class="product-details">
-                        <div class="feature-list">
-                            <div class="feature-item">✅ Additional ₹50,000 tax deduction</div>
-                            <div class="feature-item">✅ Government co-contribution for Atal Pension</div>
-                            <div class="feature-item">✅ Low cost, market-linked returns</div>
-                            <div class="feature-item">✅ Minimum ₹500 monthly contribution</div>
-                        </div>
-                        <div class="returns-info">
-                            <strong>Expected Returns:</strong> 10-12% annually
-                        </div>
-                        <div class="lock-in-info">
-                            <strong>Lock-in:</strong> Until age 60
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card ppf">
-                    <div class="product-header">
-                        <h3>Public Provident Fund (PPF)</h3>
-                        <span class="tax-benefit">Section 80C</span>
-                    </div>
-                    <div class="product-details">
-                        <div class="feature-list">
-                            <div class="feature-item">✅ Tax-free returns</div>
-                            <div class="feature-item">✅ Government guaranteed</div>
-                            <div class="feature-item">✅ 15-year maturity, extendable</div>
-                            <div class="feature-item">✅ Loan facility after 7th year</div>
-                        </div>
-                        <div class="returns-info">
-                            <strong>Current Rate:</strong> 7.1% annually
-                        </div>
-                        <div class="lock-in-info">
-                            <strong>Investment Range:</strong> ₹500 - ₹1.5 lakh/year
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card epf">
-                    <div class="product-header">
-                        <h3>Employee Provident Fund (EPF)</h3>
-                        <span class="tax-benefit">Automatic</span>
-                    </div>
-                    <div class="product-details">
-                        <div class="feature-list">
-                            <div class="feature-item">✅ Employer contribution matching</div>
-                            <div class="feature-item">✅ Tax-free accumulation</div>
-                            <div class="feature-item">✅ Withdrawal after 5 years service</div>
-                            <div class="feature-item">✅ Pension option available</div>
-                        </div>
-                        <div class="returns-info">
-                            <strong>Current Rate:</strong> 8.25% annually
-                        </div>
-                        <div class="lock-in-info">
-                            <strong>Contribution:</strong> 12% of basic salary
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card retirement-funds">
-                    <div class="product-header">
-                        <h3>Retirement Mutual Funds</h3>
-                        <span class="tax-benefit">Market Linked</span>
-                    </div>
-                    <div class="product-details">
-                        <div class="feature-list">
-                            <div class="feature-item">✅ Professional fund management</div>
-                            <div class="feature-item">✅ Diversified portfolio</div>
-                            <div class="feature-item">✅ SIP option available</div>
-                            <div class="feature-item">✅ Flexible withdrawal</div>
-                        </div>
-                        <div class="returns-info">
-                            <strong>Expected Returns:</strong> 10-14% annually
-                        </div>
-                        <div class="lock-in-info">
-                            <strong>Lock-in:</strong> 5 years (ELSS funds)
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="retirement-phases">
-            <h2>📊 Retirement Planning by Age</h2>
-            <div class="phases-timeline">
-                <div class="phase-card twenties">
-                    <h3>20s - 30s: Accumulation Phase</h3>
-                    <div class="phase-content">
-                        <div class="phase-strategy">
-                            <h4>Investment Strategy:</h4>
-                            <ul>
-                                <li>80% Equity, 20% Debt</li>
-                                <li>Start SIP in equity funds</li>
-                                <li>Take advantage of compounding</li>
-                                <li>Focus on tax-saving investments</li>
-                            </ul>
-                        </div>
-                        <div class="phase-products">
-                            <h4>Recommended Products:</h4>
-                            <ul>
-                                <li>ELSS mutual funds</li>
-                                <li>EPF/PPF</li>
-                                <li>NPS Tier-I</li>
-                                <li>Term insurance</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="phase-card forties">
-                    <h3>40s - 50s: Consolidation Phase</h3>
-                    <div class="phase-content">
-                        <div class="phase-strategy">
-                            <h4>Investment Strategy:</h4>
-                            <ul>
-                                <li>60% Equity, 40% Debt</li>
-                                <li>Increase monthly investments</li>
-                                <li>Review and rebalance portfolio</li>
-                                <li>Consider health insurance upgrade</li>
-                            </ul>
-                        </div>
-                        <div class="phase-products">
-                            <h4>Recommended Products:</h4>
-                            <ul>
-                                <li>Balanced mutual funds</li>
-                                <li>Debt funds</li>
-                                <li>NPS additional contributions</li>
-                                <li>Health insurance</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="phase-card fifties">
-                    <h3>50s+: Pre-retirement Phase</h3>
-                    <div class="phase-content">
-                        <div class="phase-strategy">
-                            <h4>Investment Strategy:</h4>
-                            <ul>
-                                <li>40% Equity, 60% Debt</li>
-                                <li>Reduce portfolio risk</li>
-                                <li>Plan withdrawal strategy</li>
-                                <li>Create emergency fund</li>
-                            </ul>
-                        </div>
-                        <div class="phase-products">
-                            <h4>Recommended Products:</h4>
-                            <ul>
-                                <li>Debt funds</li>
-                                <li>Fixed deposits</li>
-                                <li>Senior citizen schemes</li>
-                                <li>Annuity plans</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="income-streams">
-            <h2>💰 Post-Retirement Income Streams</h2>
-            <div class="streams-grid">
-                <div class="stream-card">
-                    <h3>Systematic Withdrawal Plan (SWP)</h3>
-                    <p>Regular income from mutual fund investments</p>
-                    <div class="stream-benefit">
-                        <strong>Benefit:</strong> Tax-efficient regular income
-                    </div>
-                </div>
-                
-                <div class="stream-card">
-                    <h3>Pension from NPS/EPF</h3>
-                    <p>Monthly pension from accumulated corpus</p>
-                    <div class="stream-benefit">
-                        <strong>Benefit:</strong> Guaranteed lifelong income
-                    </div>
-                </div>
-                
-                <div class="stream-card">
-                    <h3>Rental Income</h3>
-                    <p>Income from real estate investments</p>
-                    <div class="stream-benefit">
-                        <strong>Benefit:</strong> Inflation-adjusted income
-                    </div>
-                </div>
-                
-                <div class="stream-card">
-                    <h3>Senior Citizen Schemes</h3>
-                    <p>SCSS, POMIS, and other government schemes</p>
-                    <div class="stream-benefit">
-                        <strong>Benefit:</strong> Safe and secure returns
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div class="cta-section">
-            <h3>Start Your Retirement Planning Today</h3>
-            <p>Get personalized retirement planning advice from our AI advisor</p>
-            <a href="/chat" class="cta-button">Plan My Retirement</a>
         </div>
     </div>
-</div>
+</section>
+
+<section class="rp-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Philosophy</span>
+            <h2>The FIRE Approach to Retirement</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="rp-philosophy reveal-up">
+            <div class="rp-philosophy__content">
+                <h3>Financial Independence, Retire Early</h3>
+                <p>FIRE isn't about stopping work — it's about having the <strong>choice</strong>. When your passive income exceeds your expenses, you've achieved financial independence. In India, with inflation at 6-7%, you need a corpus of <strong>30-35x your annual expenses</strong> to retire safely.</p>
+                <div class="rp-fire-grid">
+                    <div class="rp-fire-item"><span class="rp-fire-icon">&#128293;</span><strong>Lean FIRE</strong><p>₹1.5-2 Cr corpus. Minimalist living with ₹40-50K/month expenses.</p></div>
+                    <div class="rp-fire-item"><span class="rp-fire-icon">&#128293;</span><strong>Regular FIRE</strong><p>₹3-5 Cr corpus. Comfortable ₹1-1.5L/month lifestyle.</p></div>
+                    <div class="rp-fire-item"><span class="rp-fire-icon">&#128293;</span><strong>Fat FIRE</strong><p>₹8-12 Cr corpus. Premium ₹2.5-3L/month with travel and luxuries.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="rp-section rp-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Instruments</span>
+            <h2>Retirement Building Blocks</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="rp-instruments-grid">
+            <div class="rp-instrument reveal-up" style="--delay:0.1s">
+                <div class="rp-instrument__accent" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+                <div class="rp-instrument__body">
+                    <h3>&#127970; National Pension System (NPS)</h3>
+                    <p>Government-backed pension scheme with lowest fund management charges (0.01%). Invest up to ₹2L/year for tax benefits under 80CCD(1) + 80CCD(1B).</p>
+                    <div class="rp-features">
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Extra ₹50,000 deduction under 80CCD(1B)</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Employer contribution deduction under 80CCD(2)</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> 60% lump-sum withdrawal tax-free at 60</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Choice of Active/Auto allocation across E/C/G</div>
+                    </div>
+                    <div class="rp-instrument__highlight"><strong>Best For:</strong> Salaried individuals seeking extra ₹50K tax deduction + disciplined long-term retirement savings</div>
+                </div>
+            </div>
+
+            <div class="rp-instrument reveal-up" style="--delay:0.2s">
+                <div class="rp-instrument__accent" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></div>
+                <div class="rp-instrument__body">
+                    <h3>&#128176; PPF &amp; EPF</h3>
+                    <p>Tax-free guaranteed returns (7.1% PPF, ~8.25% EPF). The backbone of every Indian's retirement — EEE (Exempt-Exempt-Exempt) status makes them unbeatable for debt allocation.</p>
+                    <div class="rp-features">
+                        <div class="rp-feature"><span class="tick">&#10003;</span> PPF: ₹1.5L/year limit, 15-year lock-in</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> EPF: 12% employer + 12% employee contribution</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Fully tax-free maturity (EEE status)</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> VPF extends EPF at same rate, voluntary top-up</div>
+                    </div>
+                    <div class="rp-instrument__highlight"><strong>Best For:</strong> Risk-averse investors who want guaranteed, tax-free compounding over 25-30 years</div>
+                </div>
+            </div>
+
+            <div class="rp-instrument reveal-up" style="--delay:0.3s">
+                <div class="rp-instrument__accent" style="background:linear-gradient(135deg,#fba002,#ff6b35)"></div>
+                <div class="rp-instrument__body">
+                    <h3>&#128200; Equity &amp; Mutual Funds</h3>
+                    <p>The growth engine. Over 15+ years, Nifty 50 has delivered 12-15% CAGR. SIPs in index funds + flexi-cap funds create the equity portion needed to beat inflation and build wealth.</p>
+                    <div class="rp-features">
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Nifty 50 Index Funds: Low-cost market returns</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Flexi-Cap Funds: Fund manager picks best opportunities</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> ELSS: Tax-saving + equity exposure (3-yr lock-in)</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Systematic Transfer Plan (STP) for gradual equity entry</div>
+                    </div>
+                    <div class="rp-instrument__highlight"><strong>Best For:</strong> Anyone with 10+ year horizon who needs inflation-beating growth</div>
+                </div>
+            </div>
+
+            <div class="rp-instrument reveal-up" style="--delay:0.4s">
+                <div class="rp-instrument__accent" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></div>
+                <div class="rp-instrument__body">
+                    <h3>&#127968; Senior Citizen Schemes</h3>
+                    <p>Post-retirement income generators. SCSS (8.2% with quarterly payouts), PMVVY, and Senior Citizen FDs provide stable cashflow when you stop earning active income.</p>
+                    <div class="rp-features">
+                        <div class="rp-feature"><span class="tick">&#10003;</span> SCSS: ₹30L limit, 8.2% pa, quarterly payout</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> Senior Citizen FD: Extra 0.5% rate from most banks</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> PMVVY: Pension plan for 60+ (LIC-backed)</div>
+                        <div class="rp-feature"><span class="tick">&#10003;</span> 80TTB: ₹50,000 interest exemption for seniors</div>
+                    </div>
+                    <div class="rp-instrument__highlight"><strong>Best For:</strong> Retirees (60+) who need regular monthly/quarterly income with capital safety</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="rp-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Calculator</span>
+            <h2>Retirement Corpus Estimator</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="rp-calculator reveal-up">
+            <div class="rp-calc__inputs">
+                <div class="rp-calc__group">
+                    <label>Current Age</label>
+                    <input type="number" id="rpCurrentAge" value="30" min="20" max="60">
+                </div>
+                <div class="rp-calc__group">
+                    <label>Retirement Age</label>
+                    <input type="number" id="rpRetireAge" value="55" min="40" max="70">
+                </div>
+                <div class="rp-calc__group">
+                    <label>Monthly Expenses (Today)</label>
+                    <input type="number" id="rpExpenses" value="60000" step="5000">
+                </div>
+                <div class="rp-calc__group">
+                    <label>Expected Return (%)</label>
+                    <input type="number" id="rpReturn" value="12" step="0.5" min="6" max="20">
+                </div>
+                <div class="rp-calc__group">
+                    <label>Inflation (%)</label>
+                    <input type="number" id="rpInflation" value="6" step="0.5" min="3" max="10">
+                </div>
+                <div class="rp-calc__group">
+                    <label>Life Expectancy</label>
+                    <input type="number" id="rpLifeExp" value="85" min="70" max="100">
+                </div>
+                <button class="rp-calc__btn" onclick="calcRetirement()">Calculate Corpus</button>
+            </div>
+            <div class="rp-calc__result" id="rpResult" style="display:none">
+                <div class="rp-result__card">
+                    <span class="rp-result__label">Required Corpus at Retirement</span>
+                    <span class="rp-result__value" id="rpCorpus"></span>
+                </div>
+                <div class="rp-result__card">
+                    <span class="rp-result__label">Monthly SIP Needed Today</span>
+                    <span class="rp-result__value" id="rpSIP"></span>
+                </div>
+                <div class="rp-result__card">
+                    <span class="rp-result__label">Monthly Expenses at Retirement</span>
+                    <span class="rp-result__value" id="rpFutureExp"></span>
+                </div>
+                <div class="rp-result__card">
+                    <span class="rp-result__label">Retirement Duration</span>
+                    <span class="rp-result__value" id="rpDuration"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="rp-section rp-section--dark rp-cta-section">
+    <div class="container">
+        <div class="rp-cta reveal-up">
+            <div class="rp-cta__glow"></div>
+            <h2>Start Building Your Retirement Corpus</h2>
+            <p>Every year you delay costs you lakhs in potential corpus. Start today — even ₹5,000/month makes a massive difference over 25 years.</p>
+            <div class="rp-cta__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Get AI Retirement Plan</span></a>
+                <a href="{{ url_for('main.sip_calculator') }}" class="tp-btn tp-btn--secondary"><span>SIP Calculator</span></a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.feature-content {
-    margin-top: 3rem;
-}
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-.feature-content section {
-    margin-bottom: 4rem;
-}
+.rp-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(79,172,254,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.rp-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.rp-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(79,172,254,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.rp-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.rp-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(79,172,254,0.1); border:1px solid rgba(79,172,254,0.3); border-radius:50px; color:#4facfe; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.rp-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#4facfe,#00f2fe,#4facfe); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.rp-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:2.5rem; max-width:650px; margin-left:auto; margin-right:auto; }
+.rp-hero__stats { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.rp-stat { text-align:center; padding:1.2rem 1.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(79,172,254,0.1); border-radius:16px; transition:all 0.3s; }
+.rp-stat:hover { border-color:rgba(79,172,254,0.3); transform:translateY(-3px); }
+.rp-stat__number { font-size:2rem; font-weight:800; color:#4facfe; }
+.rp-stat__unit { font-size:1rem; font-weight:700; color:#4facfe; }
+.rp-stat__label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem; display:block; }
 
-.benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
+.rp-section { padding:6rem 0; } .rp-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(79,172,254,0.08); border:1px solid rgba(79,172,254,0.15); border-radius:50px; color:#4facfe; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#4facfe,#00f2fe); margin:0 auto; border-radius:2px; }
 
-.benefit-card {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-}
+.rp-philosophy { background:var(--bg-alt); padding:3rem; border-radius:20px; border:1px solid rgba(79,172,254,0.1); }
+.rp-philosophy h3 { color:var(--text-light); font-size:1.4rem; margin-bottom:1rem; }
+.rp-philosophy > .rp-philosophy__content > p { color:var(--text-muted); line-height:1.7; margin-bottom:2rem; }
+.rp-fire-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
+.rp-fire-item { background:rgba(79,172,254,0.04); padding:1.5rem; border-radius:12px; border:1px solid rgba(79,172,254,0.08); }
+.rp-fire-icon { font-size:1.5rem; }
+.rp-fire-item strong { color:var(--text-light); display:block; margin:0.5rem 0; }
+.rp-fire-item p { color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin:0; }
 
-.calculator-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
+.rp-instruments-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(460px,1fr)); gap:1.5rem; }
+.rp-instrument { background:var(--bg-alt); border-radius:20px; overflow:hidden; border:1px solid rgba(79,172,254,0.08); transition:all 0.4s; transition-delay:var(--delay,0s); }
+.rp-instrument:hover { border-color:rgba(79,172,254,0.2); transform:translateY(-6px); box-shadow:0 15px 50px rgba(0,0,0,0.2); }
+.rp-instrument__accent { height:4px; }
+.rp-instrument__body { padding:2rem; }
+.rp-instrument h3 { color:var(--text-light); font-size:1.15rem; margin-bottom:0.8rem; }
+.rp-instrument > .rp-instrument__body > p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-bottom:1re; }
+.rp-features { margin:1rem 0; }
+.rp-feature { display:flex; align-items:flex-start; gap:0.6rem; padding:0.4rem 0; color:var(--text-muted); font-size:0.88rem; }
+.tick { color:#43e97b; font-weight:700; flex-shrink:0; }
+.rp-instrument__highlight { margin-top:1rem; padding:0.8rem 1rem; background:rgba(79,172,254,0.05); border-left:3px solid #4facfe; border-radius:0 8px 8px 0; font-size:0.85rem; color:var(--text-muted); }
 
-.input-group {
-    margin-bottom: 1rem;
-}
+.rp-calculator { max-width:700px; margin:0 auto; background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(79,172,254,0.1); }
+.rp-calc__inputs { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.rp-calc__group { display:flex; flex-direction:column; gap:0.4rem; }
+.rp-calc__group label { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+.rp-calc__group input { background:rgba(255,255,255,0.05); border:1px solid rgba(79,172,254,0.15); border-radius:10px; padding:0.7rem 1rem; color:var(--text-light); font-size:1rem; transition:border-color 0.3s; }
+.rp-calc__group input:focus { outline:none; border-color:rgba(79,172,254,0.5); }
+.rp-calc__btn { grid-column:1/-1; padding:0.9rem; background:linear-gradient(135deg,#4facfe,#00f2fe); color:#000; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; margin-top:0.5rem; }
+.rp-calc__btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(79,172,254,0.35); }
+.rp-calc__result { margin-top:2rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.rp-result__card { background:rgba(79,172,254,0.05); padding:1.5rem; border-radius:12px; border:1px solid rgba(79,172,254,0.1); text-align:center; }
+.rp-result__label { display:block; font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.5rem; }
+.rp-result__value { display:block; font-size:1.3rem; font-weight:800; color:#4facfe; }
 
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
+.rp-cta-section { padding:4rem 0 6rem; }
+.rp-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(79,172,254,0.15); overflow:hidden; }
+.rp-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(79,172,254,0.08) 0%,transparent 70%); pointer-events:none; }
+.rp-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.rp-cta p { color:var(--text-muted); max-width:550px; margin:0 auto 2rem; position:relative; }
+.rp-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#4facfe,#00f2fe); color:#000; box-shadow:0 4px 15px rgba(79,172,254,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(79,172,254,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
 
-.input-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid rgba(251, 160, 2, 0.2);
-    border-radius: var(--border-radius-md);
-    background: var(--bg-main);
-    color: var(--text-light);
-}
-
-.calculate-btn {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform var(--transition-normal);
-}
-
-.calculate-btn:hover {
-    transform: translateY(-2px);
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.result-item.highlight {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    font-size: 1.1rem;
-    border: none;
-    margin: 1rem 0;
-}
-
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.product-card {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    overflow: hidden;
-}
-
-.product-header {
-    background: var(--bg-main);
-    padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.product-header h3 {
-    color: var(--accent-primary);
-    margin: 0;
-}
-
-.tax-benefit {
-    background: var(--accent-primary);
-    color: var(--text-dark);
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--border-radius-full);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.product-details {
-    padding: 1.5rem;
-}
-
-.feature-list {
-    margin-bottom: 1rem;
-}
-
-.feature-item {
-    padding: 0.25rem 0;
-    color: var(--text-muted);
-}
-
-.returns-info, .lock-in-info {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 0.75rem;
-    border-radius: var(--border-radius-sm);
-    margin: 0.5rem 0;
-    color: var(--text-light);
-}
-
-.phases-timeline {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.phase-card {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.phase-card h3 {
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-}
-
-.phase-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.phase-strategy h4, .phase-products h4 {
-    color: var(--text-light);
-    margin-bottom: 0.5rem;
-}
-
-.phase-strategy ul, .phase-products ul {
-    list-style: none;
-    padding: 0;
-}
-
-.phase-strategy li, .phase-products li {
-    padding: 0.25rem 0;
-    color: var(--text-muted);
-}
-
-.streams-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.stream-card {
-    background: var(--bg-alt);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-}
-
-.stream-card h3 {
-    color: var(--accent-primary);
-    margin-bottom: 0.5rem;
-}
-
-.stream-benefit {
-    background: var(--bg-main);
-    padding: 0.75rem;
-    border-radius: var(--border-radius-sm);
-    margin-top: 1rem;
-    color: var(--text-light);
-}
-
-.cta-section {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    text-align: center;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-@media (max-width: 768px) {
-    .calculator-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .phase-content {
-        grid-template-columns: 1fr;
-    }
-}
+@media (max-width:768px) { .rp-hero { padding:7rem 1rem 3rem; } .rp-hero__stats { flex-direction:column; align-items:center; } .rp-instruments-grid { grid-template-columns:1fr; } .rp-calc__inputs { grid-template-columns:1fr; } .rp-calc__result { grid-template-columns:1fr; } }
 </style>
 
 <script>
-function calculateRetirement() {
-    const currentAge = parseInt(document.getElementById('currentAge').value) || 30;
-    const retirementAge = parseInt(document.getElementById('retirementAge').value) || 60;
-    const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 50000;
-    const inflationRate = parseFloat(document.getElementById('inflationRate').value) || 6;
-    const expectedReturns = parseFloat(document.getElementById('expectedReturns').value) || 12;
-    
-    const yearsToRetirement = retirementAge - currentAge;
-    const annualExpenses = monthlyExpenses * 12;
-    
-    // Calculate future expenses considering inflation
-    const futureAnnualExpenses = annualExpenses * Math.pow(1 + inflationRate/100, yearsToRetirement);
-    const futureMonthlyExpenses = futureAnnualExpenses / 12;
-    
-    // Assuming 25 years of retirement life and 4% withdrawal rate
-    const retirementCorpus = futureAnnualExpenses * 25;
-    
-    // Calculate monthly SIP required
-    const monthlyReturnRate = expectedReturns / 12 / 100;
-    const totalMonths = yearsToRetirement * 12;
-    const monthlySIP = retirementCorpus * monthlyReturnRate / (Math.pow(1 + monthlyReturnRate, totalMonths) - 1);
-    
-    // Update display
-    document.getElementById('yearsToRetirement').textContent = yearsToRetirement + ' years';
-    document.getElementById('futureExpenses').textContent = '₹' + Math.round(futureMonthlyExpenses).toLocaleString('en-IN');
-    document.getElementById('retirementCorpus').textContent = '₹' + (retirementCorpus/10000000).toFixed(2) + ' Crore';
-    document.getElementById('monthlySIP').textContent = '₹' + Math.round(monthlySIP).toLocaleString('en-IN');
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+    const c=document.getElementById('rpParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+});
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
+function calcRetirement(){
+    const age=parseInt(document.getElementById('rpCurrentAge').value),ra=parseInt(document.getElementById('rpRetireAge').value),exp=parseInt(document.getElementById('rpExpenses').value),r=parseFloat(document.getElementById('rpReturn').value)/100,inf=parseFloat(document.getElementById('rpInflation').value)/100,le=parseInt(document.getElementById('rpLifeExp').value);
+    const yrs=ra-age, retYrs=le-ra;
+    const futureExp=exp*Math.pow(1+inf,yrs);
+    const annualExp=futureExp*12;
+    const realRate=(r-inf)/(1+inf);
+    const corpus=annualExp*((1-Math.pow(1+realRate,-retYrs))/realRate);
+    const monthlyRate=r/12;
+    const sip=corpus*(monthlyRate/(Math.pow(1+monthlyRate,yrs*12)-1));
+    document.getElementById('rpCorpus').textContent='₹ '+formatINR(Math.round(corpus));
+    document.getElementById('rpSIP').textContent='₹ '+formatINR(Math.round(sip));
+    document.getElementById('rpFutureExp').textContent='₹ '+formatINR(Math.round(futureExp))+'/mo';
+    document.getElementById('rpDuration').textContent=retYrs+' years ('+ra+' → '+le+')';
+    document.getElementById('rpResult').style.display='grid';
 }
-
-// Calculate on page load
-calculateRetirement();
+function formatINR(n){if(n>=10000000)return(n/10000000).toFixed(2)+' Cr';if(n>=100000)return(n/100000).toFixed(2)+' L';return n.toLocaleString('en-IN');}
 </script>
 {% endblock %}

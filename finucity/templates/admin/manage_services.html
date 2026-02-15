@@ -1,185 +1,362 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Services | Finucity Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+</head>
+<body class="admin-shell">
 
-{% block title %}Manage Services - Admin{% endblock %}
+<div class="admin-layout" id="adminLayout">
 
-{% block content %}
-<div class="min-h-screen bg-gray-50 p-6">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Manage Services</h1>
-                <p class="text-gray-600 mt-1">Control platform service catalog</p>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">F</div>
+            <div class="sidebar-brand-text">
+                <h1>Finucity</h1>
+                <span>Admin Panel</span>
             </div>
-            <a href="{{ url_for('admin_enhanced.create_service') }}" 
-               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition">
-                + Add New Service
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Overview</div>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-th-large"></i>
+                    <span class="link-text">Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.analytics') }}" class="sidebar-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="link-text">Analytics</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">People</div>
+                <a href="{{ url_for('main.admin_users') }}" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    <span class="link-text">Users</span>
+                </a>
+                <a href="{{ url_for('main.admin_ca_applications') }}" class="sidebar-link">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="link-text">CA Applications</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Operations</div>
+                <a href="{{ url_for('admin_enhanced.manage_services') }}" class="sidebar-link active">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span class="link-text">Services</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_bookings') }}" class="sidebar-link">
+                    <i class="fas fa-receipt"></i>
+                    <span class="link-text">Bookings</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_pricing') }}" class="sidebar-link">
+                    <i class="fas fa-tags"></i>
+                    <span class="link-text">Pricing</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Moderation</div>
+                <a href="{{ url_for('admin_enhanced.manage_disputes') }}" class="sidebar-link">
+                    <i class="fas fa-gavel"></i>
+                    <span class="link-text">Disputes</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">System</div>
+                <a href="{{ url_for('admin_enhanced.platform_settings') }}" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="link-text">Settings</span>
+                </a>
+                <a href="{{ url_for('main.home') }}" class="sidebar-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="link-text">View Site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user" onclick="window.location.href='/profile'">
+                <div class="sidebar-user-avatar">AD</div>
+                <div class="sidebar-user-info">
+                    <h4>Administrator</h4>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== HEADER ===== -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-breadcrumb">
+                <span>Admin</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>Operations</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-current">Services</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>Live</span>
+            </div>
+            <div class="header-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="header-icon-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
+    </header>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm">Total Services</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-1">{{ services|length }}</p>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                        </svg>
-                    </div>
-                </div>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="admin-main">
+
+        <!-- Page Title -->
+        <div class="page-title-bar">
+            <div class="page-title-group">
+                <h2>Service Catalog</h2>
+                <p>{{ services|length }} services across {{ categorized|length }} categories</p>
             </div>
-
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm">Active Services</p>
-                        <p class="text-3xl font-bold text-green-600 mt-1">
-                            {{ services|selectattr('is_active')|list|length }}
-                        </p>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-lg">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm">Featured</p>
-                        <p class="text-3xl font-bold text-yellow-600 mt-1">
-                            {{ services|selectattr('is_featured')|list|length }}
-                        </p>
-                    </div>
-                    <div class="bg-yellow-100 p-3 rounded-lg">
-                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-600 text-sm">Inactive</p>
-                        <p class="text-3xl font-bold text-red-600 mt-1">
-                            {{ services|rejectattr('is_active')|list|length }}
-                        </p>
-                    </div>
-                    <div class="bg-red-100 p-3 rounded-lg">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                        </svg>
-                    </div>
-                </div>
+            <div class="page-actions">
+                <a href="{{ url_for('admin_enhanced.manage_pricing') }}" class="btn-admin secondary">
+                    <i class="fas fa-tags"></i> Pricing
+                </a>
+                <a href="{{ url_for('admin_enhanced.create_service') }}" class="btn-admin primary">
+                    <i class="fas fa-plus"></i> Add Service
+                </a>
             </div>
         </div>
 
-        <!-- Services by Category -->
-        {% for category, cat_services in categorized.items() %}
-        <div class="bg-white rounded-lg shadow mb-6">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-bold text-gray-900 capitalize">{{ category.replace('_', ' ') }}</h2>
-                <p class="text-gray-600 text-sm">{{ cat_services|length }} services</p>
+        <!-- ===== STATS ROW ===== -->
+        <div class="stats-row">
+            <div class="stat-card" style="--card-accent: #3b82f6;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total Services</span>
+                    <div class="stat-card-icon info"><i class="fas fa-concierge-bell"></i></div>
+                </div>
+                <div class="stat-card-value">{{ services|length }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-layer-group"></i> {{ categorized|length }} categories</div>
             </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Featured</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        {% for service in cat_services %}
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4">
-                                <div class="font-medium text-gray-900">{{ service.service_name }}</div>
-                                <div class="text-sm text-gray-500">{{ service.short_description[:50] }}...</div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-600">{{ service.service_code }}</td>
-                            <td class="px-6 py-4 text-sm font-semibold">₹{{ "{:,}".format(service.base_price) }}</td>
-                            <td class="px-6 py-4">
-                                {% if service.discount_percentage > 0 %}
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ service.discount_percentage }}% OFF
-                                </span>
-                                {% else %}
-                                <span class="text-gray-400">-</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4">
-                                <button onclick="toggleService('{{ service.id }}')" 
-                                        class="status-toggle-{{ service.id }}">
-                                    {% if service.is_active %}
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                        Active
+
+            <div class="stat-card" style="--card-accent: #22c55e;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Active</span>
+                    <div class="stat-card-icon success"><i class="fas fa-toggle-on"></i></div>
+                </div>
+                <div class="stat-card-value">{{ services|selectattr('is_active')|list|length }}</div>
+                <div class="stat-card-change up"><i class="fas fa-check-circle"></i> Available to users</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #f59e0b;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Featured</span>
+                    <div class="stat-card-icon warning"><i class="fas fa-star"></i></div>
+                </div>
+                <div class="stat-card-value">{{ services|selectattr('is_featured')|list|length }}</div>
+                <div class="stat-card-change neutral"><i class="fas fa-sparkles"></i> Highlighted services</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #ef4444;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Inactive</span>
+                    <div class="stat-card-icon danger"><i class="fas fa-toggle-off"></i></div>
+                </div>
+                <div class="stat-card-value">{{ services|rejectattr('is_active')|list|length }}</div>
+                <div class="stat-card-change down"><i class="fas fa-pause-circle"></i> Disabled services</div>
+            </div>
+        </div>
+
+        <!-- ===== SERVICES BY CATEGORY ===== -->
+        {% for category, cat_services in categorized.items() %}
+        <div class="admin-card mb-3">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-header-icon" style="background: var(--admin-accent-muted); color: var(--admin-accent);">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div>
+                        <h3 style="text-transform: capitalize;">{{ category.replace('_', ' ') }}</h3>
+                        <span style="font-size: 11px; color: var(--admin-text-muted);">{{ cat_services|length }} services</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <span class="status-badge info" style="font-size: 10px;">{{ cat_services|length }}</span>
+                </div>
+            </div>
+            <div class="card-body no-pad">
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Code</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>Status</th>
+                                <th>Featured</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in cat_services %}
+                            <tr>
+                                <td>
+                                    <div class="table-user">
+                                        <div class="table-user-avatar" style="background: var(--admin-accent-muted); color: var(--admin-accent); border-radius: var(--admin-radius-sm);">
+                                            <i class="fas fa-cube" style="font-size: 12px;"></i>
+                                        </div>
+                                        <div class="table-user-info">
+                                            <h5>{{ service.service_name }}</h5>
+                                            <span>{{ service.short_description[:50] if service.short_description else '' }}{{ '...' if service.short_description and service.short_description|length > 50 else '' }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-family: monospace; font-size: 12px; color: var(--admin-text-tertiary); background: var(--admin-bg-tertiary); padding: 2px 8px; border-radius: 4px;">
+                                        {{ service.service_code }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 700; color: var(--admin-text-primary);">₹{{ "{:,}".format(service.base_price) }}</span>
+                                </td>
+                                <td>
+                                    {% if service.discount_percentage > 0 %}
+                                    <span class="status-badge success" style="font-size: 10px;">
+                                        {{ service.discount_percentage }}% OFF
                                     </span>
                                     {% else %}
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                        Inactive
-                                    </span>
+                                    <span style="color: var(--admin-text-muted);">—</span>
                                     {% endif %}
-                                </button>
-                            </td>
-                            <td class="px-6 py-4">
-                                {% if service.is_featured %}
-                                <span class="text-yellow-500">⭐</span>
-                                {% else %}
-                                <span class="text-gray-300">☆</span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <a href="{{ url_for('admin_enhanced.edit_service', service_id=service.id) }}" 
-                                   class="text-blue-600 hover:text-blue-800 mr-3">Edit</a>
-                                <a href="{{ url_for('services.service_detail', service_code=service.service_code) }}" 
-                                   target="_blank"
-                                   class="text-gray-600 hover:text-gray-800">View</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                </td>
+                                <td>
+                                    <button onclick="toggleService('{{ service.id }}')" style="cursor: pointer; background: none; border: none; padding: 0;">
+                                        {% if service.is_active %}
+                                        <span class="status-badge active">
+                                            <span class="status-dot"></span> Active
+                                        </span>
+                                        {% else %}
+                                        <span class="status-badge danger">
+                                            <span class="status-dot"></span> Inactive
+                                        </span>
+                                        {% endif %}
+                                    </button>
+                                </td>
+                                <td>
+                                    {% if service.is_featured %}
+                                    <span style="color: var(--admin-warning); font-size: 16px;">★</span>
+                                    {% else %}
+                                    <span style="color: var(--admin-text-muted); font-size: 16px;">☆</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <div class="d-flex gap-sm" style="justify-content: flex-end;">
+                                        <a href="{{ url_for('admin_enhanced.edit_service', service_id=service.id) }}" class="btn-admin secondary sm" title="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                        <a href="{{ url_for('services.service_detail', service_code=service.service_code) }}" target="_blank" class="btn-admin ghost sm" title="View">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         {% endfor %}
-    </div>
+
+        {% if not categorized %}
+        <div class="admin-card">
+            <div class="empty-state" style="padding: 64px;">
+                <i class="fas fa-concierge-bell"></i>
+                <h4>No Services Yet</h4>
+                <p>Start by adding your first service to the catalog</p>
+                <a href="{{ url_for('admin_enhanced.create_service') }}" class="btn-admin primary mt-2">
+                    <i class="fas fa-plus"></i> Add First Service
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+    </main>
 </div>
 
 <script>
-function toggleService(serviceId) {
-    if (!confirm('Toggle service status?')) return;
-    
-    fetch(`/admin/services/${serviceId}/toggle`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Error: ' + data.error);
-        }
-    })
-    .catch(error => {
-        alert('Error: ' + error);
+(function() {
+    'use strict';
+
+    // ===== SIDEBAR =====
+    const layout = document.getElementById('adminLayout');
+    const toggle = document.getElementById('sidebarToggle');
+    if (localStorage.getItem('admin_sidebar_collapsed') === 'true') layout?.classList.add('sidebar-collapsed');
+    toggle?.addEventListener('click', () => {
+        const collapsed = layout.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('admin_sidebar_collapsed', collapsed);
     });
-}
+    document.getElementById('mobileSidebarToggle')?.addEventListener('click', () => {
+        document.querySelector('.admin-sidebar')?.classList.toggle('mobile-open');
+    });
+
+    // ===== TOGGLE SERVICE =====
+    window.toggleService = function(serviceId) {
+        if (!confirm('Toggle this service\'s active status?')) return;
+
+        fetch(`/admin/services/${serviceId}/toggle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Service status updated', 'success');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast('Error: ' + (data.error || 'Unknown'), 'error');
+            }
+        })
+        .catch(() => showToast('Network error', 'error'));
+    };
+
+    // ===== TOAST =====
+    function showToast(message, type = 'info', duration = 4000) {
+        let container = document.getElementById('admin-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'admin-toast-container';
+            container.className = 'admin-toast-container';
+            document.body.appendChild(container);
+        }
+        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `admin-toast ${type}`;
+        toast.style.setProperty('--toast-duration', `${duration}ms`);
+        toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, duration);
+    }
+})();
 </script>
-{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}SIP Calculator | Finucity{% endblock %}
+
+{% block content %}
+<section class="sp-hero">
+    <div class="container">
+        <div class="sp-hero__content reveal-up">
+            <span class="sp-hero__badge">SIP Tool</span>
+            <h1 class="sp-hero__title">SIP Wealth <span class="gradient-text">Calculator</span></h1>
+            <p class="sp-hero__subtitle">See the power of compounding — calculate how your monthly SIP grows over time, or find the SIP amount needed to reach your financial goal.</p>
+        </div>
+    </div>
+</section>
+
+<section class="sp-section">
+    <div class="container">
+        <div class="sp-calculator reveal-up">
+            <div class="sp-calc__tabs">
+                <button class="sp-tab sp-tab--active" onclick="switchTab('sip',this)">SIP Returns</button>
+                <button class="sp-tab" onclick="switchTab('goal',this)">Goal-Based SIP</button>
+            </div>
+            <div class="sp-calc__form" id="sipForm">
+                <div class="sp-calc__row">
+                    <div class="sp-calc__group"><label>Monthly SIP Amount (₹)</label><input type="number" id="spSIP" value="10000" step="1000"></div>
+                    <div class="sp-calc__group"><label>Expected Annual Return (%)</label><input type="number" id="spReturn" value="12" step="0.5" min="1" max="30"></div>
+                </div>
+                <div class="sp-calc__row">
+                    <div class="sp-calc__group"><label>Investment Period (Years)</label><input type="number" id="spYears" value="20" min="1" max="50"></div>
+                    <div class="sp-calc__group"><label>Annual Step-Up (%)</label><input type="number" id="spStepUp" value="0" min="0" max="25"><small>Increase SIP by this % every year</small></div>
+                </div>
+                <button class="sp-calc__btn" onclick="calcSIP()">Calculate Wealth</button>
+            </div>
+            <div class="sp-calc__form" id="goalForm" style="display:none">
+                <div class="sp-calc__row">
+                    <div class="sp-calc__group"><label>Target Amount (₹)</label><input type="number" id="spGoal" value="10000000" step="100000"></div>
+                    <div class="sp-calc__group"><label>Expected Annual Return (%)</label><input type="number" id="spGoalReturn" value="12" step="0.5" min="1" max="30"></div>
+                </div>
+                <div class="sp-calc__row">
+                    <div class="sp-calc__group"><label>Time Period (Years)</label><input type="number" id="spGoalYears" value="20" min="1" max="50"></div>
+                </div>
+                <button class="sp-calc__btn" onclick="calcGoalSIP()">Calculate Required SIP</button>
+            </div>
+            <div class="sp-calc__results" id="spResults" style="display:none">
+                <div class="sp-result-grid">
+                    <div class="sp-result-card"><span class="sp-result-label">Total Invested</span><span class="sp-result-value" id="spInvested"></span></div>
+                    <div class="sp-result-card"><span class="sp-result-label">Wealth Gain</span><span class="sp-result-value sp-result-value--green" id="spGain"></span></div>
+                    <div class="sp-result-card sp-result-card--total"><span class="sp-result-label">Total Value</span><span class="sp-result-value" id="spTotal"></span></div>
+                    <div class="sp-result-card"><span class="sp-result-label">Wealth Multiplier</span><span class="sp-result-value" id="spMultiplier"></span></div>
+                </div>
+                <div class="sp-progress-bar">
+                    <div class="sp-progress__invested" id="spBar1"><span id="spBarLabel1"></span></div>
+                    <div class="sp-progress__gain" id="spBar2"><span id="spBarLabel2"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="sp-section sp-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up"><span class="section-tag">Insight</span><h2>The Magic of Starting Early</h2><div class="section-line"></div></div>
+        <div class="sp-comparison-grid">
+            <div class="sp-compare reveal-up" style="--delay:0.1s">
+                <h4>Start at 25</h4>
+                <p class="sp-compare__sip">₹10,000/month for 30 years</p>
+                <p class="sp-compare__invested">Invested: ₹36L</p>
+                <p class="sp-compare__corpus">Corpus: <strong>₹3.53 Cr</strong></p>
+            </div>
+            <div class="sp-compare reveal-up" style="--delay:0.2s">
+                <h4>Start at 30</h4>
+                <p class="sp-compare__sip">₹10,000/month for 25 years</p>
+                <p class="sp-compare__invested">Invested: ₹30L</p>
+                <p class="sp-compare__corpus">Corpus: <strong>₹1.89 Cr</strong></p>
+            </div>
+            <div class="sp-compare reveal-up" style="--delay:0.3s">
+                <h4>Start at 35</h4>
+                <p class="sp-compare__sip">₹10,000/month for 20 years</p>
+                <p class="sp-compare__invested">Invested: ₹24L</p>
+                <p class="sp-compare__corpus">Corpus: <strong>₹99.9L</strong></p>
+            </div>
+        </div>
+        <p class="sp-comparison-note reveal-up" style="--delay:0.35s">5 years of delay = ₹1.64 Cr less wealth. At 12% annual return.</p>
+    </div>
+</section>
+
+<style>
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
+
+.sp-hero { padding:10rem 0 3rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(79,172,254,0.03) 50%,var(--bg-main) 100%); margin-top:80px; text-align:center; }
+.sp-hero__content { max-width:700px; margin:0 auto; }
+.sp-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(79,172,254,0.1); border:1px solid rgba(79,172,254,0.3); border-radius:50px; color:#4facfe; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.sp-hero__title { font-size:clamp(2.5rem,5vw,3.5rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#4facfe,#00f2fe,#4facfe); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.sp-hero__subtitle { color:var(--text-muted); font-size:1rem; line-height:1.7; }
+
+.sp-section { padding:4rem 0; } .sp-section--dark { background:rgba(0,0,0,0.15); padding:5rem 0; }
+.section-header { text-align:center; margin-bottom:3rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(79,172,254,0.08); border:1px solid rgba(79,172,254,0.15); border-radius:50px; color:#4facfe; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#4facfe,#00f2fe); margin:0 auto; border-radius:2px; }
+
+.sp-calculator { max-width:700px; margin:0 auto; background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(79,172,254,0.1); }
+.sp-calc__tabs { display:flex; gap:0.5rem; margin-bottom:2rem; }
+.sp-tab { flex:1; padding:0.7rem; background:rgba(255,255,255,0.04); border:1px solid rgba(79,172,254,0.1); border-radius:10px; color:var(--text-muted); font-weight:600; font-size:0.9rem; cursor:pointer; transition:all 0.3s; }
+.sp-tab--active { background:rgba(79,172,254,0.1); border-color:rgba(79,172,254,0.3); color:#4facfe; }
+.sp-calc__form { display:flex; flex-direction:column; gap:1rem; }
+.sp-calc__row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.sp-calc__group { display:flex; flex-direction:column; gap:0.3rem; }
+.sp-calc__group label { font-size:0.82rem; color:var(--text-muted); font-weight:600; }
+.sp-calc__group input { background:rgba(255,255,255,0.05); border:1px solid rgba(79,172,254,0.15); border-radius:10px; padding:0.7rem 1rem; color:var(--text-light); font-size:1rem; transition:border-color 0.3s; }
+.sp-calc__group input:focus { outline:none; border-color:rgba(79,172,254,0.5); }
+.sp-calc__group small { color:var(--text-muted); font-size:0.72rem; opacity:0.7; }
+.sp-calc__btn { padding:1rem; background:linear-gradient(135deg,#4facfe,#00f2fe); color:#000; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; margin-top:0.5rem; }
+.sp-calc__btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(79,172,254,0.35); }
+
+.sp-result-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-top:2rem; margin-bottom:1.5rem; }
+.sp-result-card { background:rgba(255,255,255,0.03); padding:1.2rem; border-radius:12px; border:1px solid rgba(79,172,254,0.08); text-align:center; }
+.sp-result-card--total { border-color:rgba(79,172,254,0.25); background:rgba(79,172,254,0.05); }
+.sp-result-label { display:block; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3px; margin-bottom:0.4rem; }
+.sp-result-value { display:block; font-size:1.2rem; font-weight:800; color:var(--text-light); }
+.sp-result-value--green { color:#43e97b !important; }
+.sp-result-card--total .sp-result-value { color:#4facfe; font-size:1.4rem; }
+
+.sp-progress-bar { display:flex; height:32px; border-radius:16px; overflow:hidden; background:rgba(255,255,255,0.03); }
+.sp-progress__invested { background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; transition:width 0.6s ease; }
+.sp-progress__gain { background:linear-gradient(135deg,#43e97b,#38f9d7); display:flex; align-items:center; justify-content:center; transition:width 0.6s ease; }
+.sp-progress-bar span { font-size:0.72rem; font-weight:700; color:#000; white-space:nowrap; }
+
+.sp-comparison-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:800px; margin:0 auto; }
+.sp-compare { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(79,172,254,0.08); text-align:center; transition:all 0.3s; transition-delay:var(--delay,0s); }
+.sp-compare:hover { border-color:rgba(79,172,254,0.2); transform:translateY(-4px); }
+.sp-compare h4 { color:var(--text-light); font-size:1.1rem; margin-bottom:0.8rem; }
+.sp-compare__sip { color:var(--text-muted); font-size:0.82rem; margin-bottom:0.3rem; }
+.sp-compare__invested { color:var(--text-muted); font-size:0.82rem; margin-bottom:0.3rem; }
+.sp-compare__corpus { color:#43e97b; font-size:0.95rem; } .sp-compare__corpus strong { font-size:1.2rem; }
+.sp-comparison-note { text-align:center; color:#ff6b6b; font-weight:600; margin-top:2rem; font-size:0.95rem; }
+
+@media (max-width:768px) { .sp-hero { padding:7rem 1rem 2rem; } .sp-calc__row, .sp-comparison-grid { grid-template-columns:1fr; } .sp-result-grid { grid-template-columns:1fr; } }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+});
+function switchTab(tab,btn){
+    document.querySelectorAll('.sp-tab').forEach(b=>b.classList.remove('sp-tab--active'));
+    btn.classList.add('sp-tab--active');
+    document.getElementById('sipForm').style.display=tab==='sip'?'':'none';
+    document.getElementById('goalForm').style.display=tab==='goal'?'':'none';
+    document.getElementById('spResults').style.display='none';
+}
+function calcSIP(){
+    const sip=parseFloat(document.getElementById('spSIP').value)||0;
+    const r=parseFloat(document.getElementById('spReturn').value)/100;
+    const yrs=parseInt(document.getElementById('spYears').value)||0;
+    const stepUp=parseFloat(document.getElementById('spStepUp').value)/100;
+    const mr=r/12; let total=0, invested=0, currentSIP=sip;
+    for(let y=0;y<yrs;y++){
+        for(let m=0;m<12;m++){total=(total+currentSIP)*(1+mr);invested+=currentSIP;}
+        currentSIP=currentSIP*(1+stepUp);
+    }
+    showResults(invested,total);
+}
+function calcGoalSIP(){
+    const goal=parseFloat(document.getElementById('spGoal').value)||0;
+    const r=parseFloat(document.getElementById('spGoalReturn').value)/100;
+    const yrs=parseInt(document.getElementById('spGoalYears').value)||0;
+    const mr=r/12; const n=yrs*12;
+    const sip=goal*mr/(Math.pow(1+mr,n)-1);
+    const invested=sip*n;
+    showResults(invested,goal);
+}
+function showResults(invested,total){
+    const gain=total-invested;
+    const mult=(invested>0)?(total/invested):0;
+    const f=n=>'₹ '+formatINR(Math.round(n));
+    document.getElementById('spInvested').textContent=f(invested);
+    document.getElementById('spGain').textContent=f(gain);
+    document.getElementById('spTotal').textContent=f(total);
+    document.getElementById('spMultiplier').textContent=mult.toFixed(1)+'x';
+    const iPct=Math.round(invested/total*100); const gPct=100-iPct;
+    document.getElementById('spBar1').style.width=iPct+'%';
+    document.getElementById('spBar2').style.width=gPct+'%';
+    document.getElementById('spBarLabel1').textContent='Invested '+iPct+'%';
+    document.getElementById('spBarLabel2').textContent='Gain '+gPct+'%';
+    document.getElementById('spResults').style.display='block';
+}
+function formatINR(n){if(n>=10000000)return(n/10000000).toFixed(2)+' Cr';if(n>=100000)return(n/100000).toFixed(2)+' L';return n.toLocaleString('en-IN');}
+</script>
+{% endblock %}

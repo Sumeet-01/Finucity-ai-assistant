@@ -3,127 +3,220 @@
 {% block title %}Learning Center | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<section class="lc-hero">
+    <div class="lc-hero__particles" id="lcParticles"></div>
     <div class="container">
-        <h1>🎓 Learning Center</h1>
-        <p>Enhance your financial knowledge with our educational resources</p>
+        <div class="lc-hero__content reveal-up">
+            <span class="lc-hero__badge">Education</span>
+            <h1 class="lc-hero__title">Financial <span class="gradient-text">Learning Center</span></h1>
+            <p class="lc-hero__subtitle">Master personal finance, taxation, and investing through structured courses — from beginner basics to expert-level strategies.</p>
+            <div class="lc-hero__stats">
+                <div class="lc-stat"><span class="lc-stat__number" data-count="{{ stats.total_tools if stats else 6 }}">0</span><span class="lc-stat__unit">+</span><span class="lc-stat__label">Courses</span></div>
+                <div class="lc-stat"><span class="lc-stat__number" data-count="{{ stats.total_queries if stats else 0 }}">0</span><span class="lc-stat__unit">+</span><span class="lc-stat__label">AI Queries</span></div>
+                <div class="lc-stat"><span class="lc-stat__number" data-count="{{ stats.total_users if stats else 0 }}">0</span><span class="lc-stat__unit">+</span><span class="lc-stat__label">Learners</span></div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="container">
-    <div class="learning-content">
-        <section class="learning-overview">
-            <h2>Financial Education Resources</h2>
-            <p>Welcome to the Finucity Learning Center! Here you'll find articles, guides, and tools to help you improve your financial literacy.</p>
-            
-            <div class="topic-grid">
-                <div class="topic-card">
-                    <div class="topic-icon">📊</div>
-                    <h3>Investments</h3>
-                    <p>Learn about stocks, mutual funds, bonds, and building a diversified portfolio.</p>
-                    <a href="#" class="topic-link">Explore Investments</a>
-                </div>
-                
-                <div class="topic-card">
-                    <div class="topic-icon">💰</div>
-                    <h3>Taxation</h3>
-                    <p>Understand tax planning strategies and maximize your deductions.</p>
-                    <a href="#" class="topic-link">Explore Taxation</a>
-                </div>
-                
-                <div class="topic-card">
-                    <div class="topic-icon">🏦</div>
-                    <h3>Banking</h3>
-                    <p>Compare banking products and make informed financial decisions.</p>
-                    <a href="#" class="topic-link">Explore Banking</a>
-                </div>
-                
-                <div class="topic-card">
-                    <div class="topic-icon">🏠</div>
-                    <h3>Real Estate</h3>
-                    <p>Learn about property investment, home loans, and tax benefits.</p>
-                    <a href="#" class="topic-link">Explore Real Estate</a>
+<section class="lc-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Curriculum</span>
+            <h2>Structured Learning Paths</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="lc-courses-grid">
+            <div class="lc-course reveal-up" style="--delay:0.1s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#667eea,#764ba2)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--beginner">Beginner</div>
+                    <h3>Income Tax Fundamentals</h3>
+                    <p>Understand salary structure, tax slabs, deductions (80C/80D), TDS, Form 16 reading, and how to file ITR online. The foundation every Indian taxpayer needs.</p>
+                    <div class="lc-course__meta"><span>&#128218; 8 Lessons</span><span>&#9201; 3-4 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>Tax Slabs</span><span>Form 16</span><span>80C Deductions</span><span>ITR Filing</span>
+                    </div>
                 </div>
             </div>
-        </section>
+
+            <div class="lc-course reveal-up" style="--delay:0.15s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#fba002,#ff6b35)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--beginner">Beginner</div>
+                    <h3>Mutual Fund Mastery</h3>
+                    <p>From SIP basics to fund selection — types (equity, debt, hybrid), NAV, expense ratio, direct vs regular, ELSS, index funds, and portfolio construction for beginners.</p>
+                    <div class="lc-course__meta"><span>&#128218; 10 Lessons</span><span>&#9201; 5 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>SIP</span><span>Index Funds</span><span>ELSS</span><span>Fund Selection</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lc-course reveal-up" style="--delay:0.2s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--intermediate">Intermediate</div>
+                    <h3>Advanced Tax Optimization</h3>
+                    <p>Old vs New regime strategy, HRA optimization, capital gains harvesting, NPS extra deduction, salary structuring, and advanced 80C/80D strategies for maximum savings.</p>
+                    <div class="lc-course__meta"><span>&#128218; 12 Lessons</span><span>&#9201; 6 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>Regime Comparison</span><span>Capital Gains</span><span>NPS</span><span>Salary Structure</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lc-course reveal-up" style="--delay:0.25s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#ff6b6b,#ffa07a)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--intermediate">Intermediate</div>
+                    <h3>GST for Small Business</h3>
+                    <p>GST registration, invoice formats, GSTR filing (1, 3B, 9), Input Tax Credit optimization, composition scheme, e-way bills, and compliance calendar management.</p>
+                    <div class="lc-course__meta"><span>&#128218; 10 Lessons</span><span>&#9201; 5 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>GST Filing</span><span>ITC Claims</span><span>E-Way Bills</span><span>Composition</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lc-course reveal-up" style="--delay:0.3s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--advanced">Advanced</div>
+                    <h3>Portfolio Construction & Asset Allocation</h3>
+                    <p>Risk profiling, goal-based investing, equity-debt-gold allocation, rebalancing strategies, international diversification, REITs, InvITs, and behavioral finance concepts.</p>
+                    <div class="lc-course__meta"><span>&#128218; 15 Lessons</span><span>&#9201; 8 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>Asset Allocation</span><span>Rebalancing</span><span>REITs</span><span>Global ETFs</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lc-course reveal-up" style="--delay:0.35s">
+                <div class="lc-course__accent" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)"></div>
+                <div class="lc-course__body">
+                    <div class="lc-course__diff lc-diff--advanced">Advanced</div>
+                    <h3>Insurance: Buy Term, Invest the Difference</h3>
+                    <p>HLV calculation, term vs endowment analysis, health insurance optimization (base + super top-up), critical illness, and policy comparison frameworks for informed decisions.</p>
+                    <div class="lc-course__meta"><span>&#128218; 8 Lessons</span><span>&#9201; 4 Hours</span></div>
+                    <div class="lc-course__topics">
+                        <span>Term Insurance</span><span>Health Plans</span><span>HLV Method</span><span>BTID</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<section class="lc-section lc-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Quick Guides</span>
+            <h2>Essential Financial Concepts</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="lc-concepts-grid">
+            <div class="lc-concept reveal-up" style="--delay:0.1s"><h4>&#128176; Compounding</h4><p>₹10,000/month at 12% for 25 years = ₹1.89 Crore. That's the magic — your money earns money on its earnings.</p></div>
+            <div class="lc-concept reveal-up" style="--delay:0.15s"><h4>&#128200; Inflation</h4><p>At 6% inflation, ₹1 Crore today is worth ₹31L in 20 years. Your investments must beat inflation to create real wealth.</p></div>
+            <div class="lc-concept reveal-up" style="--delay:0.2s"><h4>&#127793; Rule of 72</h4><p>Divide 72 by your return rate to find doubling time. At 12% return, money doubles every 6 years (72 ÷ 12 = 6).</p></div>
+            <div class="lc-concept reveal-up" style="--delay:0.25s"><h4>&#127919; Asset Allocation</h4><p>Don't put all eggs in one basket. A mix of Equity (high growth) + Debt (stability) + Gold (hedge) reduces risk without sacrificing returns.</p></div>
+            <div class="lc-concept reveal-up" style="--delay:0.3s"><h4>&#128274; Emergency Fund</h4><p>Keep 6 months of expenses in liquid funds/savings. This prevents you from breaking investments during unexpected financial shocks.</p></div>
+            <div class="lc-concept reveal-up" style="--delay:0.35s"><h4>&#128202; Expense Ratio</h4><p>A 1% higher expense ratio costs ₹25-30L over 25 years on a ₹1Cr portfolio. Always choose low-cost index and direct plans.</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="lc-section lc-cta-section">
+    <div class="container">
+        <div class="lc-cta reveal-up">
+            <div class="lc-cta__glow"></div>
+            <h2>Start Learning Today</h2>
+            <p>Financial literacy is the most valuable skill you'll ever learn. Start with any course — they're all free.</p>
+            <div class="lc-cta__buttons">
+                <a href="{{ url_for('main.chat') }}" class="tp-btn tp-btn--primary"><span>Ask AI Questions</span></a>
+                <a href="{{ url_for('main.financial_blog') }}" class="tp-btn tp-btn--secondary"><span>Read Blog</span></a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.learning-content {
-    margin: 3rem 0;
-}
+.reveal-up { opacity:0; transform:translateY(50px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up.revealed { opacity:1; transform:translate(0); }
 
-.learning-overview h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-}
+.lc-hero { position:relative; padding:10rem 0 5rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(161,140,209,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.lc-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.lc-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(161,140,209,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.lc-hero__content { position:relative; z-index:2; max-width:800px; margin:0 auto; }
+.lc-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(161,140,209,0.1); border:1px solid rgba(161,140,209,0.3); border-radius:50px; color:#a18cd1; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.lc-hero__title { font-size:clamp(2.5rem,5vw,3.8rem); font-weight:900; color:var(--text-light); margin-bottom:1rem; }
+.gradient-text { background:linear-gradient(135deg,#a18cd1,#fbc2eb,#a18cd1); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.lc-hero__subtitle { color:var(--text-muted); font-size:1.1rem; line-height:1.7; margin-bottom:2.5rem; }
+.lc-hero__stats { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; }
+.lc-stat { text-align:center; padding:1.2rem 1.8rem; background:rgba(255,255,255,0.03); border:1px solid rgba(161,140,209,0.1); border-radius:16px; }
+.lc-stat:hover { border-color:rgba(161,140,209,0.3); transform:translateY(-3px); }
+.lc-stat__number { font-size:2rem; font-weight:800; color:#a18cd1; }
+.lc-stat__unit { font-size:1rem; font-weight:700; color:#a18cd1; }
+.lc-stat__label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.3rem; display:block; }
 
-.learning-overview > p {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto 3rem;
-    color: var(--text-muted);
-}
+.lc-section { padding:6rem 0; } .lc-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(161,140,209,0.08); border:1px solid rgba(161,140,209,0.15); border-radius:50px; color:#a18cd1; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#a18cd1,#fbc2eb); margin:0 auto; border-radius:2px; }
 
-.topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
+.lc-courses-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:1.5rem; }
+.lc-course { background:var(--bg-alt); border-radius:20px; overflow:hidden; border:1px solid rgba(161,140,209,0.08); transition:all 0.4s ease; transition-delay:var(--delay,0s); }
+.lc-course:hover { border-color:rgba(161,140,209,0.2); transform:translateY(-6px); box-shadow:0 15px 50px rgba(0,0,0,0.2); }
+.lc-course__accent { height:4px; }
+.lc-course__body { padding:2rem; }
+.lc-course__diff { display:inline-block; padding:0.3rem 0.8rem; border-radius:50px; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.8rem; }
+.lc-diff--beginner { background:rgba(67,233,123,0.1); color:#43e97b; }
+.lc-diff--intermediate { background:rgba(251,160,2,0.1); color:#fba002; }
+.lc-diff--advanced { background:rgba(255,107,107,0.1); color:#ff6b6b; }
+.lc-course h3 { color:var(--text-light); font-size:1.15rem; margin-bottom:0.8rem; font-weight:700; }
+.lc-course p { color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-bottom:1rem; }
+.lc-course__meta { display:flex; gap:1.5rem; color:var(--text-muted); font-size:0.82rem; margin-bottom:1rem; }
+.lc-course__topics { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.lc-course__topics span { padding:0.3rem 0.8rem; background:rgba(161,140,209,0.06); border:1px solid rgba(161,140,209,0.1); border-radius:50px; font-size:0.75rem; color:var(--text-muted); }
 
-.topic-card {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
+.lc-concepts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem; }
+.lc-concept { background:var(--bg-alt); padding:2rem; border-radius:16px; border:1px solid rgba(161,140,209,0.08); transition:all 0.3s; transition-delay:var(--delay,0s); }
+.lc-concept:hover { border-color:rgba(161,140,209,0.2); transform:translateY(-4px); }
+.lc-concept h4 { color:var(--text-light); font-size:1.05rem; margin-bottom:0.8rem; }
+.lc-concept p { color:var(--text-muted); font-size:0.88rem; line-height:1.6; margin:0; }
 
-.topic-card:hover {
-    transform: translateY(-5px);
-}
+.lc-cta-section { padding:4rem 0 6rem; }
+.lc-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(161,140,209,0.15); overflow:hidden; }
+.lc-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(161,140,209,0.08) 0%,transparent 70%); pointer-events:none; }
+.lc-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.lc-cta p { color:var(--text-muted); max-width:550px; margin:0 auto 2rem; position:relative; }
+.lc-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#a18cd1,#fbc2eb); color:#000; box-shadow:0 4px 15px rgba(161,140,209,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(161,140,209,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
 
-.topic-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.topic-card h3 {
-    color: var(--accent-primary);
-    margin-bottom: 1rem;
-}
-
-.topic-card p {
-    color: var(--text-muted);
-    margin-bottom: 1.5rem;
-}
-
-.topic-link {
-    color: var(--accent-primary);
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-block;
-    transition: color 0.3s ease;
-}
-
-.topic-link:hover {
-    color: var(--accent-secondary);
-}
-
-@media (max-width: 768px) {
-    .topic-grid {
-        grid-template-columns: 1fr;
-    }
-}
+@media (max-width:768px) { .lc-hero { padding:7rem 1rem 3rem; } .lc-hero__stats { flex-direction:column; align-items:center; } .lc-courses-grid { grid-template-columns:1fr; } }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up').forEach(el=>observer.observe(el));
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+    const c=document.getElementById('lcParticles');
+    if(c){for(let i=0;i<15;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+});
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
+</script>
 {% endblock %}

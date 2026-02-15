@@ -46,26 +46,12 @@ def create_app(config_name=None):
         return None
 
     # Register blueprints for modular parts of the app
-    from .routes import auth_bp, api_bp, chat_bp
+    from .routes import main_bp, auth_bp, api_bp
+    from .chat_routes import chat_bp
+    app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(api_bp)
     app.register_blueprint(chat_bp)
-
-    # Define main page routes directly on the app to solve BuildErrors
-    @app.route('/', endpoint='home')
-    def index():
-        if current_user.is_authenticated:
-            return redirect(url_for('chat.chat_home'))
-        return render_template('index.html')
-
-    @app.route('/profile', endpoint='profile')
-    @login_required
-    def profile():
-        return render_template('profile.html', user=current_user)
-
-    @app.route('/about', endpoint='about')
-    def about():
-        return render_template('about.html')
 
     # Define global error handlers
     @app.errorhandler(404)

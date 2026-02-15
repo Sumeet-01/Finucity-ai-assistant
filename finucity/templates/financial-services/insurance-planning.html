@@ -1,503 +1,284 @@
 {% extends "base.html" %}
 
-{% block title %}Insurance Planning Services | Finucity{% endblock %}
+{% block title %}Insurance Planning & Protection | Finucity{% endblock %}
 
 {% block content %}
-<div class="page-header">
+<!-- ============ HERO ============ -->
+<section class="ip-hero">
+    <div class="ip-hero__particles" id="ipParticles"></div>
     <div class="container">
-        <h1>🛡️ Insurance Planning Services</h1>
-        <p>Protect what matters with comprehensive insurance planning</p>
-    </div>
-</div>
-
-<div class="container">
-    <div class="feature-content">
-        <section class="feature-overview">
-            <h2>Complete Insurance Protection</h2>
-            <p>Our AI-powered insurance planning service helps you identify coverage gaps, find the right policies, and optimize your insurance portfolio to ensure comprehensive protection for you and your family.</p>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <h3>💼 Needs Analysis</h3>
-                    <p>Calculate your exact coverage requirements based on financial obligations.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>💰 Premium Optimization</h3>
-                    <p>Find the right balance between coverage and affordability.</p>
-                </div>
-                <div class="benefit-card">
-                    <h3>🔄 Portfolio Review</h3>
-                    <p>Periodic assessment to ensure your coverage evolves with your life stages.</p>
-                </div>
+        <div class="ip-hero__content reveal-up">
+            <span class="ip-hero__badge">Financial Protection</span>
+            <h1 class="ip-hero__title">Comprehensive <span class="gradient-text">Insurance Planning</span></h1>
+            <p class="ip-hero__subtitle">Protect what matters most — your family's financial future, health security, and asset preservation with scientifically calculated coverage strategies</p>
+            <div class="ip-hero__stats">
+                <div class="ip-stat"><span class="ip-stat__number" data-count="75">0</span><span class="ip-stat__unit">%</span><span class="ip-stat__label">Indians Under-Insured</span></div>
+                <div class="ip-stat"><span class="ip-stat__number" data-count="150">0</span><span class="ip-stat__unit">x</span><span class="ip-stat__label">Income Cover Needed</span></div>
+                <div class="ip-stat"><span class="ip-stat__number" data-count="25000">0</span><span class="ip-stat__unit">+</span><span class="ip-stat__label">Sec 80D Maximum</span></div>
             </div>
-        </section>
-
-        <section class="insurance-types">
-            <h2>Essential Insurance Coverage</h2>
-            <div class="insurance-grid">
-                <div class="insurance-card term-life">
-                    <div class="insurance-header">
-                        <div class="insurance-icon">🛡️</div>
-                        <h3>Term Life Insurance</h3>
-                    </div>
-                    <div class="insurance-content">
-                        <div class="insurance-description">
-                            <p>Pure protection policy providing high coverage at affordable premiums.</p>
-                        </div>
-                        <div class="key-features">
-                            <h4>Key Features:</h4>
-                            <ul>
-                                <li>High Sum Assured (10-20x annual income)</li>
-                                <li>Low premiums compared to other life insurance</li>
-                                <li>Income replacement for dependents</li>
-                                <li>Tax benefits under Section 80C</li>
-                                <li>Add-on riders for enhanced protection</li>
-                            </ul>
-                        </div>
-                        <div class="recommendation">
-                            <strong>Recommended for:</strong> Primary breadwinners with dependents
-                        </div>
-                    </div>
-                </div>
-
-                <div class="insurance-card health">
-                    <div class="insurance-header">
-                        <div class="insurance-icon">🏥</div>
-                        <h3>Health Insurance</h3>
-                    </div>
-                    <div class="insurance-content">
-                        <div class="insurance-description">
-                            <p>Coverage for hospitalization expenses, medical treatments, and procedures.</p>
-                        </div>
-                        <div class="key-features">
-                            <h4>Key Features:</h4>
-                            <ul>
-                                <li>Cashless hospitalization facility</li>
-                                <li>Pre and post hospitalization coverage</li>
-                                <li>No-claim bonus benefits</li>
-                                <li>Tax benefits under Section 80D</li>
-                                <li>Coverage for day-care procedures</li>
-                            </ul>
-                        </div>
-                        <div class="recommendation">
-                            <strong>Recommended for:</strong> Everyone, regardless of age or income
-                        </div>
-                    </div>
-                </div>
-
-                <div class="insurance-card critical-illness">
-                    <div class="insurance-header">
-                        <div class="insurance-icon">❤️</div>
-                        <h3>Critical Illness Cover</h3>
-                    </div>
-                    <div class="insurance-content">
-                        <div class="insurance-description">
-                            <p>Lump sum benefit upon diagnosis of specified critical illnesses.</p>
-                        </div>
-                        <div class="key-features">
-                            <h4>Key Features:</h4>
-                            <ul>
-                                <li>Coverage for 20-30 major illnesses</li>
-                                <li>Single lump sum payout</li>
-                                <li>No restriction on usage of funds</li>
-                                <li>Additional tax benefits</li>
-                                <li>Covers treatment costs and income loss</li>
-                            </ul>
-                        </div>
-                        <div class="recommendation">
-                            <strong>Recommended for:</strong> Adults with family history of critical illnesses
-                        </div>
-                    </div>
-                </div>
-
-                <div class="insurance-card personal-accident">
-                    <div class="insurance-header">
-                        <div class="insurance-icon">⚠️</div>
-                        <h3>Personal Accident Insurance</h3>
-                    </div>
-                    <div class="insurance-content">
-                        <div class="insurance-description">
-                            <p>Financial protection against accidental death and disabilities.</p>
-                        </div>
-                        <div class="key-features">
-                            <h4>Key Features:</h4>
-                            <ul>
-                                <li>Coverage for accidental death</li>
-                                <li>Permanent/temporary disability benefits</li>
-                                <li>Hospital cash allowance</li>
-                                <li>Low premium, high coverage</li>
-                                <li>Education benefit for children</li>
-                            </ul>
-                        </div>
-                        <div class="recommendation">
-                            <strong>Recommended for:</strong> Working individuals, especially those in high-risk professions
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="insurance-calculator">
-            <h2>🧮 Insurance Coverage Calculator</h2>
-            <div class="calculator-container">
-                <div class="calculator-inputs">
-                    <div class="input-group">
-                        <label>Annual Income (₹)</label>
-                        <input type="number" id="annualIncome" value="1000000" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Age (years)</label>
-                        <input type="number" id="age" value="35" min="18" max="65">
-                    </div>
-                    <div class="input-group">
-                        <label>Total Outstanding Debt (₹)</label>
-                        <input type="number" id="outstandingDebt" value="2000000" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Children's Future Education (₹)</label>
-                        <input type="number" id="educationFund" value="1500000" min="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Annual Medical Expenses (₹)</label>
-                        <input type="number" id="medicalExpenses" value="50000" min="0">
-                    </div>
-                    <button class="calculate-btn" onclick="calculateInsurance()">Calculate Coverage Needs</button>
-                </div>
-                
-                <div class="calculator-result">
-                    <h3>Recommended Coverage</h3>
-                    <div class="result-item">
-                        <span>Term Life Insurance:</span>
-                        <span id="lifeInsurance">₹1.5 Crore</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Health Insurance:</span>
-                        <span id="healthInsurance">₹10 Lakhs</span>
-                    </div>
-                    <div class="result-item">
-                        <span>Critical Illness Cover:</span>
-                        <span id="criticalIllness">₹25 Lakhs</span>
-                    </div>
-                    <div class="result-item highlight">
-                        <span>Personal Accident Cover:</span>
-                        <span id="accidentCover">₹1 Crore</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="insurance-tips">
-            <h2>💡 Insurance Planning Tips</h2>
-            <div class="tips-grid">
-                <div class="tip-card">
-                    <h4>1. Buy Term, Invest the Rest</h4>
-                    <p>Choose pure term insurance for life coverage and invest the savings in mutual funds or other growth instruments separately.</p>
-                </div>
-                
-                <div class="tip-card">
-                    <h4>2. Adequate Health Cover</h4>
-                    <p>Secure at least ₹5-10 lakhs health insurance per family member, adjusting for inflation and rising healthcare costs.</p>
-                </div>
-                
-                <div class="tip-card">
-                    <h4>3. Start Early</h4>
-                    <p>Purchase insurance policies early in life to lock in lower premiums and ensure maximum coverage period.</p>
-                </div>
-                
-                <div class="tip-card">
-                    <h4>4. Disclose Everything</h4>
-                    <p>Always provide complete and accurate medical history to avoid claim rejections during emergencies.</p>
-                </div>
-                
-                <div class="tip-card">
-                    <h4>5. Review Regularly</h4>
-                    <p>Review your insurance portfolio annually or after major life events like marriage, childbirth, or job changes.</p>
-                </div>
-                
-                <div class="tip-card">
-                    <h4>6. Consider Inflation</h4>
-                    <p>Factor in medical inflation when selecting health insurance coverage and opt for policies with inflation protection.</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="cta-section">
-            <h3>Get Your Insurance Plan Today</h3>
-            <p>Receive personalized insurance recommendations from our AI advisor</p>
-            <a href="/chat" class="cta-button">Plan My Insurance</a>
         </div>
     </div>
-</div>
+</section>
+
+<!-- ============ PHILOSOPHY ============ -->
+<section class="ip-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Philosophy</span>
+            <h2>Insurance is Not Investment</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="ip-overview reveal-up">
+            <p>The single biggest financial mistake Indians make is mixing insurance with investment. <strong>ULIPs, endowment plans, and money-back policies provide neither adequate insurance nor competitive returns</strong>. A ₹25L endowment plan costs ₹50,000/year — but a ₹1Cr pure term plan costs just ₹12,000/year. The ₹38,000 difference, if invested in a simple index fund at 12% CAGR, creates ₹1.1 Crore wealth over 25 years.</p>
+            <p>Our philosophy is crystal clear: <strong>Buy Term, Invest the Difference (BTID)</strong>. Insurance should only serve one purpose — risk transfer. We use the <strong>Human Life Value (HLV) method</strong> to calculate the exact coverage needed based on your income, liabilities, future obligations, and existing assets. Every policy recommendation is data-backed, not commission-driven.</p>
+        </div>
+
+        <div class="ip-pillars-grid">
+            <div class="ip-pillar reveal-left" style="--delay: 0.1s">
+                <div class="ip-pillar__icon"><span>&#128737;</span></div>
+                <h3>HLV-Based Coverage</h3>
+                <p>Human Life Value calculation considers your current income, expected growth, working years remaining, inflation, and dependents. A 30-year-old earning ₹15L/year needs ₹2-3 Crore term cover — not the ₹10L your employer provides.</p>
+            </div>
+            <div class="ip-pillar reveal-up" style="--delay: 0.2s">
+                <div class="ip-pillar__icon"><span>&#127973;</span></div>
+                <h3>Health-First Approach</h3>
+                <p>Medical inflation in India runs at 14% annually — double general inflation. A ₹5L health plan today will feel like ₹1.25L in just 10 years. We recommend ₹15-25L base + Super Top-Up to prevent healthcare costs from destroying decades of savings.</p>
+            </div>
+            <div class="ip-pillar reveal-right" style="--delay: 0.3s">
+                <div class="ip-pillar__icon"><span>&#128200;</span></div>
+                <h3>Zero-Commission Bias</h3>
+                <p>We don't earn commissions on insurance sales. Our fee-only advisory model ensures every recommendation — Term Life, Health, Critical Illness, or Personal Accident — is chosen purely based on claim settlement ratio, coverage quality, and your specific needs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ INSURANCE SOLUTIONS ============ -->
+<section class="ip-section ip-section--dark">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Protection Suite</span>
+            <h2>Complete Insurance Solutions</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="ip-solutions-grid">
+            <div class="ip-solution-card reveal-up" style="--delay: 0.1s">
+                <div class="ip-card-accent" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                <div class="ip-card-icon">&#128737;</div>
+                <h3>Term Life Insurance</h3>
+                <div class="ip-card-items">
+                    <div class="ip-item"><strong>Coverage Calculation</strong><p>HLV Method: (Annual Income × Working Years Remaining) - (Existing Assets + EPF/PPF Corpus). Add all liabilities (Home Loan, Education Loans). Typical recommendation: 15-20x annual income for ages 25-35.</p></div>
+                    <div class="ip-item"><strong>Key Features to Prioritize</strong><p>Claim Settlement Ratio > 97%, lump sum + monthly income payout options, whole life coverage option (till 99 years), terminal illness benefit, and waiver of premium rider for disability.</p></div>
+                    <div class="ip-item"><strong>Cost Optimization</strong><p>Buy early (25-30 age): ₹1Cr cover at ₹8,000-12,000/year. Add 3-5% annual income step-up rider to match salary growth. Stagger policies: ₹50L till 45 + ₹50L till 60 instead of single ₹1Cr till 60.</p></div>
+                    <div class="ip-item"><strong>Top Considerations</strong><p>Compare LIC, HDFC Life, ICICI Pru, Max Life, Tata AIA based on CSR, solvency ratio, and premium. Non-smoker, non-tobacco status saves 30-40% on premiums. Medical tests are mandatory above ₹50L cover.</p></div>
+                </div>
+            </div>
+
+            <div class="ip-solution-card reveal-up" style="--delay: 0.2s">
+                <div class="ip-card-accent" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></div>
+                <div class="ip-card-icon">&#127973;</div>
+                <h3>Health Insurance</h3>
+                <div class="ip-card-items">
+                    <div class="ip-item"><strong>Base + Super Top-Up Strategy</strong><p>₹5-10L base health plan + ₹25-50L Super Top-Up with deductible equal to base plan. Total coverage: ₹30-60L at fraction of cost. Super Top-Up premium for ₹50L: just ₹3,000-5,000/year.</p></div>
+                    <div class="ip-item"><strong>Essential Features Checklist</strong><p>Room rent: No capping/No sub-limits. Restoration benefit (recharges sum insured after full utilization). Day care procedures coverage (490+ listed). No co-payment across all ages. AYUSH treatment coverage.</p></div>
+                    <div class="ip-item"><strong>Family Floater vs Individual</strong><p>Family floater (covers entire family under one sum insured) works till age 45. After 45, separate individual policies for parents recommended — parental claims should not reduce family's coverage.</p></div>
+                    <div class="ip-item"><strong>Tax Benefits</strong><p>Section 80D: ₹25,000 deduction for self/family premium. Additional ₹25,000 for parents' premium (₹50,000 if parents are senior citizens). Preventive health check-up: ₹5,000 within limits.</p></div>
+                </div>
+            </div>
+
+            <div class="ip-solution-card reveal-up" style="--delay: 0.3s">
+                <div class="ip-card-accent" style="background: linear-gradient(135deg, #ff6b6b, #ffa07a);"></div>
+                <div class="ip-card-icon">&#129657;</div>
+                <h3>Critical Illness Cover</h3>
+                <div class="ip-card-items">
+                    <div class="ip-item"><strong>Why Separate Critical Illness</strong><p>Health insurance covers hospitalization, but cancer treatment costs ₹20-40L over 2-3 years including travel, diet, caregiving, income loss. Critical Illness provides lump sum payout on diagnosis — covers non-medical costs health insurance cannot.</p></div>
+                    <div class="ip-item"><strong>Coverage Amount</strong><p>Recommend 2-3x annual income as Critical Illness cover. If earning ₹20L/year, take ₹50L CI cover. Lump sum payout on diagnosis of covered conditions (heart attack, stroke, cancer, kidney failure, major organ transplant).</p></div>
+                    <div class="ip-item"><strong>Must-Cover Conditions</strong><p>Ensure policy covers: Cancer (all stages), Heart Attack, Stroke, Kidney Failure, Major Organ Transplant, Coronary Bypass, Paralysis, Multiple Sclerosis. Choose plans covering 30+ conditions minimum.</p></div>
+                </div>
+            </div>
+
+            <div class="ip-solution-card reveal-up" style="--delay: 0.4s">
+                <div class="ip-card-accent" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                <div class="ip-card-icon">&#127968;</div>
+                <h3>Asset Protection</h3>
+                <div class="ip-card-items">
+                    <div class="ip-item"><strong>Home Insurance</strong><p>Covers structure + contents against fire, flood, earthquake, theft, and burglary. Premium: ₹2,000-5,000/year for ₹50L-1Cr coverage. Mandatory for home loan (structure insurance).</p></div>
+                    <div class="ip-item"><strong>Motor Insurance</strong><p>Third-party liability is mandatory by law. Own Damage (OD) covers your vehicle. Go for comprehensive cover with add-ons: Zero Depreciation, Engine Protect, Return to Invoice. NCB protection to preserve no-claim bonus discount (up to 50% premium).</p></div>
+                    <div class="ip-item"><strong>Personal Accident Cover</strong><p>Covers accidental death, permanent total/partial disability, temporary total disability. ₹50L-1Cr cover at ₹3,000-5,000/year. Complements term life insurance for accident-specific scenarios.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ COVERAGE ESTIMATOR ============ -->
+<section class="ip-section">
+    <div class="container">
+        <div class="section-header reveal-up">
+            <span class="section-tag">Interactive Tool</span>
+            <h2>Coverage Need Estimator</h2>
+            <div class="section-line"></div>
+            <p class="section-desc">Quickly estimate your recommended life insurance coverage using the HLV approach.</p>
+        </div>
+
+        <div class="ip-calculator reveal-up">
+            <div class="ip-calc-inputs">
+                <div class="ip-calc-group"><label>Annual Income (₹)</label><input type="number" id="annualIncome" value="1200000" oninput="estimateCoverage()"></div>
+                <div class="ip-calc-group"><label>Years to Retirement</label><input type="number" id="yearsToRetire" value="30" oninput="estimateCoverage()"></div>
+                <div class="ip-calc-group"><label>Outstanding Liabilities (₹)</label><input type="number" id="liabilities" value="2000000" oninput="estimateCoverage()"></div>
+                <div class="ip-calc-group"><label>Existing Savings & Investments (₹)</label><input type="number" id="existingSavings" value="500000" oninput="estimateCoverage()"></div>
+                <button class="ip-calc-btn" onclick="estimateCoverage()">Calculate Coverage</button>
+            </div>
+            <div class="ip-calc-results">
+                <div class="ip-calc-header">Recommended Coverage</div>
+                <div class="ip-calc-row"><span>Future Income Value (6% growth)</span><span id="futureIncome" class="ip-calc-val">--</span></div>
+                <div class="ip-calc-row"><span>Add: Outstanding Liabilities</span><span id="dispLiabilities" class="ip-calc-val">--</span></div>
+                <div class="ip-calc-row"><span>Less: Existing Savings</span><span id="dispSavings" class="ip-calc-val">--</span></div>
+                <div class="ip-calc-row ip-calc-row--highlight"><span>Recommended Term Cover</span><span id="recommendedCover" class="ip-calc-highlight">--</span></div>
+                <p class="ip-note">*This is a simplified estimate. Actual HLV calculation factors in inflation, dependents' needs, education costs, and more.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="ip-section ip-cta-section">
+    <div class="container">
+        <div class="ip-cta reveal-up">
+            <div class="ip-cta__glow"></div>
+            <h2>Don't Leave Your Family's Future to Chance</h2>
+            <p>Every day without adequate insurance is a day of unnecessary risk. Get a comprehensive insurance audit — zero cost, zero obligation.</p>
+            <div class="ip-cta__buttons">
+                <a href="{{ url_for('main.contact') }}" class="tp-btn tp-btn--primary"><span>Request Insurance Audit</span></a>
+                <a href="{{ url_for('main.tax_calculator') }}" class="tp-btn tp-btn--secondary"><span>Tax Savings Calculator</span></a>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
-.page-header {
-    background: var(--bg-gradient);
-    padding: 6rem 0 4rem;
-    text-align: center;
-    margin-top: 80px;
-}
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeInLeft { from { opacity:0; transform:translateX(-40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes fadeInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes gradient-shift { 0% { background-position:0% 50%; } 50% { background-position:100% 50%; } 100% { background-position:0% 50%; } }
+@keyframes particle-float { 0% { transform:translateY(0) translateX(0); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-100vh) translateX(50px); opacity:0; } }
 
-.feature-content {
-    margin-top: 3rem;
-}
+.reveal-up,.reveal-left,.reveal-right { opacity:0; transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal-up { transform:translateY(50px); } .reveal-left { transform:translateX(-50px); } .reveal-right { transform:translateX(50px); }
+.reveal-up.revealed,.reveal-left.revealed,.reveal-right.revealed { opacity:1; transform:translate(0); }
 
-.feature-content section {
-    margin-bottom: 4rem;
-}
+.ip-hero { position:relative; padding:10rem 0 6rem; background:linear-gradient(180deg,var(--bg-main) 0%,rgba(67,233,123,0.03) 50%,var(--bg-main) 100%); overflow:hidden; margin-top:80px; text-align:center; }
+.ip-hero__particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.ip-hero__particles .particle { position:absolute; width:3px; height:3px; background:rgba(67,233,123,0.4); border-radius:50%; animation:particle-float linear infinite; }
+.ip-hero__content { position:relative; z-index:2; max-width:900px; margin:0 auto; }
+.ip-hero__badge { display:inline-block; padding:0.5rem 1.5rem; background:rgba(67,233,123,0.1); border:1px solid rgba(67,233,123,0.3); border-radius:50px; color:#43e97b; font-size:0.85rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:1.5rem; }
+.ip-hero__title { font-size:clamp(2.5rem,5vw,4rem); font-weight:900; color:var(--text-light); line-height:1.1; margin-bottom:1.5rem; }
+.gradient-text { background:linear-gradient(135deg,#43e97b,#38f9d7,#43e97b); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:gradient-shift 4s ease infinite; }
+.ip-hero__subtitle { font-size:1.2rem; color:var(--text-muted); max-width:700px; margin:0 auto 3rem; line-height:1.7; }
+.ip-hero__stats { display:flex; justify-content:center; gap:2.5rem; flex-wrap:wrap; }
+.ip-stat { text-align:center; padding:1.5rem 2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(67,233,123,0.1); border-radius:16px; min-width:160px; transition:all 0.3s; }
+.ip-stat:hover { border-color:rgba(67,233,123,0.3); transform:translateY(-4px); }
+.ip-stat__number { font-size:2.2rem; font-weight:800; color:#43e97b; }
+.ip-stat__unit { font-size:1.2rem; font-weight:700; color:#43e97b; }
+.ip-stat__label { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-top:0.4rem; display:block; }
 
-.benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
+.ip-section { padding:6rem 0; } .ip-section--dark { background:rgba(0,0,0,0.15); }
+.section-header { text-align:center; margin-bottom:4rem; }
+.section-tag { display:inline-block; padding:0.4rem 1.2rem; background:rgba(67,233,123,0.08); border:1px solid rgba(67,233,123,0.15); border-radius:50px; color:#43e97b; font-size:0.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:1rem; }
+.section-header h2 { font-size:2.2rem; font-weight:800; color:var(--text-light); margin-bottom:1rem; }
+.section-line { width:60px; height:3px; background:linear-gradient(135deg,#43e97b,#38f9d7); margin:0 auto 1.5rem; border-radius:2px; }
+.section-desc { color:var(--text-muted); font-size:1.05rem; max-width:650px; margin:0 auto; line-height:1.7; }
 
-.benefit-card {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    text-align: center;
-}
+.ip-overview { max-width:900px; margin:0 auto 4rem; text-align:justify; }
+.ip-overview p { color:var(--text-muted); font-size:1.05rem; line-height:1.85; margin-bottom:1.5rem; }
+.ip-overview strong { color:var(--text-light); }
 
-.insurance-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
+.ip-pillars-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:2rem; }
+.ip-pillar { background:var(--bg-alt); padding:2.5rem; border-radius:20px; border:1px solid rgba(67,233,123,0.08); transition:all 0.4s cubic-bezier(0.16,1,0.3,1); transition-delay:var(--delay,0s); }
+.ip-pillar:hover { transform:translateY(-8px); border-color:rgba(67,233,123,0.25); box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+.ip-pillar__icon { width:70px; height:70px; display:flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:1.5rem; background:rgba(67,233,123,0.08); border-radius:18px; }
+.ip-pillar h3 { color:var(--text-light); font-size:1.25rem; margin-bottom:1rem; font-weight:700; }
+.ip-pillar p { color:var(--text-muted); line-height:1.7; font-size:0.95rem; }
 
-.insurance-card {
-    background: var(--bg-alt);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    overflow: hidden;
-}
+.ip-solutions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:2rem; }
+.ip-solution-card { background:var(--bg-alt); border-radius:20px; overflow:hidden; border:1px solid rgba(67,233,123,0.08); transition:all 0.4s ease; transition-delay:var(--delay,0s); }
+.ip-solution-card:hover { border-color:rgba(67,233,123,0.2); box-shadow:0 15px 50px rgba(0,0,0,0.2); transform:translateY(-6px); }
+.ip-card-accent { height:4px; width:100%; }
+.ip-card-icon { font-size:2.5rem; padding:2rem 2rem 0; display:block; }
+.ip-solution-card h3 { color:var(--text-light); font-size:1.3rem; padding:1rem 2rem; font-weight:700; }
+.ip-card-items { padding:0 2rem 2rem; }
+.ip-item { padding:0.8rem 0; border-bottom:1px solid rgba(67,233,123,0.05); }
+.ip-item:last-child { border-bottom:none; }
+.ip-item strong { color:#43e97b; display:block; font-size:0.95rem; margin-bottom:0.3rem; }
+.ip-item p { color:var(--text-muted); font-size:0.88rem; line-height:1.6; margin:0; }
 
-.insurance-header {
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
+.ip-calculator { display:grid; grid-template-columns:1fr 1fr; gap:3rem; background:var(--bg-alt); padding:3rem; border-radius:20px; border:1px solid rgba(67,233,123,0.1); max-width:900px; margin:0 auto; align-items:center; }
+.ip-calc-group { margin-bottom:1.5rem; }
+.ip-calc-group label { display:block; margin-bottom:0.5rem; color:var(--text-light); font-size:0.9rem; font-weight:600; }
+.ip-calc-group input { width:100%; padding:0.85rem 1rem; border:1px solid rgba(67,233,123,0.2); border-radius:12px; background:var(--bg-main); color:var(--text-light); font-size:1rem; }
+.ip-calc-group input:focus { outline:none; border-color:#43e97b; }
+.ip-calc-btn { width:100%; background:linear-gradient(135deg,#43e97b,#38f9d7); color:#000; padding:0.9rem; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-size:1rem; transition:all 0.3s; }
+.ip-calc-btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(67,233,123,0.3); }
+.ip-calc-results { background:var(--bg-main); padding:2rem; border-radius:16px; border:1px solid rgba(67,233,123,0.1); }
+.ip-calc-header { color:#43e97b; font-size:1.2rem; font-weight:700; margin-bottom:1.5rem; }
+.ip-calc-row { display:flex; justify-content:space-between; padding:0.85rem 0; border-bottom:1px solid rgba(67,233,123,0.08); color:var(--text-muted); }
+.ip-calc-val { color:var(--text-light); font-weight:500; }
+.ip-calc-row--highlight { background:rgba(67,233,123,0.08); padding:1rem; border-radius:12px; margin-top:1.5rem; border:none; }
+.ip-calc-highlight { font-size:1.5rem; font-weight:800; color:#43e97b; }
+.ip-note { color:var(--text-muted); font-size:0.8rem; margin-top:1rem; font-style:italic; }
 
-.insurance-icon {
-    font-size: 2rem;
-}
+.ip-cta-section { padding:4rem 0 6rem; }
+.ip-cta { position:relative; text-align:center; padding:4rem 3rem; background:var(--bg-alt); border-radius:24px; border:1px solid rgba(67,233,123,0.15); overflow:hidden; }
+.ip-cta__glow { position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:400px; height:400px; border-radius:50%; background:radial-gradient(circle,rgba(67,233,123,0.08) 0%,transparent 70%); pointer-events:none; }
+.ip-cta h2 { font-size:2rem; color:var(--text-light); margin-bottom:1rem; position:relative; }
+.ip-cta p { color:var(--text-muted); max-width:600px; margin:0 auto 2.5rem; line-height:1.7; font-size:1.05rem; position:relative; }
+.ip-cta__buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position:relative; }
+.tp-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; border-radius:12px; font-weight:700; text-decoration:none; transition:all 0.3s; font-size:0.95rem; }
+.tp-btn--primary { background:linear-gradient(135deg,#43e97b,#38f9d7); color:#000; box-shadow:0 4px 15px rgba(67,233,123,0.3); }
+.tp-btn--primary:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(67,233,123,0.4); }
+.tp-btn--secondary { background:rgba(255,255,255,0.08); color:var(--text-light); border:1px solid rgba(255,255,255,0.1); }
+.tp-btn--secondary:hover { background:rgba(255,255,255,0.12); transform:translateY(-2px); }
 
-.insurance-header h3 {
-    color: var(--accent-primary);
-    margin: 0;
-}
-
-.insurance-content {
-    padding: 1.5rem;
-}
-
-.insurance-description {
-    margin-bottom: 1rem;
-}
-
-.key-features h4 {
-    color: var(--text-light);
-    margin: 0 0 1rem;
-}
-
-.key-features ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.key-features li {
-    padding: 0.5rem 0;
-    color: var(--text-muted);
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.key-features li:last-child {
-    border-bottom: none;
-}
-
-.recommendation {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
-    margin-top: 1rem;
-    color: var(--text-light);
-}
-
-.calculator-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.input-group {
-    margin-bottom: 1rem;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-light);
-    font-weight: 500;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid rgba(251, 160, 2, 0.2);
-    border-radius: var(--border-radius-md);
-    background: var(--bg-main);
-    color: var(--text-light);
-}
-
-.calculate-btn {
-    background: var(--accent-gradient);
-    color: var(--text-dark);
-    padding: 0.75rem 2rem;
-    border: none;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform var(--transition-normal);
-    margin-top: 1rem;
-}
-
-.calculate-btn:hover {
-    transform: translateY(-2px);
-}
-
-.result-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-.result-item.highlight {
-    background: rgba(251, 160, 2, 0.1);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
-    font-weight: 600;
-    font-size: 1.1rem;
-    border: none;
-    margin: 1rem 0;
-}
-
-.tips-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
-}
-
-.tip-card {
-    background: var(--bg-alt);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-lg);
-    border: 1px solid rgba(251, 160, 2, 0.1);
-    transition: transform var(--transition-normal);
-}
-
-.tip-card:hover {
-    transform: translateY(-5px);
-}
-
-.tip-card h4 {
-    color: var(--accent-primary);
-    margin-bottom: 0.75rem;
-}
-
-.cta-section {
-    background: var(--bg-alt);
-    padding: 2rem;
-    border-radius: var(--border-radius-lg);
-    text-align: center;
-    border: 1px solid rgba(251, 160, 2, 0.1);
-}
-
-@media (max-width: 992px) {
-    .insurance-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .calculator-container {
-        grid-template-columns: 1fr;
-    }
+@media (max-width:768px) {
+    .ip-hero { padding:7rem 1rem 4rem; } .ip-hero__stats { flex-direction:column; align-items:center; }
+    .ip-section { padding:4rem 0; } .ip-solutions-grid { grid-template-columns:1fr; }
+    .ip-calculator { grid-template-columns:1fr; }
 }
 </style>
 
 <script>
-function calculateInsurance() {
-    const annualIncome = parseFloat(document.getElementById('annualIncome').value) || 0;
-    const age = parseInt(document.getElementById('age').value) || 35;
-    const outstandingDebt = parseFloat(document.getElementById('outstandingDebt').value) || 0;
-    const educationFund = parseFloat(document.getElementById('educationFund').value) || 0;
-    const medicalExpenses = parseFloat(document.getElementById('medicalExpenses').value) || 0;
-    
-    // Term Life Insurance: 10x annual income + debt + education fund
-    let lifeInsurance = (annualIncome * 10) + outstandingDebt + educationFund;
-    
-    // Round to nearest 25 lakhs
-    lifeInsurance = Math.ceil(lifeInsurance / 2500000) * 2500000;
-    
-    // Health Insurance: Based on age and medical expenses
-    let healthInsurance = 500000; // Base coverage
-    
-    if (age > 45) {
-        healthInsurance = 1000000; // Higher base for older individuals
-    }
-    
-    if (medicalExpenses > 100000) {
-        healthInsurance = Math.max(healthInsurance, medicalExpenses * 10);
-    }
-    
-    // Round to nearest 5 lakhs
-    healthInsurance = Math.ceil(healthInsurance / 500000) * 500000;
-    
-    // Critical Illness: 25% of life cover, minimum 10 lakhs
-    let criticalIllness = Math.max(lifeInsurance * 0.25, 1000000);
-    
-    // Round to nearest 5 lakhs
-    criticalIllness = Math.ceil(criticalIllness / 500000) * 500000;
-    
-    // Personal Accident: Equal to annual income, minimum 50 lakhs
-    let accidentCover = Math.max(annualIncome, 5000000);
-    
-    // Round to nearest 50 lakhs
-    accidentCover = Math.ceil(accidentCover / 5000000) * 5000000;
-    
-    // Display results in Indian number format
-    document.getElementById('lifeInsurance').textContent = formatIndianCurrency(lifeInsurance);
-    document.getElementById('healthInsurance').textContent = formatIndianCurrency(healthInsurance);
-    document.getElementById('criticalIllness').textContent = formatIndianCurrency(criticalIllness);
-    document.getElementById('accidentCover').textContent = formatIndianCurrency(accidentCover);
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) { const d=getComputedStyle(entry.target).getPropertyValue('--delay')||'0s'; setTimeout(()=>entry.target.classList.add('revealed'),parseFloat(d)*1000); observer.unobserve(entry.target); } });
+    }, { threshold:0.1, rootMargin:'0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal-up,.reveal-left,.reveal-right').forEach(el=>observer.observe(el));
 
-function formatIndianCurrency(amount) {
-    if (amount >= 10000000) {
-        return '₹' + (amount / 10000000).toFixed(2) + ' Crore';
-    } else if (amount >= 100000) {
-        return '₹' + (amount / 100000).toFixed(2) + ' Lakhs';
-    } else if (amount >= 1000) {
-        return '₹' + (amount / 1000).toFixed(2) + ' Thousand';
-    } else {
-        return '₹' + amount.toFixed(2);
-    }
-}
+    const co = new IntersectionObserver((entries) => { entries.forEach(e=>{ if(e.isIntersecting){animateCounter(e.target);co.unobserve(e.target);} }); }, {threshold:0.5});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
 
-// Calculate on page load
-document.addEventListener('DOMContentLoaded', function() {
-    calculateInsurance();
+    const c=document.getElementById('ipParticles');
+    if(c){for(let i=0;i<20;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.top=(80+Math.random()*20)+'%';p.style.animationDuration=(8+Math.random()*15)+'s';p.style.animationDelay=Math.random()*10+'s';c.appendChild(p);}}
+    estimateCoverage();
 });
+
+function animateCounter(el){const t=parseInt(el.dataset.count),d=2000,s=performance.now();function u(n){const p=Math.min((n-s)/d,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(t*e).toLocaleString('en-IN');if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString('en-IN');}requestAnimationFrame(u);}
+
+function estimateCoverage(){
+    const income=parseFloat(document.getElementById('annualIncome').value)||0;
+    const years=parseFloat(document.getElementById('yearsToRetire').value)||0;
+    const liab=parseFloat(document.getElementById('liabilities').value)||0;
+    const savings=parseFloat(document.getElementById('existingSavings').value)||0;
+    if(income>0&&years>0){
+        const growthRate=0.06;
+        let futureVal=0;
+        for(let i=0;i<years;i++){futureVal+=income*Math.pow(1+growthRate,i);}
+        const cover=futureVal+liab-savings;
+        document.getElementById('futureIncome').textContent='₹'+Math.round(futureVal).toLocaleString('en-IN');
+        document.getElementById('dispLiabilities').textContent='₹'+liab.toLocaleString('en-IN');
+        document.getElementById('dispSavings').textContent='₹'+savings.toLocaleString('en-IN');
+        document.getElementById('recommendedCover').textContent='₹'+Math.round(Math.max(cover,0)).toLocaleString('en-IN');
+    }
+}
 </script>
 {% endblock %}

@@ -3,405 +3,718 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CA Applications - Finucity Admin</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0d0a 0%, #1a1f1a 100%);
-            color: #f0f2f0;
-            min-height: 100vh;
-        }
-
-        .admin-header {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(251, 160, 2, 0.2);
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .admin-badge {
-            background: linear-gradient(135deg, #FBA002, #e69200);
-            color: #0a0c0a;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .admin-title {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .admin-user {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .admin-nav {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 0 40px;
-            border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            display: block;
-            padding: 18px 0;
-            color: #9ca89c;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #FBA002;
-            border-bottom-color: #FBA002;
-        }
-
-        .container {
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .page-header {
-            margin-bottom: 32px;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: #9ca89c;
-        }
-
-        .applications-grid {
-            display: grid;
-            gap: 24px;
-        }
-
-        .application-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .application-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(251, 160, 2, 0.2);
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .app-info h3 {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        .app-info p {
-            color: #9ca89c;
-            font-size: 14px;
-        }
-
-        .status-badge {
-            padding: 6px 16px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-pending {
-            background: rgba(251, 160, 2, 0.2);
-            color: #FBA002;
-        }
-
-        .app-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .detail-label {
-            color: #9ca89c;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .detail-value {
-            color: #f0f2f0;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .app-actions {
-            display: flex;
-            gap: 12px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(251, 160, 2, 0.1);
-        }
-
-        .btn-approve {
-            flex: 1;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #86efac;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-approve:hover {
-            background: rgba(34, 197, 94, 0.2);
-        }
-
-        .btn-reject {
-            flex: 1;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-reject:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .empty-state {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-            border-radius: 16px;
-            padding: 60px;
-            text-align: center;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            color: #9ca89c;
-            margin-bottom: 16px;
-        }
-
-        .empty-state h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            color: #9ca89c;
-        }
-    </style>
+    <title>CA Applications | Finucity Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dashboard.css') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
 </head>
-<body>
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="admin-logo">
-            <div class="admin-badge">🔐 ADMIN</div>
-            <h1 class="admin-title">Finucity Admin</h1>
+<body class="admin-shell">
+
+<div class="admin-layout" id="adminLayout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">F</div>
+            <div class="sidebar-brand-text">
+                <h1>Finucity</h1>
+                <span>Admin Panel</span>
+            </div>
         </div>
-        <div class="admin-user">
-            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Overview</div>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="sidebar-link">
+                    <i class="fas fa-th-large"></i>
+                    <span class="link-text">Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.analytics') }}" class="sidebar-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="link-text">Analytics</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">People</div>
+                <a href="{{ url_for('main.admin_users') }}" class="sidebar-link">
+                    <i class="fas fa-users"></i>
+                    <span class="link-text">Users</span>
+                </a>
+                <a href="{{ url_for('main.admin_ca_applications') }}" class="sidebar-link active">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="link-text">CA Applications</span>
+                    <span class="badge-count" id="pendingBadge" style="display:none;">0</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Operations</div>
+                <a href="{{ url_for('admin_enhanced.manage_services') }}" class="sidebar-link">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span class="link-text">Services</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_bookings') }}" class="sidebar-link">
+                    <i class="fas fa-receipt"></i>
+                    <span class="link-text">Bookings</span>
+                </a>
+                <a href="{{ url_for('admin_enhanced.manage_pricing') }}" class="sidebar-link">
+                    <i class="fas fa-tags"></i>
+                    <span class="link-text">Pricing</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">Moderation</div>
+                <a href="{{ url_for('admin_enhanced.manage_disputes') }}" class="sidebar-link">
+                    <i class="fas fa-gavel"></i>
+                    <span class="link-text">Disputes</span>
+                </a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-label">System</div>
+                <a href="{{ url_for('admin_enhanced.platform_settings') }}" class="sidebar-link">
+                    <i class="fas fa-cog"></i>
+                    <span class="link-text">Settings</span>
+                </a>
+                <a href="{{ url_for('main.home') }}" class="sidebar-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="link-text">View Site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user" onclick="window.location.href='/profile'">
+                <div class="sidebar-user-avatar">{{ user.first_name[0]|upper if user.first_name else 'A' }}{{ user.last_name[0]|upper if user.last_name else 'D' }}</div>
+                <div class="sidebar-user-info">
+                    <h4>{{ user.first_name or 'Admin' }} {{ user.last_name or '' }}</h4>
+                    <span>Administrator</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== HEADER ===== -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="mobile-sidebar-toggle" id="mobileSidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-breadcrumb">
+                <span>Admin</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>People</span>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-current">CA Applications</span>
+            </div>
+            <button class="cmd-palette-trigger" onclick="document.getElementById('cmdPaletteOverlay').classList.add('open'); document.getElementById('cmdPaletteInput').focus();">
+                <i class="fas fa-search"></i>
+                <span>Search commands...</span>
+                <kbd>Ctrl K</kbd>
+            </button>
+        </div>
+        <div class="header-right">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                <span>Live</span>
+            </div>
+            <div class="header-divider"></div>
+            <button class="header-icon-btn" onclick="loadApplications()" title="Refresh">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <div class="header-divider"></div>
+            <a href="{{ url_for('auth.logout') }}" class="header-icon-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
         </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="admin-main">
+
+        <!-- Page Title -->
+        <div class="page-title-bar">
+            <div class="page-title-group">
+                <h2>CA Applications</h2>
+                <p>Review and verify Chartered Accountant applications &middot; Last synced <span id="lastRefresh">--:--</span></p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-admin secondary" onclick="loadApplications()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <a href="{{ url_for('main.admin_dashboard') }}" class="btn-admin primary">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== STATS ROW ===== -->
+        <div class="stats-row">
+            <div class="stat-card" style="--card-accent: #f59e0b;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Pending</span>
+                    <div class="stat-card-icon warning"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-card-value" id="statPending">0</div>
+                <div class="stat-card-change neutral"><i class="fas fa-hourglass-half"></i> Awaiting review</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #22c55e;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Approved</span>
+                    <div class="stat-card-icon success"><i class="fas fa-check-circle"></i></div>
+                </div>
+                <div class="stat-card-value" id="statApproved">0</div>
+                <div class="stat-card-change up"><i class="fas fa-thumbs-up"></i> Verified CAs</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #ef4444;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Rejected</span>
+                    <div class="stat-card-icon danger"><i class="fas fa-times-circle"></i></div>
+                </div>
+                <div class="stat-card-value" id="statRejected">0</div>
+                <div class="stat-card-change down"><i class="fas fa-ban"></i> Declined applications</div>
+            </div>
+
+            <div class="stat-card" style="--card-accent: #06b6d4;">
+                <div class="stat-card-header">
+                    <span class="stat-card-label">Total</span>
+                    <div class="stat-card-icon cyan"><i class="fas fa-file-signature"></i></div>
+                </div>
+                <div class="stat-card-value" id="statTotal">0</div>
+                <div class="stat-card-change neutral"><i class="fas fa-database"></i> All applications</div>
+            </div>
+        </div>
+
+        <!-- ===== STATUS FILTER TABS ===== -->
+        <div class="admin-card mb-3">
+            <div class="card-body" style="padding: 14px 22px;">
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <div class="admin-tabs" id="statusTabs">
+                        <button class="admin-tab active" data-status="pending" onclick="switchTab('pending', this)">
+                            <i class="fas fa-clock" style="margin-right: 6px; font-size: 11px;"></i> Pending
+                        </button>
+                        <button class="admin-tab" data-status="approved" onclick="switchTab('approved', this)">
+                            <i class="fas fa-check" style="margin-right: 6px; font-size: 11px;"></i> Approved
+                        </button>
+                        <button class="admin-tab" data-status="rejected" onclick="switchTab('rejected', this)">
+                            <i class="fas fa-times" style="margin-right: 6px; font-size: 11px;"></i> Rejected
+                        </button>
+                        <button class="admin-tab" data-status="all" onclick="switchTab('all', this)">
+                            <i class="fas fa-layer-group" style="margin-right: 6px; font-size: 11px;"></i> All
+                        </button>
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <span class="text-muted" style="font-size: 12px;" id="appCount">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== APPLICATIONS LIST ===== -->
+        <div id="applicationsContainer">
+            <!-- Loading skeleton -->
+            <div class="admin-card mb-2">
+                <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="skeleton skeleton-text lg"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text sm"></div>
+                </div>
+            </div>
+            <div class="admin-card mb-2">
+                <div class="card-body" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="skeleton skeleton-text lg"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text sm"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ===== APPLICATION DETAIL PANEL ===== -->
+<div class="detail-panel" id="appDetailPanel">
+    <div class="detail-panel-header">
+        <h3>Application Details</h3>
+        <button class="btn-admin ghost sm" onclick="closeAppDetail()"><i class="fas fa-times"></i></button>
     </div>
+    <div class="detail-panel-body" id="appDetailBody">
+        <!-- Populated dynamically -->
+    </div>
+    <div class="detail-panel-footer" id="appDetailFooter">
+        <button class="btn-admin secondary" onclick="closeAppDetail()">Close</button>
+    </div>
+</div>
+<div class="notification-panel-overlay" id="appDetailOverlay" onclick="closeAppDetail()"></div>
 
-    <!-- Admin Navigation -->
-    <nav class="admin-nav">
-        <ul class="nav-links">
-            <li><a href="{{ url_for('main.admin_dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('main.admin_users') }}">Users</a></li>
-            <li><a href="{{ url_for('main.admin_ca_applications') }}" class="active">CA Applications</a></li>
-        </ul>
-    </nav>
-
-    <!-- Page Content -->
-    <div class="container">
-        <div class="page-header">
-            <h1>📋 CA Applications</h1>
-            <p>Review and verify Chartered Accountant applications</p>
+<!-- ===== REJECT REASON MODAL ===== -->
+<div class="admin-modal-overlay" id="rejectModal">
+    <div class="admin-modal">
+        <div class="admin-modal-header">
+            <h3><i class="fas fa-times-circle" style="color: var(--admin-danger); margin-right: 8px;"></i> Reject Application</h3>
+            <button class="btn-admin ghost sm" onclick="closeRejectModal()"><i class="fas fa-times"></i></button>
         </div>
-
-        <div class="applications-grid" id="applicationsContainer">
-            <!-- Applications will be loaded here -->
+        <div class="admin-modal-body">
+            <p style="font-size: 13px; color: var(--admin-text-tertiary); margin-bottom: 16px;">
+                Provide a reason for rejecting this application. The applicant may receive this feedback.
+            </p>
+            <div class="form-group">
+                <label>Rejection Reason</label>
+                <textarea id="rejectReason" class="admin-input" rows="4" placeholder="e.g., Invalid ICAI number, documentation missing..."></textarea>
+            </div>
         </div>
-
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <i class="fas fa-inbox"></i>
-            <h3>No Pending Applications</h3>
-            <p>All CA applications have been reviewed</p>
+        <div class="admin-modal-footer">
+            <button class="btn-admin secondary" onclick="closeRejectModal()">Cancel</button>
+            <button class="btn-admin danger" onclick="confirmReject()">
+                <i class="fas fa-times-circle"></i> Reject Application
+            </button>
         </div>
     </div>
+</div>
 
-    <script>
-        async function loadApplications() {
-            try {
-                const response = await fetch('/api/admin/ca-applications');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success && data.data && data.data.length > 0) {
-                        renderApplications(data.data);
-                    } else {
-                        document.getElementById('emptyState').style.display = 'block';
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading applications:', error);
-                document.getElementById('emptyState').style.display = 'block';
+<!-- ===== COMMAND PALETTE ===== -->
+<div class="cmd-palette-overlay" id="cmdPaletteOverlay">
+    <div class="cmd-palette">
+        <input type="text" class="cmd-palette-input" id="cmdPaletteInput" placeholder="Type a command or search..." autocomplete="off" spellcheck="false">
+        <div class="cmd-palette-results" id="cmdPaletteResults"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ===== STATE =====
+    let applications = [];
+    let currentStatus = 'pending';
+    let currentRejectId = null;
+    let allApps = { pending: [], approved: [], rejected: [] };
+
+    // ===== SIDEBAR =====
+    const layout = document.getElementById('adminLayout');
+    const toggle = document.getElementById('sidebarToggle');
+    if (localStorage.getItem('admin_sidebar_collapsed') === 'true') layout?.classList.add('sidebar-collapsed');
+    toggle?.addEventListener('click', () => {
+        const collapsed = layout.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('admin_sidebar_collapsed', collapsed);
+    });
+    document.getElementById('mobileSidebarToggle')?.addEventListener('click', () => {
+        document.querySelector('.admin-sidebar')?.classList.toggle('mobile-open');
+    });
+
+    // ===== LOAD APPLICATIONS =====
+    window.loadApplications = async function() {
+        try {
+            // Load all statuses for counts
+            const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
+                fetch('/api/admin/ca-applications?status=pending').then(r => r.json()),
+                fetch('/api/admin/ca-applications?status=approved').then(r => r.json()),
+                fetch('/api/admin/ca-applications?status=rejected').then(r => r.json())
+            ]);
+
+            allApps.pending = pendingRes.success ? (pendingRes.data || []) : [];
+            allApps.approved = approvedRes.success ? (approvedRes.data || []) : [];
+            allApps.rejected = rejectedRes.success ? (rejectedRes.data || []) : [];
+
+            // Update stat counts
+            document.getElementById('statPending').textContent = allApps.pending.length;
+            document.getElementById('statApproved').textContent = allApps.approved.length;
+            document.getElementById('statRejected').textContent = allApps.rejected.length;
+            document.getElementById('statTotal').textContent = allApps.pending.length + allApps.approved.length + allApps.rejected.length;
+
+            // Badge
+            const badge = document.getElementById('pendingBadge');
+            if (badge) {
+                badge.textContent = allApps.pending.length;
+                badge.style.display = allApps.pending.length > 0 ? 'inline' : 'none';
             }
+
+            // Update current view
+            renderApplications();
+            updateLastRefresh();
+        } catch (error) {
+            console.error('Error loading applications:', error);
+            showToast('Failed to load applications', 'error');
+        }
+    };
+
+    // ===== SWITCH TAB =====
+    window.switchTab = function(status, btn) {
+        currentStatus = status;
+        document.querySelectorAll('#statusTabs .admin-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        renderApplications();
+    };
+
+    // ===== RENDER =====
+    function renderApplications() {
+        const container = document.getElementById('applicationsContainer');
+        let apps;
+
+        if (currentStatus === 'all') {
+            apps = [...allApps.pending, ...allApps.approved, ...allApps.rejected];
+        } else {
+            apps = allApps[currentStatus] || [];
         }
 
-        function renderApplications(applications) {
-            const container = document.getElementById('applicationsContainer');
-            container.innerHTML = applications.map(app => `
-                <div class="application-card">
-                    <div class="app-header">
-                        <div class="app-info">
-                            <h3>${app.full_name}</h3>
-                            <p>${app.email}</p>
-                        </div>
-                        <span class="status-badge status-${app.status}">${app.status}</span>
+        document.getElementById('appCount').textContent = `${apps.length} application${apps.length !== 1 ? 's' : ''}`;
+
+        if (apps.length === 0) {
+            const messages = {
+                pending: { icon: 'fa-check-circle', title: 'All Caught Up', desc: 'No pending applications to review' },
+                approved: { icon: 'fa-user-tie', title: 'No Approved CAs', desc: 'No applications have been approved yet' },
+                rejected: { icon: 'fa-inbox', title: 'No Rejections', desc: 'No applications have been rejected' },
+                all: { icon: 'fa-folder-open', title: 'No Applications', desc: 'No CA applications have been submitted' }
+            };
+            const msg = messages[currentStatus] || messages.all;
+            container.innerHTML = `
+                <div class="admin-card">
+                    <div class="empty-state" style="padding: 64px 24px;">
+                        <i class="fas ${msg.icon}" style="color: var(--admin-text-muted);"></i>
+                        <h4>${msg.title}</h4>
+                        <p>${msg.desc}</p>
                     </div>
-                    <div class="app-details">
-                        <div class="detail-item">
-                            <span class="detail-label">ICAI Number</span>
-                            <span class="detail-value">${app.icai_number}</span>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = apps.map(app => {
+            const initials = ((app.full_name || app.first_name || 'U')[0] + ((app.last_name || app.full_name?.split(' ')[1] || '')[0] || '')).toUpperCase();
+            const name = app.full_name || `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown';
+            const submittedDate = app.submitted_at || app.created_at;
+            const statusColor = app.status === 'approved' ? 'success' : app.status === 'rejected' ? 'danger' : 'warning';
+
+            return `
+            <div class="admin-card mb-2" style="cursor: pointer; transition: var(--admin-transition);" onmouseenter="this.style.borderColor='var(--admin-border-hover)'" onmouseleave="this.style.borderColor=''">
+                <div class="card-body">
+                    <div style="display: flex; align-items: flex-start; gap: 16px;">
+                        <!-- Avatar -->
+                        <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-${statusColor}), rgba(0,0,0,0.3)); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff;">
+                            ${initials}
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">City</span>
-                            <span class="detail-value">${app.city}</span>
+
+                        <!-- Info -->
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                <h4 style="font-size: 16px; font-weight: 700; color: var(--admin-text-primary);">${name}</h4>
+                                <span class="status-badge ${app.status}">
+                                    <span class="status-dot"></span>
+                                    ${app.status}
+                                </span>
+                            </div>
+                            <p style="font-size: 13px; color: var(--admin-text-tertiary); margin-bottom: 14px;">${app.email || ''}</p>
+
+                            <!-- Detail Grid -->
+                            <div class="metric-row" style="margin-bottom: 14px;">
+                                <div class="metric-pill">
+                                    <span class="metric-label">ICAI Number</span>
+                                    <span class="metric-value" style="font-size: 14px;">${app.icai_number || 'N/A'}</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-label">Location</span>
+                                    <span class="metric-value" style="font-size: 14px;">${app.city || ''}${app.city && app.state ? ', ' : ''}${app.state || 'N/A'}</span>
+                                </div>
+                                <div class="metric-pill">
+                                    <span class="metric-label">Submitted</span>
+                                    <span class="metric-value" style="font-size: 14px;">${submittedDate ? new Date(submittedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</span>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button class="btn-admin secondary sm" onclick="viewAppDetail('${encodeURIComponent(JSON.stringify(app))}')">
+                                    <i class="fas fa-eye"></i> Details
+                                </button>
+                                ${app.status === 'pending' ? `
+                                    <button class="btn-admin success sm" onclick="approveApplication('${app.id}')">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn-admin danger sm" onclick="openRejectModal('${app.id}')">
+                                        <i class="fas fa-times"></i> Reject
+                                    </button>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">State</span>
-                            <span class="detail-value">${app.state}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Submitted</span>
-                            <span class="detail-value">${new Date(app.submitted_at).toLocaleDateString()}</span>
-                        </div>
-                    </div>
-                    <div class="app-actions">
-                        <button class="btn-approve" onclick="approveApplication('${app.id}')">
-                            <i class="fas fa-check"></i> Approve
-                        </button>
-                        <button class="btn-reject" onclick="rejectApplication('${app.id}')">
-                            <i class="fas fa-times"></i> Reject
-                        </button>
                     </div>
                 </div>
-            `).join('');
+            </div>`;
+        }).join('');
+    }
+
+    // ===== VIEW DETAIL =====
+    window.viewAppDetail = function(appJson) {
+        const app = JSON.parse(decodeURIComponent(appJson));
+        const body = document.getElementById('appDetailBody');
+        const footer = document.getElementById('appDetailFooter');
+        const name = app.full_name || `${app.first_name || ''} ${app.last_name || ''}`.trim() || 'Unknown';
+        const initials = (name[0] + (name.split(' ')[1]?.[0] || '')).toUpperCase();
+        const submittedDate = app.submitted_at || app.created_at;
+
+        body.innerHTML = `
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-accent), #d88c00); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #000; margin: 0 auto 14px;">
+                    ${initials}
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--admin-text-primary); margin-bottom: 4px;">${name}</h3>
+                <p style="font-size: 13px; color: var(--admin-text-tertiary);">${app.email || ''}</p>
+                <span class="status-badge ${app.status}" style="margin-top: 10px; display: inline-flex;">
+                    <span class="status-dot"></span> ${app.status}
+                </span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="background: var(--admin-bg-tertiary); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 16px;">
+                    <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--admin-text-muted); margin-bottom: 14px;">Professional Details</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">ICAI Number</span>
+                            <span style="font-size: 13px; color: var(--admin-accent); font-weight: 600; font-family: monospace;">${app.icai_number || 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Phone</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${app.phone || app.phone_number || 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Experience</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${app.experience_years ? app.experience_years + ' years' : app.experience || 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Specialization</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${app.specialization || 'General'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: var(--admin-bg-tertiary); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 16px;">
+                    <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--admin-text-muted); margin-bottom: 14px;">Location</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">City</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${app.city || 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">State</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${app.state || 'N/A'}</span>
+                        </div>
+                        ${app.address ? `<div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Address</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500; text-align: right; max-width: 200px;">${app.address}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                <div style="background: var(--admin-bg-tertiary); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 16px;">
+                    <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--admin-text-muted); margin-bottom: 14px;">Application Info</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Application ID</span>
+                            <span style="font-size: 11px; color: var(--admin-text-tertiary); font-family: monospace;">${app.id?.substring(0, 16) || 'N/A'}...</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Submitted</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500;">${submittedDate ? new Date(submittedDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-size: 13px; color: var(--admin-text-muted);">Status</span>
+                            <span style="font-size: 13px; color: var(--admin-text-secondary); font-weight: 500; text-transform: capitalize;">${app.status}</span>
+                        </div>
+                        ${app.rejection_reason ? `<div>
+                            <span style="font-size: 13px; color: var(--admin-text-muted); display: block; margin-bottom: 6px;">Rejection Reason</span>
+                            <p style="font-size: 13px; color: var(--admin-danger); background: var(--admin-danger-bg); padding: 10px; border-radius: var(--admin-radius-sm); line-height: 1.5;">${app.rejection_reason}</p>
+                        </div>` : ''}
+                    </div>
+                </div>
+
+                ${app.bio || app.about ? `
+                <div style="background: var(--admin-bg-tertiary); border: 1px solid var(--admin-border); border-radius: var(--admin-radius-md); padding: 16px;">
+                    <h4 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--admin-text-muted); margin-bottom: 10px;">Bio / About</h4>
+                    <p style="font-size: 13px; color: var(--admin-text-secondary); line-height: 1.6;">${app.bio || app.about}</p>
+                </div>
+                ` : ''}
+            </div>
+        `;
+
+        // Footer actions
+        if (app.status === 'pending') {
+            footer.innerHTML = `
+                <button class="btn-admin secondary" onclick="closeAppDetail()">Close</button>
+                <button class="btn-admin danger" onclick="closeAppDetail(); openRejectModal('${app.id}')">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+                <button class="btn-admin success" onclick="closeAppDetail(); approveApplication('${app.id}')">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+            `;
+        } else {
+            footer.innerHTML = `<button class="btn-admin secondary" onclick="closeAppDetail()">Close</button>`;
         }
 
-        async function approveApplication(appId) {
-            if (!confirm('Approve this CA application?')) return;
+        document.getElementById('appDetailPanel').classList.add('open');
+        document.getElementById('appDetailOverlay').classList.add('open');
+    };
 
-            try {
-                const response = await fetch(`/api/admin/ca-application/${appId}/approve`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
-                });
+    window.closeAppDetail = function() {
+        document.getElementById('appDetailPanel').classList.remove('open');
+        document.getElementById('appDetailOverlay').classList.remove('open');
+    };
 
-                const data = await response.json();
-                if (data.success) {
-                    alert('Application approved successfully!');
-                    loadApplications();
-                } else {
-                    alert('Failed to approve: ' + (data.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error approving application:', error);
-                alert('Error approving application');
+    // ===== APPROVE =====
+    window.approveApplication = async function(appId) {
+        if (!confirm('Approve this CA application? The user will receive CA role and access.')) return;
+        try {
+            const response = await fetch(`/api/admin/ca-application/${appId}/approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast('Application approved successfully!', 'success');
+                await loadApplications();
+            } else {
+                showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
             }
+        } catch (error) {
+            showToast('Network error while approving', 'error');
+        }
+    };
+
+    // ===== REJECT =====
+    window.openRejectModal = function(appId) {
+        currentRejectId = appId;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').classList.add('open');
+    };
+
+    window.closeRejectModal = function() {
+        document.getElementById('rejectModal').classList.remove('open');
+        currentRejectId = null;
+    };
+
+    window.confirmReject = async function() {
+        if (!currentRejectId) return;
+        const reason = document.getElementById('rejectReason').value.trim();
+        if (!reason) {
+            showToast('Please provide a rejection reason', 'warning');
+            return;
         }
 
-        async function rejectApplication(appId) {
-            const reason = prompt('Enter rejection reason:');
-            if (!reason) return;
-
-            try {
-                const response = await fetch(`/api/admin/ca-application/${appId}/reject`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reason })
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    alert('Application rejected');
-                    loadApplications();
-                } else {
-                    alert('Failed to reject: ' + (data.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error rejecting application:', error);
-                alert('Error rejecting application');
+        try {
+            const response = await fetch(`/api/admin/ca-application/${currentRejectId}/reject`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+            const data = await response.json();
+            if (data.success) {
+                showToast('Application rejected', 'warning');
+                closeRejectModal();
+                await loadApplications();
+            } else {
+                showToast('Failed: ' + (data.error || 'Unknown error'), 'error');
             }
+        } catch (error) {
+            showToast('Network error while rejecting', 'error');
         }
+    };
 
-        loadApplications();
-    </script>
+    document.getElementById('rejectModal')?.addEventListener('click', function(e) {
+        if (e.target === this) closeRejectModal();
+    });
+
+    // ===== LAST REFRESH =====
+    function updateLastRefresh() {
+        const el = document.getElementById('lastRefresh');
+        if (el) el.textContent = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ===== TOAST =====
+    function showToast(message, type = 'info', duration = 4000) {
+        let container = document.getElementById('admin-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'admin-toast-container';
+            container.className = 'admin-toast-container';
+            document.body.appendChild(container);
+        }
+        const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+        const toast = document.createElement('div');
+        toast.className = `admin-toast ${type}`;
+        toast.style.setProperty('--toast-duration', `${duration}ms`);
+        toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, duration);
+    }
+    window.showToast = showToast;
+
+    // ===== AUTO REFRESH =====
+    let refreshInterval = setInterval(() => loadApplications(), 30000);
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { clearInterval(refreshInterval); }
+        else { refreshInterval = setInterval(() => loadApplications(), 30000); loadApplications(); }
+    });
+
+    // ===== COMMAND PALETTE =====
+    const cmdOverlay = document.getElementById('cmdPaletteOverlay');
+    const cmdInput = document.getElementById('cmdPaletteInput');
+    const cmdResults = document.getElementById('cmdPaletteResults');
+    const commands = [
+        { icon: 'fa-th-large', label: 'Dashboard', action: () => window.location.href = '/admin/dashboard' },
+        { icon: 'fa-users', label: 'User Management', action: () => window.location.href = '/admin/users' },
+        { icon: 'fa-user-tie', label: 'CA Applications', action: () => window.location.href = '/admin/ca-applications' },
+        { icon: 'fa-chart-line', label: 'Analytics', action: () => window.location.href = '/admin/analytics' },
+        { icon: 'fa-concierge-bell', label: 'Services', action: () => window.location.href = '/admin/services' },
+        { icon: 'fa-cog', label: 'Settings', action: () => window.location.href = '/admin/settings' },
+        { icon: 'fa-sync-alt', label: 'Refresh Data', action: () => { loadApplications(); cmdOverlay.classList.remove('open'); } },
+        { icon: 'fa-home', label: 'Main Site', action: () => window.location.href = '/' },
+        { icon: 'fa-sign-out-alt', label: 'Logout', action: () => window.location.href = '/auth/logout' },
+    ];
+
+    function renderCmds(cmds) {
+        if (!cmdResults) return;
+        cmdResults.innerHTML = cmds.map((c, i) => `
+            <div class="cmd-palette-item ${i === 0 ? 'selected' : ''}" data-index="${i}">
+                <i class="fas ${c.icon}"></i><span>${c.label}</span>
+            </div>`).join('');
+        cmdResults.querySelectorAll('.cmd-palette-item').forEach((item, idx) => {
+            item.addEventListener('click', () => { cmds[idx].action(); cmdOverlay.classList.remove('open'); });
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); cmdOverlay?.classList.toggle('open'); cmdInput?.focus(); renderCmds(commands); }
+        if (e.key === 'Escape') { cmdOverlay?.classList.remove('open'); closeAppDetail(); closeRejectModal(); }
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.key === 'r' && !e.ctrlKey) { loadApplications(); showToast('Refreshing...', 'info', 1500); }
+    });
+
+    cmdOverlay?.addEventListener('click', (e) => { if (e.target === cmdOverlay) cmdOverlay.classList.remove('open'); });
+    cmdInput?.addEventListener('input', (e) => {
+        renderCmds(commands.filter(c => c.label.toLowerCase().includes(e.target.value.toLowerCase())));
+    });
+    cmdInput?.addEventListener('keydown', (e) => {
+        const items = cmdResults?.querySelectorAll('.cmd-palette-item');
+        if (!items?.length) return;
+        const current = cmdResults.querySelector('.selected');
+        let idx = current ? parseInt(current.dataset.index) : 0;
+        if (e.key === 'ArrowDown') { e.preventDefault(); current?.classList.remove('selected'); idx = (idx + 1) % items.length; items[idx].classList.add('selected'); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); current?.classList.remove('selected'); idx = (idx - 1 + items.length) % items.length; items[idx].classList.add('selected'); }
+        else if (e.key === 'Enter') { e.preventDefault(); current?.click(); }
+    });
+
+    // ===== INIT =====
+    loadApplications();
+})();
+</script>
+
 </body>
 </html>
